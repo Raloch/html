@@ -29,7 +29,7 @@ class Bottom extends Component {
                     <div className="footer-content">
                         <div className="footer-left">
                             <div className="footrt-logo"><img src={logo} /></div>
-                            <p className="footrt-state">全生态分红节点型社区</p>
+                            <p className="footrt-state">全生态分红数字资产社区</p>
                             {/* <div className="footrt-contact">
                                 <p><a  className="contact-box">微博</a></p>
                                 <p><a  className="contact-box">邮箱</a></p>

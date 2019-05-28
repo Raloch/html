@@ -26,11 +26,11 @@ const BottomTop= [
     //     title : '联系我们'
     // }, 
     {
-        key   : '/addUs',
-        title : '加入我们'
-    }, {
         key   : '/workOrder',
         title : '上币申请'
+    },{
+        key   : '/addUs',
+        title : '加入我们'
     }]
 },{
     key   : '/toolbar',
@@ -52,7 +52,8 @@ const BottomTop= [
     title : '支持',
     list  : [{
         key   : '/help',
-        title : '帮助中心'
+        // title : '帮助中心'
+        title: '公告'
     }, {
         key   : '/application',
         title : '提交工单'
