@@ -42,7 +42,7 @@ class Home extends Component {
     constructor() {
         super()
         this.store = new store() // 在这里实例化，保证每次加载组件数据的初始化。
-        console.log(this.store);  
+        console.log(this.store);
     }
     state = {
         loading: false,

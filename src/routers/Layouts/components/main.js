@@ -14,7 +14,7 @@ class Main extends Component {
     constructor(props){
         super(props)
         message.config({
-            maxCount: 1,
+            maxCount: 1, // 最大消息显示数量
           });
     }
     componentWillMount(){
