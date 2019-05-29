@@ -49,7 +49,7 @@ class FromBox extends Component {
                             "Ticket" : res.ticket,
                             "Randstr" : res.randstr
                         }
-                        CgicallPost("/apiv1/captchaReg",obj,function(d){
+                        CgicallPost("/api/v1/visitor/email-code",obj,function(d){
                             if(d.result) {
                                 _this.setState({codeLoading:true})
                                 _this.getAuthCode();
@@ -67,6 +67,7 @@ class FromBox extends Component {
             }    
         })
     }
+    // 获取邮箱验证码
     getAuthCode = () => {
         var obj = {
             type: 'register',
@@ -74,8 +75,8 @@ class FromBox extends Component {
             receiver : 'email'
         }
         var _this = this;
-        CgicallPost("/apiv1/visitor/getValidateCode",obj,function(d){
-            if(d.result) {
+        CgicallPost("/api/v1/visitor/email-code",obj,function(d){
+            if(d.code === 0) {
                 message.success('验证码已发送到您的邮箱上，请注意查收');
                 _this.countDown();
             }else {
@@ -210,7 +211,7 @@ class FromBox extends Component {
                             // </Button>} type="text" placeholder="邮箱验证码" />
                             <Button disabled={this.state.codeDisType} className="searchInBtn" 
                                 onClick={this.drawingImg} loading={this.state.codeLoading}>{this.state.codeHtml}
-                            </Button>} type="text" placeholder="邮箱验证码" />
+                            </Button>} type="text" placeholder="输入6位短信验证码" />
                     )}
                 </FormItem>
                 <FormItem>
@@ -235,7 +236,7 @@ class FromBox extends Component {
                                 // { validator: this.validateToNextPassword }
                             ],
                         })( 
-                            <Input autocomplete="new-password off" onChange={this.getPassGrade} prefix={<Icon type="lock" />} type="password" placeholder="密码" />
+                            <Input autocomplete="new-password off" onChange={this.getPassGrade} prefix={<Icon type="lock" />} type="password" placeholder="设置登录密码" />
                         )}
                     </Tooltip>
                 </FormItem>
@@ -269,6 +270,10 @@ class FromBox extends Component {
                         注册
                     </Button>
                 </FormItem>
+                <p className="toLogin">
+                    没有BitCoCo账号？
+                    <Link to="/login">立即登录</Link>
+                </p>
             </Form>
         )
     }

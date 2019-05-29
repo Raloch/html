@@ -79,8 +79,8 @@ class Login extends Component {
     }
     PhoneVerify = (obj) => {
         let _this = this;
-        CgicallPost("/apiv1/visitor/loginWithCode",obj,function(d){
-            if(d.result) {
+        CgicallPost("/api/v1/visitor/login",obj,function(d){
+            if(d.code === 0) {
                 message.success('登录成功!');
                 _this.props.history.push('/home')
             }else {
@@ -110,18 +110,25 @@ class Login extends Component {
                     "Ticket" : res.ticket,
                     "Randstr" : res.randstr
                 }
-                CgicallPost("/apiv1/captchaReg",obj,function(d){
-                    if(d.result) {
-                        if((_this.state.isAuthentication == "false" || !_this.state.isAuthentication) && !_this.state.phone) {
-                            _this.onlyEmailLogin();
-                        }else {
-                            _this.showModalPhone();
-                        }
-                    }else {
-                        message.error(GetErrorMsg(d));
+                CgicallPost("/api/v1/visitor/phone-code", obj, function(d) {
+                    if (d.code === 0) {
+                        _this.setState({
+                            visiblePhone: true
+                        })
                     }
+                })
+                // CgicallPost("/apiv1/captchaReg",obj,function(d){
+                //     if(d.result) {
+                //         if((_this.state.isAuthentication == "false" || !_this.state.isAuthentication) && !_this.state.phone) {
+                //             _this.onlyEmailLogin();
+                //         }else {
+                //             _this.showModalPhone();
+                //         }
+                //     }else {
+                //         message.error(GetErrorMsg(d));
+                //     }
                     
-                });
+                // });
             }
         });
         captcha1.show();
@@ -171,17 +178,27 @@ class Login extends Component {
                 setTimeout(function(){
                     _this.setState({ LoginLoading: false });
                 },3000)
-                CgicallPost("/apiv1/visitor/loginCheck",obj,function(d){
-                    if(d.result) {
-                        _this.state.email = d.result.email
-                        _this.state.phone =  d.result.phone;
-                        _this.state.isAuthentication = d.result.isAuthentication;
+                CgicallPost("/api/v1/visitor/bindinfo",obj,function(d) {
+                    if (d.result.phone) {
                         _this.drawingImg();
-                    }else {
-                        message.error(GetErrorMsg(d,'loginCheck'))
+                    } else {
+                        if (d.code === 0) {
+                            _this.props.history.replace('/home')
+                        }
                     }
+                })
+                // CgicallPost("/api/v1/visitor/login",obj,function(d){
+                //     console.log(d)
+                //     if(d.result) {
+                //         _this.state.email = d.result.email
+                //         _this.state.phone =  d.result.phone;
+                //         _this.state.isAuthentication = d.result.isAuthentication;
+                //         _this.drawingImg();
+                //     }else {
+                //         message.error(GetErrorMsg(d,'loginCheck'))
+                //     }
                     
-                });
+                // });
             }
         });
     }
@@ -193,7 +210,7 @@ class Login extends Component {
         if(Cookies.get('account')) {
             if(this.props.history.length < 3) this.props.history.push('/home')
             else this.props.history.goBack();
-        } 
+        }
     }
     render() {
         const { visiblePhone, loading, verifyArr, visiblePass } = this.state;
@@ -204,6 +221,7 @@ class Login extends Component {
                         <h3>欢迎登录</h3>
                         <FormBox submit={this.submit} LoginLoading={this.state.LoginLoading} forgetPass={this.forgetPass}/>
                     </div>
+                    {/* 谷歌验证码输入框 */}
                     <CodeModal title='验证' 
                         handleOkPhone={this.handleOkPhone} 
                         cancelPhone={this.handleCancelPhone} 
@@ -214,6 +232,7 @@ class Login extends Component {
                         codeType='login'
                         account={this.state.phone}
                     />
+                    {/* 绑定手机验证码输入框 */}
                     <PassModal
                         cancelPass={this.cancelPass} 
                         visiblePass={visiblePass} 

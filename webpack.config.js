@@ -98,16 +98,16 @@ const config = {
         hot: true,
         inline: true,
         progress: true,
-        port: 8001,
+        port: 9080,
         host: 'localhost',
         proxy: {
-        '/apiv1/*': {
-            target: 'http://172.16.1.248:9080',
+        '/api/v1/*': {
+            target: 'http://172.38.5.190:9080',
             changeOrigin: true,
             secure: false
             },
         '/captchaReg': {
-            target: 'http://172.16.1.248:9080',
+            target: 'http://172.38.5.190:9080',
             changeOrigin: true,
             secure: false
             }

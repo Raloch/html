@@ -25,7 +25,7 @@ class FromBox extends Component {
                     {getFieldDecorator('userName', {
                         rules: [{ required: true, message: '请输入用户名' }],
                     })(
-                        <Input autocomplete="off" prefix={<Icon type="user" />} placeholder="手机号/邮箱" />
+                        <Input autocomplete="off" prefix={<Icon type="user" />} placeholder="邮箱" />
                     )}
                 </FormItem>
                 <FormItem>

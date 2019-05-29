@@ -45,16 +45,22 @@ class Regist extends Component {
         form.validateFields((err, values) => {
             if (!err) {
                 let { email, emailCode, password, inviteCode} = values
-                var obj = {
-                    email: email,
-                    password : sha256(sha256(password) + sha256(password) + this.state.pwKey),
+                // var obj = {
+                //     email: email,
+                //     password : sha256(sha256(password) + sha256(password) + this.state.pwKey),
+                //     code: emailCode,
+                //     referCode: inviteCode,
+                //     passwordStrength: gradeStr
+                // }
+                let obj = {
+                    username: email,
+                    password: sha256(sha256(password) + sha256(password) + this.state.pwKey),
                     code: emailCode,
-                    referCode: inviteCode,
-                    passwordStrength: gradeStr
+                    phone: ''
                 }
                 var _this = this;
-                CgicallPost("/apiv1/visitor/register",obj,function(d){
-                    if(d.result) {
+                CgicallPost("/api/v1/visitor/email-register",obj,function(d){
+                    if(d.code === 0) {
                         message.success("注册成功！")
                         _this.state.account = d.result.account;
                         _this.props.history.push('/home');

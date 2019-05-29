@@ -12,7 +12,8 @@ import $ from  'jquery'
 // @observer
 // let version = "http://172.38.5.22:8001";
 // let version = "https://www.coinex.com"
-let version = "";
+// let version = "";
+let version = "http://172.38.5.190:9080";
 let token = Cookies.get('token') ? "?token=" + Cookies.get('token') : "?";
 
 // class Cgicall extends Component {

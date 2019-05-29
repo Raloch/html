@@ -89,7 +89,7 @@ class CodeModal extends Component {
                         onChange={this.TabChang} 
                         type="card" 
                         className={(this.props.verifyArr && this.props.verifyArr.length == 2)?'':'onlyOne'} 
-                        defaultActiveKey={(this.props.verifyArr && this.props.verifyArr[0])?this.props.verifyArr[0]:'google'}
+                        defaultActiveKey={(this.props.verifyArr && this.props.verifyArr[0])?this.props.verifyArr[0]:'phone'}
                     >
                         <TabPane tab="Google验证" key="google">
                             <GoogleCode codeChange={this.codeChange.bind(this)}/>
@@ -108,7 +108,8 @@ class PhoneCodes extends Component {
         return(
             <Form>
                 <FormItem>
-                    <Input className="code_input" prefix={<Icon type="safety" />} onChange={this.props.codeChange}  placeholder="输入6位手机验证码" addonAfter={<Button  disabled={this.props.codeDisType} className="searchInBtn" onClick={this.props.getAuthCode}>{this.props.codeHtml}</Button>} />
+                    {/* addonAfter={<Button  disabled={this.props.codeDisType} className="searchInBtn" onClick={this.props.getAuthCode}>{this.props.codeHtml}</Button>}  */}
+                    <Input className="code_input" prefix={<Icon type="safety" />} onChange={this.props.codeChange}  placeholder="输入6位手机验证码" />
                 </FormItem>
             </Form>
         )
