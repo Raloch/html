@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Provider, inject, observer } from 'mobx-react'
 import { message, Modal, Button, Input, Form, Icon, Tabs, Tooltip } from 'antd'
 import $ from  'jquery'
+import md5 from 'js-md5'
 import CryptoJS from 'crypto-js'
 import store from '../store'
 import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
@@ -28,7 +29,8 @@ class PassModal extends Component {
         code: '',
         password: '',
         codeLoading: false,
-        pwKey: 'fdec3af2f062f9d5893d22ffb46164d7ffcbee648cffb96af79121e7b274d979'
+        pwKey: 'fdec3af2f062f9d5893d22ffb46164d7ffcbee648cffb96af79121e7b274d979',
+        changePhone: '', // 更换绑定的手机号码
     }
     defaultModal = () => {
         this.setState({loading: false,emailHtml:'获取邮箱验证码',
@@ -65,6 +67,7 @@ class PassModal extends Component {
             } 
         },1000)
     }
+    // 忘记密码：获取邮箱或手机验证码
     drawingImg = (type,event) => {
         let _this = this;
         let { form } = (type == 'email')?this.childEmail.props:this.childPhone.props;
@@ -78,17 +81,24 @@ class PassModal extends Component {
                             "Ticket" : res.ticket,
                             "Randstr" : res.randstr
                         }
-                        CgicallPost("/apiv1/captchaReg",obj,function(d){
-                            if(d.result) {
-                                _this.setState({codeLoading:true})
-                                if(type == 'email') _this.getEmailAuthCode();
-                                else _this.getPhoneAuthCode();
-                            }else {
-                                message.error(GetErrorMsg(d));
-                                _this.setState({codeLoading:false})
-                            }
-                            
-                        });
+                        var obj = {
+                            userip : res.appid,
+                            ticket : res.ticket,
+                            randstr : res.randstr
+                        }
+                        _this.setState({codeLoading:true})
+                        if(type == 'email') _this.getEmailAuthCode(obj);
+                        else _this.getPhoneAuthCode();
+                        // CgicallPost("/api/v1/visitor/email-code",obj,function(d){
+                        //     if(d.result) {
+                        //         _this.setState({codeLoading:true})
+                        //         if(type == 'email') _this.getEmailAuthCode();
+                        //         else _this.getPhoneAuthCode();
+                        //     }else {
+                        //         message.error(GetErrorMsg(d));
+                        //         _this.setState({codeLoading:false})
+                        //     }
+                        // });
                     }
                 });
                 captcha1.show();
@@ -98,7 +108,8 @@ class PassModal extends Component {
             }    
         })
     }
-    getEmailAuthCode = () => {
+    // 获取邮箱验证码
+    getEmailAuthCode = (obj) => {
         let _this = this;
         let { form } = this.childEmail.props;
         let type = 'forgotpasswordbyemail'
@@ -106,10 +117,11 @@ class PassModal extends Component {
         form.validateFields(['email'],{first:true},(err, values) => {
             if(!err) {
                 let { email } = values;
-                _this.getAuthCode(email,type,'email');
+                _this.getAuthCode(email, type, 'email', obj);
             }
         })
     }
+    // 获取手机验证码
     getPhoneAuthCode = () => {
         let _this = this;
         let { form } = this.childPhone.props;
@@ -122,15 +134,19 @@ class PassModal extends Component {
             }
         })
     }
-    getAuthCode = (account,codeType,receiver) => {
-        var obj = {
-            type: codeType,
-            account: account,
-            receiver : receiver
-        }
+    // 获取邮箱/手机验证码
+    getAuthCode = (account,codeType,receiver, obj) => {
+        // var obj = {
+        //     type: codeType,
+        //     account: account,
+        //     receiver : receiver
+        // }
+        obj.type = 'reset'
+        obj.username = account
+        console.log(obj)
         var _this = this;
-        CgicallPost("/apiv1/visitor/getValidateCode",obj,function(d){
-            if(d.result) {
+        CgicallPost("/api/v1/visitor/email-code",obj,function(d){
+            if(d.code === 0) {
                 message.success('验证码已发送，请注意查收');
                 _this.countDown(receiver);
                 _this.setState({codeLoading:false})
@@ -158,6 +174,7 @@ class PassModal extends Component {
             
         });
     }
+    // 点击下一步按钮触发，现在将改处理函数并入提交事件中 2019-5-30
     nextPage = () => {
         let arr;
         var _this = this;
@@ -173,36 +190,65 @@ class PassModal extends Component {
                 account: arr[0],
                 code : arr[1]
             }
-            CgicallPost("/apiv1/visitor/validateCodeExist",obj,function(d){
-                if(d.result) {
-                    // message.success('验证码已发送到您的手机上，请注意查收');
-                    // _this.countDown();
-                    _this.state.account = arr[0];
-                    _this.state.code = arr[1];
-                    _this.setState({btnNext: false,btnSub: true})
-                }else {
-                    message.error(GetErrorMsg(d));
-                }
+            _this.state.account = arr[0];
+            _this.state.code = arr[1];
+            _this.setState({btnNext: false,btnSub: true})
+            // CgicallPost("/apiv1/visitor/validateCodeExist",obj,function(d){
+            //     if(d.result) {
+            //         // message.success('验证码已发送到您的手机上，请注意查收');
+            //         // _this.countDown();
+            //         _this.state.account = arr[0];
+            //         _this.state.code = arr[1];
+            //         _this.setState({btnNext: false,btnSub: true})
+            //     }else {
+            //         message.error(GetErrorMsg(d));
+            //     }
                 
-            });
+            // });
         }  
     }
+    // 提交
     updatePass = (event) => {
+        // 邮箱及验证码处理
+        let arr1;
+        var _this = this;
+        if(this.state.type == 'email') arr1 = this.childEmail.handleSubmit();
+        else arr1 = this.childPhone.handleSubmit();
+        let type = (this.state.type == 'email')?'forgotpasswordbyemail':'forgotpasswordbyphone';
+        if(this.props.portPass != 'forgotPassword') type = (this.state.type == 'email')?'modifypassword':'modifypasswordbyphone';
+        if(arr1 && arr1.length) {
+            this.state.account = arr1[0];
+            this.state.code = arr1[1];
+            var obj = {
+                type: type,
+                account: arr1[0],
+                code : arr1[1]
+            }
+            _this.state.account = arr1[0];
+            _this.state.code = arr1[1];
+        } 
+
+        // 密码处理
         let arr;
         if(this.state.type == 'email') arr = this.passChildEmail.handleSubmit();
         else arr = this.passChildPhone.handleSubmit();
         if(arr && arr.length) {
             var obj = {
-                account: this.state.account,
-                password: sha256(sha256(arr[0]) + sha256(arr[0]) + this.state.pwKey),
+                username: this.state.account,
+                // password: sha256(sha256(arr[0]) + sha256(arr[0]) + this.state.pwKey),
+                password: md5(arr[0]),
                 code : this.state.code,
-                passwordStrength: arr[1]
+                // passwordStrength: arr[1]
+                phone: arr[1]
             }
+            console.log(obj)
             var _this = this;
-            let url = '/apiv1/visitor/forgotPassword';
-            if(this.props.portPass != 'forgotPassword') url = '/apiv1/user/modifyPassword';
+            // let url = '/apiv1/visitor/forgotPassword';
+            // if(this.props.portPass != 'forgotPassword') url = '/apiv1/user/modifyPassword';
+            let url = '/api/v1/visitor/email-reset';
+            if(this.props.portPass != 'forgotPassword') url = '/api/v1/visitor/email-reset';
             CgicallPost(url ,obj,function(d){
-                if(d.result) {
+                if(d.code === 0) {
                     message.success('密码重置成功！');
                     _this.props.cancelPass();
                 }else {
@@ -243,10 +289,14 @@ class PassModal extends Component {
                 onCancel={this.props.cancelPass}
                 afterClose={this.defaultModal}
                 footer={[
-                    <Button type="primary" style={{display:(this.state.btnNext?'inline-block':'none')}} onClick={this.nextPage}>
-                    下一步
-                    </Button>,
-                    <Button key="submit" type="primary" style={{display:(this.state.btnSub?'inline-block':'none')}} loading={loading} onClick={this.updatePass}>
+                    // 现在将邮箱验证码和重置的密码及重置的手机绑定号码放在同一个模态框中
+                    // <Button type="primary" style={{display:(this.state.btnNext?'inline-block':'none')}} onClick={this.nextPage}>
+                    // 下一步
+                    // </Button>,
+                    // <Button key="submit" type="primary" style={{display:(this.state.btnSub?'inline-block':'none')}} loading={loading} onClick={this.updatePass}>
+                    // 提交
+                    // </Button>,
+                    <Button key="submit" type="primary" style={{display:(this.state.btnSub?'inline-block':'inline-block')}} loading={loading} onClick={this.updatePass}>
                     提交
                     </Button>,
                 ]}
@@ -274,10 +324,11 @@ class PassModal extends Component {
                             />
                             <PassWordInput 
                                 setPassChild={this.setPassEmail} 
-                                className={this.state.btnSub?'':'enterPass'}
+                                // className={this.state.btnSub?'':'enterPass'}
+                                className={this.state.btnSub?'':''}
                             />
                         </TabPane>
-                        <TabPane 
+                        {/* <TabPane 
                             tab="手机重置" 
                             key="phone" 
                             disabled={(this.state.btnSub)?true:false}
@@ -296,7 +347,7 @@ class PassModal extends Component {
                                 setPassChild={this.setPassPhone} 
                                 className={this.state.btnSub?'':'enterPass'}
                             />
-                        </TabPane>
+                        </TabPane> */}
                     </Tabs>
             </Modal>
         )
@@ -449,14 +500,17 @@ class PassWordInputs extends Component {
         grade: '',
         gradeStr: ''
     }
+    // 提交时获取输入框数据
     handleSubmit = () => {
         let { form } = this.props;
         let arr = [];
         form.validateFields((err, values) => {
-            let { password } = values
+            let { password, changePhone } = values
             if(!err) {
-                this.getPassGrade('',password);
-                arr.push(password,this.state.gradeStr);
+                // this.getPassGrade('',password);
+                // arr.push(password,this.state.gradeStr);
+                arr.push(password)
+                arr.push(changePhone)
             }
         })
         return arr;
@@ -491,8 +545,8 @@ class PassWordInputs extends Component {
                 var t=passVal.charCodeAt(i); 
                 if(t>=48 && t <=57){hasNum = true;} //为0～9十个阿拉伯数字
                 else if((t>=65 && t <=90) || (t>=97 && t <=122)){hasWord = true;} //为26个大写英文字母 为26个小写英文字母
-                else{hasChar = true;} 
-            } 
+                else{hasChar = true;}
+            }
             // }
             if(passVal.length >= 6 && passVal.length <=8 && (hasWord || hasChar)) {
                 this.setState({passGrade: 'lowGrade',grade:'低',gradeStr: 'low'})
@@ -521,12 +575,23 @@ class PassWordInputs extends Component {
         const value = e.target.value;
         this.setState({ confirmDirty: this.state.confirmDirty || !!value });
     }
+    // 前后密码一致性校验
     compareToFirstPassword = (rule, value, callback) => {
         const form = this.props.form;
         if (value && value !== form.getFieldValue('password')) {
             callback('两次密码输入不一致！');
         } else {
             callback();
+        }
+    }
+    // 更换绑定的手机号码格式校验
+    phoneFormat = (rule, value, callback) => {
+        const reg = /^1[3|4|5|8][0-9]\d{4,8}$/
+        const form = this.props.form
+        if (!reg.test(value)) {
+            callback('请输入有效的手机号码')
+        } else {
+            callback()
         }
     }
     // codeType = (rule, value, callback) => {
@@ -580,6 +645,18 @@ class PassWordInputs extends Component {
                     ],
                     })(
                         <Input autocomplete="new-password off" className="code_input" onBlur={this.handleConfirmBlur}  prefix={<Icon type="lock" />} type="password" placeholder="确认密码" />    
+                    )}
+                </FormItem>
+                {/* 更换绑定的手机号码 */}
+                <FormItem>
+                    {getFieldDecorator('changePhone', {
+                        rules: [
+                            { required: false, message: '请输入需要更换绑定的手机号码' },
+                            { validator: this.phoneFormat },
+                            // { pattern: /^1[3|4|5|8][0-9]\d{4,8}$/ }
+                        ]
+                    })(
+                        <Input autocomplete="new-password off" className="code_input" prefix={<Icon type="phone" />} type="number" placeholder="更换绑定的手机号码（可选）" />    
                     )}
                 </FormItem>
             </Form>

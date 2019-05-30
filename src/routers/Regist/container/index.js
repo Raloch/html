@@ -3,6 +3,7 @@ import { Provider, inject, observer } from 'mobx-react'
 import { message, Modal, Button, Input, Form } from 'antd'
 import $ from  'jquery'
 import CryptoJS from 'crypto-js'
+import md5 from 'js-md5'
 import FormBox from '../components/FormBox'
 import Cookies from 'js-cookie'
 import store from '../store'
@@ -54,7 +55,8 @@ class Regist extends Component {
                 // }
                 let obj = {
                     username: email,
-                    password: sha256(sha256(password) + sha256(password) + this.state.pwKey),
+                    // password: sha256(sha256(password) + sha256(password) + this.state.pwKey),
+                    password: md5(password),
                     code: emailCode,
                     phone: ''
                 }
@@ -62,6 +64,7 @@ class Regist extends Component {
                 CgicallPost("/api/v1/visitor/email-register",obj,function(d){
                     if(d.code === 0) {
                         message.success("注册成功！")
+                        Cookies.set('account', d.result.account)
                         _this.state.account = d.result.account;
                         _this.props.history.push('/home');
                     }else {

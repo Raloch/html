@@ -95,7 +95,7 @@ class CodeModal extends Component {
                             <GoogleCode codeChange={this.codeChange.bind(this)}/>
                         </TabPane>
                         <TabPane tab="手机验证" key="phone">
-                            <PhoneCode codeChange={this.codeChange.bind(this)} codeDisType={codeDisType} getAuthCode={this.getAuthCode} codeHtml={codeHtml}/>
+                            <PhoneCode codeChange={this.codeChange.bind(this)} codeDisType={codeDisType} hidePhone={this.props.hidePhone} getAuthCode={this.getAuthCode} codeHtml={codeHtml}/>
                         </TabPane>
                     </Tabs>
             </Modal>
@@ -103,12 +103,16 @@ class CodeModal extends Component {
     }
 }
 class PhoneCodes extends Component {
+    componentDidMount() {
+        console.log(this.props)
+    }
     render() {
         const { getFieldDecorator } = this.props.form
         return(
             <Form>
                 <FormItem>
                     {/* addonAfter={<Button  disabled={this.props.codeDisType} className="searchInBtn" onClick={this.props.getAuthCode}>{this.props.codeHtml}</Button>}  */}
+                    <p>您绑定的手机号码为：{this.props.hidePhone}</p>
                     <Input className="code_input" prefix={<Icon type="safety" />} onChange={this.props.codeChange}  placeholder="输入6位手机验证码" />
                 </FormItem>
             </Form>

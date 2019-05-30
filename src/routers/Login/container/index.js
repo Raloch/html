@@ -3,6 +3,7 @@ import { Provider, inject, observer } from 'mobx-react'
 import { message, Modal, Button, Input, Form, Icon, Tabs } from 'antd'
 import $ from  'jquery'
 import CryptoJS from 'crypto-js'
+import md5 from 'js-md5'
 import FormBox from '../components/FormBox'
 import Cookies from 'js-cookie'
 import store from '../store'
@@ -32,7 +33,8 @@ class Login extends Component {
         isAuthentication: false,
         codeValue: '',
         codeDisType:false,
-        pwKey: 'fdec3af2f062f9d5893d22ffb46164d7ffcbee648cffb96af79121e7b274d979'
+        pwKey: 'fdec3af2f062f9d5893d22ffb46164d7ffcbee648cffb96af79121e7b274d979',
+        hidePhone: '' // 登录输入手机验证码时显示的半隐藏手机号码
     }
     showModalPhone = () => {
         let arr = [];
@@ -51,7 +53,7 @@ class Login extends Component {
             if(this.state.phone) type = 'phone';
             if(this.state.isAuthentication) type ='google';
         }
-        if(this.state.codeValue.length <6 || this.state.codeValue.length >6) {
+        if(this.state.codeValue.length < 6 || this.state.codeValue.length > 6) {
             message.error('验证码格式错误')
             return false;
         }else {
@@ -62,7 +64,8 @@ class Login extends Component {
         }
         var obj = {
             account: this.state.userName,
-            password : sha256(sha256(this.state.password) + sha256(this.state.password) + this.state.pwKey),
+            // password : sha256(sha256(this.state.password) + sha256(this.state.password) + this.state.pwKey),
+            password: md5(this.state.password),
             code : this.state.codeValue
         }
         var _this = this;
@@ -82,6 +85,7 @@ class Login extends Component {
         CgicallPost("/api/v1/visitor/login",obj,function(d){
             if(d.code === 0) {
                 message.success('登录成功!');
+                Cookies.set('account', d.result.account)
                 _this.props.history.push('/home')
             }else {
                 message.error(GetErrorMsg(d))
@@ -136,7 +140,8 @@ class Login extends Component {
     onlyEmailLogin = () => {
         var obj = {
             account: this.state.userName,
-            password : sha256(sha256(this.state.password) + sha256(this.state.password) + this.state.pwKey),
+            // password : sha256(sha256(this.state.password) + sha256(this.state.password) + this.state.pwKey),
+            password: md5(this.state.password)
         }
         var _this = this;
         this.setState({ LoginLoading: true });
@@ -169,7 +174,8 @@ class Login extends Component {
                 let { userName, password } = values
                 var obj = {
                     account: userName,
-                    password : sha256(sha256(password) + sha256(password) +this.state.pwKey)
+                    // password : sha256(sha256(password) + sha256(password) +this.state.pwKey)
+                    password: md5(password)
                 }
                 this.state.userName =  userName;
                 this.state.password =  password;
@@ -180,6 +186,9 @@ class Login extends Component {
                 },3000)
                 CgicallPost("/api/v1/visitor/bindinfo",obj,function(d) {
                     if (d.result.phone) {
+                        _this.setState({
+                            hidePhone: d.result.number
+                        })
                         _this.drawingImg();
                     } else {
                         if (d.code === 0) {
@@ -231,6 +240,7 @@ class Login extends Component {
                         codeChange={this.codeChange}
                         codeType='login'
                         account={this.state.phone}
+                        hidePhone={this.state.hidePhone}
                     />
                     {/* 绑定手机验证码输入框 */}
                     <PassModal

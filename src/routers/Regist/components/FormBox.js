@@ -44,20 +44,29 @@ class FromBox extends Component {
                 this.setState({codeLoading:true})
                 let captcha1 = new TencentCaptcha('2038116476', function(res) {
                     if(res.ret === 0){
+                        // var obj = {
+                        //     "Aid" : res.appid,
+                        //     "Ticket" : res.ticket,
+                        //     "Randstr" : res.randstr
+                        // }
                         var obj = {
-                            "Aid" : res.appid,
-                            "Ticket" : res.ticket,
-                            "Randstr" : res.randstr
+                            username: _this.props.form.getFieldValue('email'),
+                            type: 'reg',
+                            userip : res.appid,
+                            ticket : res.ticket,
+                            randstr : res.randstr
                         }
-                        CgicallPost("/api/v1/visitor/email-code",obj,function(d){
-                            if(d.result) {
-                                _this.setState({codeLoading:true})
-                                _this.getAuthCode();
-                            }else {
-                                message.error(GetErrorMsg(d));
-                            }
+                        _this.setState({codeLoading:true})
+                        _this.getAuthCode(obj);
+                        // CgicallPost("/api/v1/visitor/email-code",obj,function(d){
+                        //     if(d.code === 0) {
+                        //         _this.setState({codeLoading:true})
+                        //         _this.getAuthCode();
+                        //     }else {
+                        //         message.error(GetErrorMsg(d));
+                        //     }
                             
-                        });
+                        // });
                     }
                 });
                 captcha1.show();
@@ -68,12 +77,12 @@ class FromBox extends Component {
         })
     }
     // 获取邮箱验证码
-    getAuthCode = () => {
-        var obj = {
-            type: 'register',
-            account: this.props.form.getFieldValue('email'),
-            receiver : 'email'
-        }
+    getAuthCode = (obj) => {
+        // var obj = {
+        //     type: 'register',
+        //     account: this.props.form.getFieldValue('email'),
+        //     receiver : 'email'
+        // }
         var _this = this;
         CgicallPost("/api/v1/visitor/email-code",obj,function(d){
             if(d.code === 0) {

@@ -28,7 +28,7 @@ import partner2 from '../images/partner2.png'
 import partner3 from '../images/partner3.png'
 import partner4 from '../images/partner4.png'
 import partner5 from '../images/partner5.png'
-import media from '../images/media.png'
+import media from '../images/mediaBg.png'
 import wechatCode from '../images/wechat-cade.png'
 import Notices from '@/routers/Notice/NoticeMenu/noticeMenu'
 import sliders3 from '../images/banner3.jpg'
@@ -50,7 +50,6 @@ class Home extends Component {
     getNotice = ( key, event) => {
         sessionStorage.dtkey = key;
 	    this.props.history.push('/notice');
-        
     }
     getNoticeAll = () => {
         sessionStorage.dtkey = "";
@@ -96,7 +95,7 @@ class Home extends Component {
                         <div className='strength_bg'>
                             <img className='strth_main' src={strength} />
                             <StrengthMode />
-	                        <Media/>
+	                        <Media />
                         </div>
                     </div>
                     <div>
@@ -149,10 +148,10 @@ class StrengthMode extends Component {
     render() {
         const strthMode = [
             {
-                img: strth1,
-                title: "轻松获取收益",
+                img: strth3,
+                title: "社区节点奖励",
                 cls: "strth1",
-                msg: "多重回馈模式 · 全生态真分红"
+                msg: "成为节点用户 · 尊享超额奖励"
             },
             {
                 img: strth2,
@@ -224,9 +223,7 @@ class Media extends Component {
             <div className='home_mode_main'>
                 <div className='home_mode_title'>投资机构与合作媒体</div>
                 <div className='home_mode_line'></div>
-	            <img
-		            className ='partner-bg'
-		            src = { media } alt = ""/>
+	            <img className ='partner-bg' src={ media } alt=""/>
             </div>
         )
     }

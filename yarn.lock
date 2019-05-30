@@ -4772,6 +4772,11 @@ js-export-excel@^1.1.2:
     script-loader "0.7.2"
     xlsx "^0.11.17"
 
+js-md5@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.npm.taobao.org/js-md5/download/js-md5-0.7.3.tgz#b4f2fbb0b327455f598d6727e38ec272cd09c3f2"
+  integrity sha1-tPL7sLMnRV9ZjWcn447Ccs0Jw/I=
+
 js-sha256@^0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/js-sha256/-/js-sha256-0.9.0.tgz#0b89ac166583e91ef9123644bd3c5334ce9d0966"

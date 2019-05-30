@@ -19,7 +19,9 @@ class SideMenu extends Component {
         keys:[],
         // loginState:Cookies.get('userName')?true:false
         loginState:Cookies.get('account')?true:false,
-        menuReviver:menuConfig
+        menuReviver:menuConfig,
+        loginStyle: 'whiteBorder', // 点击登录按钮边框切换时的颜色显示
+        registStyle: 'whiteBorder', // 点击注册按钮边框切换时的颜色显示
     }
     selectKey = () =>{
         let keys = []
@@ -43,10 +45,38 @@ class SideMenu extends Component {
         // if (userInfo.name == '') {
         //     updateName(Cookies.get('userName'))
         // }
+        if (this.props.history.location.pathname === '/login') {
+            this.setState({
+                loginStyle: 'blueBorder',
+                registStyle: 'whiteBorder'
+            })
+        }
+        if (this.props.history.location.pathname === '/regist') {
+            this.setState({
+                loginStyle: 'whiteBorder',
+                registStyle: 'blueBorder'
+            })
+        }
         this.selectKey();
     }
     // 点击导航栏切换至对应界面
     onSelect = ({key}) =>{
+        if (key === '/login') {
+            this.setState({
+                loginStyle: 'blueBorder',
+                registStyle: 'whiteBorder'
+            })
+        } else if (key === '/regist') {
+            this.setState({
+                loginStyle: 'whiteBorder',
+                registStyle: 'blueBorder'
+            })
+        } else {
+            this.setState({
+                loginStyle: 'whiteBorder',
+                registStyle: 'whiteBorder'
+            })
+        }
         // 用户退出操作
         if(key) {
             if(key == "/users/login") {
@@ -67,7 +97,7 @@ class SideMenu extends Component {
         Cookies.remove('transactionverification', { path: '/' })
         this.setState({'loginState': (Cookies.get('account')?true:false)})
         // 退出登录请求
-        CgicallPost("/apiv1/visitor/logout",'',function(d){
+        CgicallPost("/api/v1/user/logout", '', function(d){
             if(d.result) {
             }else {
                 // message.error('退出登录失败！')
@@ -142,7 +172,7 @@ class SideMenu extends Component {
                                 </Menu.Item>))
                             :
                             (<Menu.Item key={item.key} disabled={item.state} className={item.type} onClick={this.getNotice.bind(this,item.key)}>
-                                <span>{(item.key == '/home')?(<img className='menu_logo' src={logo} />):((item.key == '/gosub')?(<span>{item.title} <img src={Fire} /></span>):(item.title))}</span>
+                                <span className={ item.key === '/login' ? this.state.loginStyle : (item.key === '/regist' ? this.state.registStyle : '') }>{(item.key == '/home')?(<img className='menu_logo' src={logo} />):((item.key == '/gosub')?(<span>{item.title} <img src={Fire} /></span>):(item.title))}</span>
                             </Menu.Item>))
                     )}
                 </Menu>
