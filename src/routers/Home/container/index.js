@@ -196,6 +196,7 @@ class StrengthMode extends Component {
         )
     }
 }
+// 循环显示商标（切成一个个小图）
 class Partner extends Component {
     render() {
         const partner = [
@@ -214,6 +215,7 @@ class Partner extends Component {
         )
     }
 }
+// 显示整个商标大图（切整个图）
 class Media extends Component {
     render() {
 /*        const media = [
