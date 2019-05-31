@@ -64,85 +64,124 @@
     }
     .home_strength {
         // height: 940px;
-        height: 1322px;
         width: 100%;
         background-color: #F4F9FC;
         .strength_bg {
-            position: relative;
         //     width: 100%;
         //     height: 100%;
         //     // background: url('../images/strength.png')no-repeat center bottom;
         //     background-size: 50% 50%;
-            img.strth_main {
-                width: 100%;
-                height: auto;
-            }
-            .Strength_mode {
-                width: 100%;
-                height: 50%;
-                position: absolute;
-                top: 0;
-                bottom: 0;
-                li {
-                    position: absolute;
-                    list-style: none;
-                    width: 228px;
-                    div,h3,p {
+            background: #fff;
+            // 交易所市场列表
+            .exchange_market {
+                // width: 72.9166%;
+                width: 1400px;
+                margin: 0 auto;
+                padding-top: 52px;
+                padding-bottom: 123px;
+                background: #fff;
+                // tabs
+                .ant-tabs {
+                    width: 100%;
+                    // 标题栏标签选中状态
+                    .ant-tabs-nav .ant-tabs-tab-active {
+                        line-height: 45px;
+                        background: #00a0e9;
+                        color: #fff !important;
+                        border: 1px solid #00a0e9 !important;
+                    }
+                    // 标签栏标签未选中状态
+                    .ant-tabs-nav .ant-tabs-tab {
+                        width: 160px;
+                        padding: 0;
+                        margin: 0;
                         text-align: center;
+                        line-height: 45px;
+                        font-size: 18px;
+                        color: #999999;
+                        border: 1px solid #dadada;
                     }
-                    img {
-                        width: 40%;
-                        height: auto;
-                    }
-                    h3 {
-                        font-size: 20px;
-                        font-weight: 700;
-                        margin-top: 10px;
-                        // margin-bottom: 10px;
-                        letter-spacing: 2px;
-                    }
-                    p {
-                        font-size: 16px;
-                        color: #666666;
+                    // 标题栏
+                    .ant-tabs-bar {
+                        margin-bottom: 0;
                     }
                 }
-                li.strth1 {
-                    left: 14%;
-                    left: calc(20% - 114px);
-                    bottom: 27%;
+            }
+            .strength_box {
+                position: relative;
+                img.strth_main {
+                    width: 100%;
+                    height: auto;
                 }
-                li.strth2 {
-                    left: 27%;
-                    left: calc(33.1% - 114px);
-                    bottom: 47%;
-                }
-                li.strth3 {
-                    left: 44%;
-                    left: calc(50.3% - 114px);
-                    bottom: 56%;
-                    display: none; // 隐藏显示
-                }
-                li.strth4 {
-                    right: 27%;
-                    left: calc(67% - 114px);
-                    bottom: 47%;
-                }
-                li.strth5 {
-                    right: 14%;
-                    left: calc(80.18% - 114px);
-                    bottom: 27%;
+                .Strength_mode {
+                    width: 100%;
+                    margin: 0;
+                    li {
+                        position: absolute;
+                        list-style: none;
+                        width: 228px;
+                        div,h3,p {
+                            text-align: center;
+                        }
+                        img {
+                            width: 40%;
+                            height: auto;
+                        }
+                        h3 {
+                            font-size: 20px;
+                            font-weight: 700;
+                            margin-top: 10px;
+                            // margin-bottom: 10px;
+                            letter-spacing: 2px;
+                        }
+                        p {
+                            font-size: 16px;
+                            color: #666666;
+                        }
+                    }
+                    li.strth1 {
+                        left: 14%;
+                        left: calc(20% - 114px);
+                        bottom: 34%;
+                    }
+                    li.strth2 {
+                        left: 27%;
+                        left: calc(33.1% - 114px);
+                        bottom: 54%;
+                    }
+                    li.strth3 {
+                        left: 44%;
+                        left: calc(50.3% - 114px);
+                        bottom: 56%;
+                        display: none; // 隐藏显示
+                    }
+                    li.strth4 {
+                        right: 27%;
+                        left: calc(67% - 114px);
+                        bottom: 54%;
+                    }
+                    li.strth5 {
+                        right: 14%;
+                        left: calc(80.18% - 114px);
+                        bottom: 34%;
+                    }
                 }
             }
         }
     }
     .home_mode_main {
         // width: 72.9%;
+        position: static !important;
         width: 100%;
         margin: 0 auto;
         background: #fff;
+        padding-top: 70px;
+        padding-bottom: 82px;
         img{
-            width: 1283px;
-            height: 552px;
+            display: block;
+            width: 66.8229%;
+            height: auto;
+            margin: 0 auto;
             margin-top: 100px;
         }
         .home_mode_title {
@@ -348,15 +387,15 @@
     display: block;
   }
 }
-.partner-bg{
-    width: 1283px;
-    height: auto;
-    // width: 100%;
-    // height: auto;
-    // min-width: 100% ;
-    display: block;
-    margin: 0 auto;
-}
+// .partner-bg{
+//     // width: 1283px;
+//     // height: auto;
+//     width: 100%;
+//     height: auto;
+//     min-width: 100% ;
+//     display: block;
+//     // margin: 0 auto;
+// }
 
 /*屏幕尺寸*/
 @media screen and (max-width: 1366px) {

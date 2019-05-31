@@ -45,6 +45,7 @@ class SideMenu extends Component {
         // if (userInfo.name == '') {
         //     updateName(Cookies.get('userName'))
         // }
+        console.log('登录页面compoenntWIllmoi')
         if (this.props.history.location.pathname === '/login') {
             this.setState({
                 loginStyle: 'blueBorder',
@@ -98,7 +99,7 @@ class SideMenu extends Component {
         this.setState({'loginState': (Cookies.get('account')?true:false)})
         // 退出登录请求
         CgicallPost("/api/v1/user/logout", '', function(d){
-            if(d.result) {
+            if(d.code === 0) {
             }else {
                 // message.error('退出登录失败！')
             }

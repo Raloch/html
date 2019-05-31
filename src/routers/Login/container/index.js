@@ -84,6 +84,7 @@ class Login extends Component {
         let _this = this;
         CgicallPost("/api/v1/visitor/login",obj,function(d){
             if(d.code === 0) {
+                console.log(obj)
                 message.success('登录成功!');
                 Cookies.set('account', d.result.account)
                 _this.props.history.push('/home')
@@ -105,20 +106,24 @@ class Login extends Component {
             
         });
     }
-    drawingImg = () => {
+    drawingImg = (email) => {
         let _this = this;
         var captcha1 = new TencentCaptcha('2038116476', function(res) {
             if(res.ret === 0){
                 var obj = {
-                    "Aid" : res.appid,
-                    "Ticket" : res.ticket,
-                    "Randstr" : res.randstr
+                    username: email,
+                    type: 'login',
+                    userip : res.appid,
+                    ticket : res.ticket,
+                    randstr : res.randstr
                 }
                 CgicallPost("/api/v1/visitor/phone-code", obj, function(d) {
                     if (d.code === 0) {
                         _this.setState({
                             visiblePhone: true
                         })
+                        Cookies.set('account', d.result.account)
+                        _this.props.history.push('/home')
                     }
                 })
                 // CgicallPost("/apiv1/captchaReg",obj,function(d){
@@ -173,7 +178,7 @@ class Login extends Component {
             if (!err) {
                 let { userName, password } = values
                 var obj = {
-                    account: userName,
+                    username: userName,
                     // password : sha256(sha256(password) + sha256(password) +this.state.pwKey)
                     password: md5(password)
                 }
@@ -185,15 +190,18 @@ class Login extends Component {
                     _this.setState({ LoginLoading: false });
                 },3000)
                 CgicallPost("/api/v1/visitor/bindinfo",obj,function(d) {
-                    if (d.result.phone) {
-                        _this.setState({
-                            hidePhone: d.result.number
-                        })
-                        _this.drawingImg();
-                    } else {
-                        if (d.code === 0) {
+                    if (d.code === 0) {
+                        if (d.result.phone) {
+                            _this.setState({
+                                hidePhone: d.result.number
+                            })
+                            _this.drawingImg(_this.state.userName);
+                        } else {
+                            Cookies.set('account', d.result.account)
                             _this.props.history.replace('/home')
                         }
+                    } else {
+                        message.error(GetErrorMsg(d))
                     }
                 })
                 // CgicallPost("/api/v1/visitor/login",obj,function(d){

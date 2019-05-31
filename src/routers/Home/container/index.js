@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react'
 import { Provider, inject, observer } from 'mobx-react'
-import { message, Modal, Button, Input, Form } from 'antd'
+import { message, Modal, Button, Input, Form, Tabs, Icon } from 'antd'
 import $ from  'jquery'
 import CryptoJS from 'crypto-js'
 import FormBox from '../components/FormBox'
@@ -14,7 +14,7 @@ import './index.less'
 import './index.scss'
 import sliders1 from '../images/banner1.jpg'
 import sliders2 from '../images/banner2.jpg'
-import strength from '../images/bg.png'
+import strength from '../images/bg2.png'
 import strth1 from '../images/strth1.png'
 import strth2 from '../images/strth2.png'
 import strth3 from '../images/strth3.png'
@@ -35,6 +35,7 @@ import sliders3 from '../images/banner3.jpg'
 // import { withRouter } from 'react-router-dom'
 const Search = Input.Search;
 const FormItem = Form.Item
+const { TabPane } = Tabs
 @inject('Store')
 @observer
 // @withRouter
@@ -93,8 +94,11 @@ class Home extends Component {
                     </div>
                     <div className='home_strength'>
                         <div className='strength_bg'>
-                            <img className='strth_main' src={strength} />
-                            <StrengthMode />
+                            <ExchangeMarket />
+                            <div className='strength_box'>
+                                <img className='strth_main' src={strength} />
+                                <StrengthMode />
+                            </div>
 	                        <Media />
                         </div>
                     </div>
@@ -144,6 +148,41 @@ class BannerSlider extends Component {
 		)
 	}
 }
+
+// 交易所市场
+class ExchangeMarket extends Component {
+    callback = (key) => {
+        // console.log(key)
+    }
+    render() {
+        return (
+            <div className="exchange_market">
+                <Input
+                    placeholder="搜索币种"
+                    prefix={ <Icon type="search" style={{ color: '#9a9a9a' }} /> }
+                    style={{ width: 260, height: 38 }}
+                />
+                <Tabs defaultActiveKey="1" className="market_header" onChange={ this.callback }>
+                    <TabPane tab="USDT市场" className="market_header_title" key="1">
+                    Content of Tab Pane 1
+                    <br />
+                    dfsafsad
+                    <br />
+                    dfasfdsa
+                    </TabPane>
+                    <TabPane tab="BTC市场" key="2">
+                    Content of Tab Pane 2
+                    </TabPane>
+                    <TabPane tab="ETH市场" key="3">
+                    Content of Tab Pane 3
+                    </TabPane>
+                </Tabs>
+            </div>
+        );
+    }
+}
+
+// 功能福利展示区
 class StrengthMode extends Component {
     render() {
         const strthMode = [
@@ -197,6 +236,7 @@ class StrengthMode extends Component {
     }
 }
 // 循环显示商标（切成一个个小图）
+/* 
 class Partner extends Component {
     render() {
         const partner = [
@@ -215,6 +255,7 @@ class Partner extends Component {
         )
     }
 }
+*/
 // 显示整个商标大图（切整个图）
 class Media extends Component {
     render() {

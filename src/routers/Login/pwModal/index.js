@@ -76,12 +76,14 @@ class PassModal extends Component {
                 this.setState({codeLoading:true})
                 let captcha1 = new TencentCaptcha('2038116476', function(res) {
                     if(res.ret === 0){
+                        // var obj = {
+                        //     "Aid" : res.appid,
+                        //     "Ticket" : res.ticket,
+                        //     "Randstr" : res.randstr
+                        // }
                         var obj = {
-                            "Aid" : res.appid,
-                            "Ticket" : res.ticket,
-                            "Randstr" : res.randstr
-                        }
-                        var obj = {
+                            username: '', // 在后面添加进去
+                            type: 'reset',
                             userip : res.appid,
                             ticket : res.ticket,
                             randstr : res.randstr
@@ -141,7 +143,6 @@ class PassModal extends Component {
         //     account: account,
         //     receiver : receiver
         // }
-        obj.type = 'reset'
         obj.username = account
         console.log(obj)
         var _this = this;
@@ -239,9 +240,8 @@ class PassModal extends Component {
                 password: md5(arr[0]),
                 code : this.state.code,
                 // passwordStrength: arr[1]
-                phone: arr[1]
+                phone: arr[1] // 可选
             }
-            console.log(obj)
             var _this = this;
             // let url = '/apiv1/visitor/forgotPassword';
             // if(this.props.portPass != 'forgotPassword') url = '/apiv1/user/modifyPassword';
@@ -588,10 +588,12 @@ class PassWordInputs extends Component {
     phoneFormat = (rule, value, callback) => {
         const reg = /^1[3|4|5|8][0-9]\d{4,8}$/
         const form = this.props.form
-        if (!reg.test(value)) {
-            callback('请输入有效的手机号码')
-        } else {
-            callback()
+        if (value !== '') {
+            if (!reg.test(value)) {
+                callback('请输入有效的手机号码')
+            } else {
+                callback()
+            }
         }
     }
     // codeType = (rule, value, callback) => {

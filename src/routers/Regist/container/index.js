@@ -57,8 +57,7 @@ class Regist extends Component {
                     username: email,
                     // password: sha256(sha256(password) + sha256(password) + this.state.pwKey),
                     password: md5(password),
-                    code: emailCode,
-                    phone: ''
+                    code: emailCode
                 }
                 var _this = this;
                 CgicallPost("/api/v1/visitor/email-register",obj,function(d){

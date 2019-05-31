@@ -9,7 +9,7 @@ export default
     key   : '/trade',
     title : '币币交易',
     type  : 'menu-item-left',
-    state : true
+    state : false
 },
 // {
 //     key   : '/gosub',
