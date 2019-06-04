@@ -7,11 +7,12 @@ import md5 from 'js-md5'
 import FormBox from '../components/FormBox'
 import Cookies from 'js-cookie'
 import store from '../store'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { Cgicallget, Cgicallgets, CgicallPost, GetErrorMsg} from '@/components/Ajax'
 import { sha256, sha224 } from 'js-sha256'
 import CodeModal from '../codeModal'
 import PassModal from '../pwModal'
 import './index.less'
+import { md } from 'node-forge';
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
 @inject('Store')
@@ -63,7 +64,7 @@ class Login extends Component {
             }
         }
         var obj = {
-            account: this.state.userName,
+            username: this.state.userName,
             // password : sha256(sha256(this.state.password) + sha256(this.state.password) + this.state.pwKey),
             password: md5(this.state.password),
             code : this.state.codeValue
@@ -80,27 +81,26 @@ class Login extends Component {
         }, 3000);
         
     }
+    // 登录验证
     PhoneVerify = (obj) => {
         let _this = this;
         CgicallPost("/api/v1/visitor/login",obj,function(d){
-            if(d.code === 0) {
-                console.log(obj)
+            if (d.code === 0) {
                 message.success('登录成功!');
                 Cookies.set('account', d.result.account)
                 _this.props.history.push('/home')
-            }else {
-                message.error(GetErrorMsg(d))
+            } else {
+                message.error(d.message)
             }
-            
         });
     }
     GoogleVerify = (obj) => {
         let _this = this;
-        CgicallPost("/apiv1/visitor/loginWithAuth",obj,function(d){
+        CgicallPost("/apiv1/visitor/loginWithAuth", obj, function(d) {
             if(d.result) {
                 message.success('登录成功!');
                 _this.props.history.push('/home')
-            }else {
+            } else {
                 message.error(GetErrorMsg(d))
             }
             
@@ -122,8 +122,8 @@ class Login extends Component {
                         _this.setState({
                             visiblePhone: true
                         })
-                        Cookies.set('account', d.result.account)
-                        _this.props.history.push('/home')
+                        // Cookies.set('account', d.result.account)
+                        // _this.props.history.push('/home')
                     }
                 })
                 // CgicallPost("/apiv1/captchaReg",obj,function(d){
@@ -180,7 +180,7 @@ class Login extends Component {
                 var obj = {
                     username: userName,
                     // password : sha256(sha256(password) + sha256(password) +this.state.pwKey)
-                    password: md5(password)
+                    // password: md5(password)
                 }
                 this.state.userName =  userName;
                 this.state.password =  password;
@@ -188,22 +188,39 @@ class Login extends Component {
                 this.setState({ LoginLoading: true });
                 setTimeout(function(){
                     _this.setState({ LoginLoading: false });
-                },3000)
-                CgicallPost("/api/v1/visitor/bindinfo",obj,function(d) {
+                }, 3000)
+                let objs = {
+                    username: userName,
+                    password: md5(password)
+                }
+                // 判断用户输入邮箱密码是否正确
+                CgicallPost('/api/v1/visitor/check-user', objs, function(d) {
                     if (d.code === 0) {
-                        if (d.result.phone) {
-                            _this.setState({
-                                hidePhone: d.result.number
-                            })
-                            _this.drawingImg(_this.state.userName);
-                        } else {
-                            Cookies.set('account', d.result.account)
-                            _this.props.history.replace('/home')
-                        }
+                        // 判断邮箱是否绑定了手机号码
+                        Cgicallgets("/api/v1/visitor/bind-info",obj,function(d) {
+                            if (d.code === 0) {
+                                if (d.result.Phone) {
+                                    _this.setState({
+                                        hidePhone: d.result.Phone
+                                    })
+                                    _this.drawingImg(_this.state.userName);
+                                } else {
+                                    let obj = {
+                                        username: _this.state.userName,
+                                        password: md5(_this.state.password),
+                                        code: ''
+                                    }
+                                    _this.PhoneVerify(obj)
+                                }
+                            } else {
+                                message.error(GetErrorMsg(d))
+                            }
+                        })
                     } else {
-                        message.error(GetErrorMsg(d))
+                        message.error(d.message)
                     }
                 })
+                    
                 // CgicallPost("/api/v1/visitor/login",obj,function(d){
                 //     console.log(d)
                 //     if(d.result) {

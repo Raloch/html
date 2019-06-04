@@ -25,6 +25,7 @@ devMiddleware.waitUntilValid(()=>{
     opn("http://localhost:"+ port)
     // opn("http://172.38.5.22:"+ port)
     // opn("http://172.38.5.22:8001")
+    // opn("http://172.38.2.178:8000")
 })
 
 const hotMiddleware = webpackHotMiddleware(compiler, {

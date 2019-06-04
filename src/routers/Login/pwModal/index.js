@@ -588,12 +588,15 @@ class PassWordInputs extends Component {
     phoneFormat = (rule, value, callback) => {
         const reg = /^1[3|4|5|8][0-9]\d{4,8}$/
         const form = this.props.form
+        console.log(value)
         if (value !== '') {
             if (!reg.test(value)) {
                 callback('请输入有效的手机号码')
             } else {
                 callback()
             }
+        } else {
+            callback()
         }
     }
     // codeType = (rule, value, callback) => {
@@ -634,7 +637,7 @@ class PassWordInputs extends Component {
                                 {required: true, message: '请输入密码' },
                                 // { validator: this.validateToNextPassword }
                             ],
-                        })( 
+                        })(
                             <Input autocomplete="new-password off" className="code_input" onChange={this.getPassGrade} prefix={<Icon type="lock" />} type="password" placeholder="密码" />
                         )}
                     </Tooltip>
@@ -654,7 +657,7 @@ class PassWordInputs extends Component {
                     {getFieldDecorator('changePhone', {
                         rules: [
                             { required: false, message: '请输入需要更换绑定的手机号码' },
-                            { validator: this.phoneFormat },
+                            // { validator: this.phoneFormat },
                             // { pattern: /^1[3|4|5|8][0-9]\d{4,8}$/ }
                         ]
                     })(

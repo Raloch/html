@@ -13,7 +13,8 @@ import $ from  'jquery'
 // let version = "http://172.38.5.22:8001";
 // let version = "https://www.coinex.com"
 // let version = "";
-let version = "http://172.38.5.190:9080";
+// let version = "http://172.38.5.190:9080";
+let version = "http://172.38.2.178:8000"
 let token = Cookies.get('token') ? "?token=" + Cookies.get('token') : "?";
 
 // class Cgicall extends Component {
@@ -29,6 +30,24 @@ let Cgicallget = function(url,obj,fun) {
         }
     }
     url = version + url + token + "&_=" + new Date().getTime() + objstr;
+        $.get(url, function(d, x, s) {
+            d = initBackDatas(d);
+            // if (typeof d != "undefined" && typeof d.status != "undefined" && typeof d.data != "undefined" && d.status == 1 && (d.data.indexOf("quitlogin") > -1 || d.data.indexOf("otherlogin") > -1)) {
+            // 	this.props.history.replace('/login')
+            // }
+            fun(d,x,s);
+        }, "json");
+}
+
+// bind-info
+let Cgicallgets = function(url,obj,fun) {
+    var objstr = "";
+    if(obj) {
+        for (var k in obj) {
+            objstr += "&" + k + "=" + encodeURIComponent($.trim(obj[k]));
+        }
+    }
+    url = version + url + token + objstr;
         $.get(url, function(d, x, s) {
             d = initBackDatas(d);
             // if (typeof d != "undefined" && typeof d.status != "undefined" && typeof d.data != "undefined" && d.status == 1 && (d.data.indexOf("quitlogin") > -1 || d.data.indexOf("otherlogin") > -1)) {
@@ -267,4 +286,4 @@ let paramError = function(type) {
     return msg;
 }
 
-export {Cgicallget,CgicallPost,CgicallPut,ObjClone,GetErrorMsg}
+export {Cgicallget,Cgicallgets,CgicallPost,CgicallPut,ObjClone,GetErrorMsg}

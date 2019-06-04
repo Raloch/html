@@ -45,7 +45,6 @@ class SideMenu extends Component {
         // if (userInfo.name == '') {
         //     updateName(Cookies.get('userName'))
         // }
-        console.log('登录页面compoenntWIllmoi')
         if (this.props.history.location.pathname === '/login') {
             this.setState({
                 loginStyle: 'blueBorder',

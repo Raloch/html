@@ -85,6 +85,7 @@ class FromBox extends Component {
         // }
         var _this = this;
         CgicallPost("/api/v1/visitor/email-code",obj,function(d){
+            console.log(d)
             if(d.code === 0) {
                 message.success('验证码已发送到您的邮箱上，请注意查收');
                 _this.countDown();

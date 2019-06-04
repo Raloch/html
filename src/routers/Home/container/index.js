@@ -1,7 +1,8 @@
 
 import React, { Component } from 'react'
 import { Provider, inject, observer } from 'mobx-react'
-import { message, Modal, Button, Input, Form, Tabs, Icon } from 'antd'
+import { message, Modal, Button, Input, Form, Tabs, Icon, Table, Divider, Tag } from 'antd'
+// import Highlighter from 'react-highlight-words'
 import $ from  'jquery'
 import CryptoJS from 'crypto-js'
 import FormBox from '../components/FormBox'
@@ -32,6 +33,9 @@ import media from '../images/mediaBg.png'
 import wechatCode from '../images/wechat-cade.png'
 import Notices from '@/routers/Notice/NoticeMenu/noticeMenu'
 import sliders3 from '../images/banner3.jpg'
+import star1 from '../images/star1.png'
+import star2 from '../images/star2.png'
+import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT, columnsFree, dataFree } from '../components/marketList'
 // import { withRouter } from 'react-router-dom'
 const Search = Input.Search;
 const FormItem = Form.Item
@@ -149,32 +153,127 @@ class BannerSlider extends Component {
 	}
 }
 
-// 交易所市场
+// 主页交易所市场
 class ExchangeMarket extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            searchText: '',
+            activeKey: '1',
+            dataUSDT: dataUSDT,
+            dataBTC: dataBTC,
+            dataETH: dataETH,
+            dataBCT: dataBCT,
+            dataFree: dataFree,
+            USDTLoading: false,
+            BTCLoading: false,
+            ETHLoading: false,
+            BCTLoading: false,
+            FreeLoading: false,
+        }
+    }
+    // 标题栏切换回调
     callback = (key) => {
-        // console.log(key)
+        this.state.activeKey = key
+    }
+    // 搜索币种
+    search = () => {
+        let arr, name, loadName
+        switch(this.state.activeKey) {
+            case '1':
+                arr = dataUSDT
+                name = 'dataUSDT',
+                loadName = 'USDTLoading'
+                this.setState({
+                    USDTLoading: true
+                })
+                break
+            case '2':
+                arr = dataBTC
+                name = 'dataBTC'
+                loadName = 'BTCLoading'
+                this.setState({
+                    BTCLoading: true
+                })
+                break
+            case '3':
+                arr = dataBTC
+                name = 'dataETH'
+                loadName = 'ETHLoading'
+                this.setState({
+                    ETHLoading: true
+                })
+                break
+            case '4':
+                arr = dataBTC
+                name = 'dataBCT'
+                loadName = 'BCTLoading'
+                this.setState({
+                    BCTLoading: true
+                })
+                break
+            case '5':
+                arr = dataBTC
+                name = 'dataFree'
+                loadName = 'FreeLoading'
+                this.setState({
+                    FreeLoading: true
+                })
+                break
+        }
+        if (this.state.searchText !== '') {
+            // 过滤不匹配的元素
+            let data = arr.filter(val => {
+                return val.exchangePairs.toLowerCase().includes(this.state.searchText.toLowerCase())
+            })
+            // setTimeout(() => { // 模拟延迟加载loading效果
+            //     this.setState({
+            //         [name]: data,
+            //         [loadName]: false
+            //     })
+            // }, 1000)
+            this.setState({
+                [name]: data,
+                [loadName]: false
+            })
+        } else {
+            this.setState({
+                [name]: arr,
+                [loadName]: false
+            })
+        }  
+    }
+    handleChange = (e) => {
+        this.setState({
+            searchText: e.target.value
+        })
     }
     render() {
         return (
             <div className="exchange_market">
                 <Input
                     placeholder="搜索币种"
-                    prefix={ <Icon type="search" style={{ color: '#9a9a9a' }} /> }
-                    style={{ width: 260, height: 38 }}
+                    prefix={ <Icon onClick={ this.search } type="search" style={{ color: '#9a9a9a', cursor: 'pointer' }} /> }
+                    className="market_search_input"
+                    value={ this.state.searchText }
+                    onPressEnter={ this.search }
+                    onChange={ this.handleChange }
                 />
-                <Tabs defaultActiveKey="1" className="market_header" onChange={ this.callback }>
+                <Tabs defaultActiveKey={ this.state.activeKey } className="market_header" onChange={ this.callback }>
                     <TabPane tab="USDT市场" className="market_header_title" key="1">
-                    Content of Tab Pane 1
-                    <br />
-                    dfsafsad
-                    <br />
-                    dfasfdsa
+                        <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } loading={ this.state.USDTLoading } />
                     </TabPane>
                     <TabPane tab="BTC市场" key="2">
-                    Content of Tab Pane 2
+                        <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ this.state.USDTLoading } />
                     </TabPane>
                     <TabPane tab="ETH市场" key="3">
-                    Content of Tab Pane 3
+                        <Table columns={ columnsETH } dataSource={ this.state.dataETH } pagination={ false } loading={ this.state.USDTLoading } />
+                    </TabPane>
+                    <TabPane tab="BCT市场" key="4">
+                        <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } pagination={ false } loading={ this.state.USDTLoading } />
+                    </TabPane>
+                    <TabPane tab={ <span><img style={{ marginBottom: 5, marginRight: 5 }} src={ star2 } />自选市场</span> } key="5">
+                        <Table columns={ columnsFree } dataSource={ this.state.dataFree } pagination={ false } loading={ this.state.USDTLoading } />
                     </TabPane>
                 </Tabs>
             </div>
@@ -182,7 +281,7 @@ class ExchangeMarket extends Component {
     }
 }
 
-// 功能福利展示区
+// 主页功能福利展示区
 class StrengthMode extends Component {
     render() {
         const strthMode = [
