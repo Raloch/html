@@ -1,13 +1,12 @@
-import React, {Component} from 'react'
+import Trade from './container/index'
+import React, { Component } from 'react'
 
-class Trade extends Component {
+class ProviderTrade extends Component {
     render() {
         return (
-            <div className='Home_'>
-               Trade
-            </div>
+            <Trade />
         )
     }
 }
 
-export default Trade
+export default ProviderTrade

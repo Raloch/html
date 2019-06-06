@@ -2,11 +2,6 @@ import React from 'react'
 import star1 from '../images/star1.png'
 import star2 from '../images/star2.png'
 
-function collect() {
-  dataUSDT[0].star = false
-  console.log(dataUSDT[0])
-}
-
 export const columnsUSDT = [
   {
     title: '',
