@@ -56,7 +56,7 @@ p {
           }
           .self-check {
             position: absolute;
-            right: 15px;
+            right: 10px;
             top: 5px;
             color: #666666FF;
             .ant-checkbox {
@@ -69,6 +69,11 @@ p {
               .ant-checkbox-inner {
                 width: 12px;
                 height: 12px;
+                &:after {
+                  left: 3px !important;
+                  top: 0 !important;
+                  transform: rotate(45deg) scale(0.9) !important;
+                }
               }
             }
           }
