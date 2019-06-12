@@ -34,6 +34,7 @@ p {
         header {
           position: relative;
           padding: 20px 0 10px 20px;
+          margin-bottom: 10px;
           p {
             line-height: 1em;
             font-size: 16px;
@@ -47,11 +48,43 @@ p {
           }
         }
         main {
+          position: relative;
+          // 自选checkbox
+          .ant-checkbox-wrapper span {
+            color: #666666FF;
+            font-size: 14px;
+          }
+          .self-check {
+            position: absolute;
+            right: 15px;
+            top: 5px;
+            color: #666666FF;
+            .ant-checkbox {
+              width: 12px;
+              height: 12px;
+              .ant-checkbox-input {
+                width: 12px;
+                height: 12px;
+              }
+              .ant-checkbox-inner {
+                width: 12px;
+                height: 12px;
+              }
+            }
+          }
           // 设置table选项的高度 -- padding
           .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
             font-size: 12px;
             padding: 4px 16px;
             word-break: break-word;
+          }
+          // 设置标题栏标题的宽高
+          .ant-tabs-nav .ant-tabs-tab {
+            padding: 5px 0;
+            margin-right: 20px;
+          }
+          .ant-tabs-nav {
+            padding-left: 25px;
           }
           // table表格隔行变色
           .ant-table-thead > tr > th {
@@ -245,11 +278,11 @@ p {
                 }
               }
               // 限价交易内容
-              .present-price {
+              .present-price, .market-price {
                 padding: 18px 20px 0 20px;
                 box-sizing: border-box;
                 overflow: hidden;
-                .purchase {
+                .purchase, .sellout {
                   // width: 452px;
                   width: 45.8417%;
                   header {
@@ -279,6 +312,7 @@ p {
                   main {
                     width: 100%;
                     .input-purchase {
+                      margin-bottom: 30px;
                       .purchase-price, .purchase-number {
                         position: relative;
                         input {
@@ -307,12 +341,59 @@ p {
                         letter-spacing: 1px;
                       }
                     }
+                    .transaction-steps {
+                      width: 100%;
+                      // 更改步骤条的宽度（设置了progressDot后不会自适应父级宽度，可能是版本问题）
+                      .ant-steps-item {
+                        width: 22%;
+                        transform: translateX(-70%);
+                      }
+                      // 设置步骤条的颜色
+                      .ant-steps-item-finish .ant-steps-icon-dot, .ant-steps-item-process .ant-steps-icon-dot, .ant-steps-item-finish > .ant-steps-item-tail:after {
+                        background: #1AB781FF;
+                      }
+                      // 设置完成和进行时步骤的文字颜色
+                      .ant-steps-item-process .ant-steps-item-description, .ant-steps-item-finish .ant-steps-item-description {
+                        color: #1AB781FF;
+                      }
+                    }
+                    .expected-turnover {
+                      margin-top: 15px;
+                      font-size: 14px;
+                      color: #333333FF;
+                      margin-bottom: 25px;
+                      span {
+                        color: #1AB781FF;
+                        font-weight: bold;
+                        letter-spacing: 1px;
+                      }
+                    }
+                    .ant-btn-primary {
+                      background: #1AB781FF;
+                      border-color: #1AB781FF;
+                    }
                   }
                 }
                 .sellout {
-                  width: 45.8417%;
-                  height: 100px;
-                  background: teal;
+                  main {
+                    .transaction-steps {
+                      .ant-steps-item-finish .ant-steps-icon-dot, .ant-steps-item-process .ant-steps-icon-dot, .ant-steps-item-finish > .ant-steps-item-tail:after {
+                        background: #E95454FF;
+                      }
+                      .ant-steps-item-process .ant-steps-item-description, .ant-steps-item-finish .ant-steps-item-description {
+                        color: #E95454FF;
+                      }
+                    }
+                    .expected-turnover {
+                      span {
+                        color: #E95454FF;
+                      }
+                    }
+                    .ant-btn-primary {
+                      background: #E95454FF;
+                      border-color: #E95454FF;
+                    }
+                  }
                 }
               }
             }
@@ -403,6 +484,12 @@ p {
             padding: 10px 16px;
             word-break: break-word;
           }
+          .ant-table-tbody > tr > td:nth-child(2) {
+            color: #1AB781FF;
+          }
+          .ant-table-tbody > tr > td:nth-child(8) {
+            color: #00A0E9FF;
+          }
           // 隔行变色
           .ant-table-thead > tr > th {
             background: #fff !important;
@@ -416,7 +503,7 @@ p {
             color: #333333FF;
             background: #EEF1F7FF;
             padding-left: 20px;
-            padding-top: 11px;
+            margin-top: 11px;
           }
           main {
             .scroll-table();
@@ -425,12 +512,14 @@ p {
           }
         }
         .MSCurrency {
+          margin-bottom: 40px;
           header {
             font-size: 16px;
             line-height: 40px;
             color: #333333FF;
             background: #EEF1F7FF;
-            padding: 11px 22px 0 20px;
+            padding: 0 22px 0 20px;
+            margin-top: 11px;
             overflow: hidden;
             a {
               font-size: 14px;

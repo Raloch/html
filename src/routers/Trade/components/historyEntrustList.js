@@ -61,7 +61,7 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '2',
@@ -72,7 +72,7 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '3',
@@ -83,7 +83,7 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '4',
@@ -94,7 +94,7 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '5',
@@ -105,7 +105,7 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '6',
@@ -116,7 +116,7 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '7',
@@ -127,7 +127,7 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '8',
@@ -138,7 +138,7 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '9',
@@ -149,7 +149,7 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '10',
@@ -160,7 +160,7 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '11',
@@ -171,6 +171,6 @@ export const historyEntrustData = [
     alreadyDeal: '1.00000000',
     totalTurnover: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   }
 ]
