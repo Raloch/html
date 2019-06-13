@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './index.less'
-import { Layout, Input, Icon, Tabs, Table, Select, Steps, Button, Checkbox } from 'antd'
+import { Layout, Input, Icon, Tabs, Table, Select, Steps, Button, Checkbox, message } from 'antd'
 import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT } from '../components/coinsList'
 import { exchangeColumns, exchangeData } from '../components/currentExchangeList'
 import { currentEntrustColumns, currentEntrustData } from '../components/currentEntrustList'
@@ -8,6 +8,7 @@ import { historyEntrustColumns, historyEntrustData } from '../components/history
 import { entrustMessageColumns1, entrustMessageData1, entrustMessageColumns2, entrustMessageData2 } from '../components/entrustMessageList'
 import star1 from '../images/star1.png'
 import star2 from '../images/star2.png'
+import Kline from '../components/kline/Kline'
 
 const { Header, Footer, Sider, Content } = Layout
 const { TabPane } = Tabs
@@ -37,7 +38,6 @@ class Trade extends Component {
   // 搜索币种
   search = () => {
     let arr, name, loadName
-    console.log(this.state.activeKey)
     switch(this.state.activeKey) {
       case '1':
         arr = dataUSDT
@@ -97,6 +97,19 @@ class Trade extends Component {
   accuracyChange = val => {
     console.log(val)
   }
+  rowClick = (record, rowkey) => {
+    return {
+      onClick: (e) => {
+        if (e.target.className === 'collectStar') {
+          this.state.dataUSDT[rowkey].isCollected = !this.state.dataUSDT[rowkey].isCollected
+          this.setState({
+            dataUSDT
+          })
+        }
+        
+      }
+    }
+  }
   render() {
     return (
       <div className="trade">
@@ -117,10 +130,9 @@ class Trade extends Component {
                 />
               </header>
               <main>
-                <Checkbox className="self-check">自选</Checkbox>
-                <Tabs defaultActiveKey={ this.state.activeKey } onChange={ this.callback }>
+                <Tabs defaultActiveKey={ this.state.activeKey } onChange={ this.callback } tabBarExtraContent={ <Checkbox className="self-check">自选</Checkbox> }>
                   <TabPane tab="USDT" key="1">
-                    <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } scroll={{ y: 545 }} pagination={ false } />
+                    <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } />
                     {/* <div className="market_USDT" style={{ height: 569, overflow: 'auto' }}>
                       <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } />
                     </div> */}
@@ -197,7 +209,10 @@ class Trade extends Component {
             <Content className="trade-right-layout-content">
               <Layout className="trade-right-layout-content-layout">
                 <Content className="trade-right-layout-content-layout-content">
-                  <div className="k-line">K线</div>
+                  {/* k线 */}
+                  <div className="k-line">
+                    <Kline></Kline>
+                  </div>
                   <div className="transaction">
                     <Tabs defaultActiveKey="1" onChange={ this.transactionChange }>
                       <TabPane className="present-price" tab="限价交易" key="1">

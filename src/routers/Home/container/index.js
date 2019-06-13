@@ -248,6 +248,41 @@ class ExchangeMarket extends Component {
             searchText: e.target.value
         })
     }
+    // 点击star图标收藏
+    rowClick = (record, rowKey) => {
+        return {
+            onClick: e => {
+                if (e.target.className === 'collectStar') {
+                    switch(this.state.activeKey) {
+                        case '1':
+                            this.state.dataUSDT[record.key - 1].isCollected = !this.state.dataUSDT[record.key - 1].isCollected
+                            this.setState({
+                                dataUSDT
+                            })
+                            break
+                        case '2':
+                            this.state.dataBTC[record.key - 1].isCollected = !this.state.dataBTC[record.key - 1].isCollected
+                            this.setState({
+                                dataBTC
+                            })
+                            break
+                        case '3':
+                            this.state.dataETH[record.key - 1].isCollected = !this.state.dataETH[record.key - 1].isCollected
+                            this.setState({
+                                dataETH
+                            })
+                            break
+                        case '4':
+                            this.state.dataBCT[record.key - 1].isCollected = !this.state.dataBCT[record.key - 1].isCollected
+                            this.setState({
+                                dataBCT
+                            })
+                            break
+                    }
+                }
+            }
+        }
+    }
     render() {
         return (
             <div className="exchange_market">
@@ -261,19 +296,19 @@ class ExchangeMarket extends Component {
                 />
                 <Tabs defaultActiveKey={ this.state.activeKey } className="market_header" onChange={ this.callback }>
                     <TabPane tab="USDT市场" className="market_header_title" key="1">
-                        <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } loading={ this.state.USDTLoading } />
+                        <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
                     </TabPane>
                     <TabPane tab="BTC市场" key="2">
-                        <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ this.state.USDTLoading } />
+                        <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
                     </TabPane>
                     <TabPane tab="ETH市场" key="3">
-                        <Table columns={ columnsETH } dataSource={ this.state.dataETH } pagination={ false } loading={ this.state.USDTLoading } />
+                        <Table columns={ columnsETH } dataSource={ this.state.dataETH } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
                     </TabPane>
                     <TabPane tab="BCT市场" key="4">
-                        <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } pagination={ false } loading={ this.state.USDTLoading } />
+                        <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
                     </TabPane>
                     <TabPane tab={ <span><img style={{ marginBottom: 5, marginRight: 5 }} src={ star2 } />自选市场</span> } key="5">
-                        <Table columns={ columnsFree } dataSource={ this.state.dataFree } pagination={ false } loading={ this.state.USDTLoading } />
+                        <Table columns={ columnsFree } dataSource={ this.state.dataFree } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
                     </TabPane>
                 </Tabs>
             </div>

@@ -5,8 +5,12 @@ import star2 from '../images/star2.png'
 export const columnsUSDT = [
   {
     title: '',
-    dataIndex: 'star',
-    render: text => <img style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />,
+    dataIndex: 'isCollected',
+    render: text => {
+      return (
+        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />
+      )
+    },
     align: 'center'
   },
   {
@@ -54,7 +58,7 @@ export const columnsUSDT = [
 export const dataUSDT = [
   {
     key: '1',
-    star: true,
+    isCollected: true,
     exchangePairs: 'WINGS/USDT',
     newPrice: '0.00000000',
     highsAndLows: '0.00%',
@@ -65,7 +69,7 @@ export const dataUSDT = [
   },
   {
     key: '2',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -76,7 +80,7 @@ export const dataUSDT = [
   },
   {
     key: '3',
-    star: true,
+    isCollected: true,
     exchangePairs: 'DCR/USDT',
     newPrice: '0.00000000',
     highsAndLows: '+12.10%',
@@ -87,7 +91,7 @@ export const dataUSDT = [
   },
   {
     key: '4',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '-8.51%',
@@ -98,7 +102,7 @@ export const dataUSDT = [
   },
   {
     key: '5',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -109,7 +113,7 @@ export const dataUSDT = [
   },
   {
     key: '6',
-    star: true,
+    isCollected: true,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '-6.01%',
@@ -123,8 +127,12 @@ export const dataUSDT = [
 export const columnsBTC = [
   {
     title: '',
-    dataIndex: 'star',
-    render: text => <img src={ text ? star1 : star2 } alt=""/>
+    dataIndex: 'isCollected',
+    render: text => {
+      return (
+        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />
+      )
+    }
   },
   {
     title: '交易对',
@@ -163,7 +171,7 @@ export const columnsBTC = [
 export const dataBTC = [
   {
     key: '1',
-    star: true,
+    isCollected: true,
     exchangePairs: 'WINGS/USDT',
     newPrice: '0.00000005',
     highsAndLows: '0.00%',
@@ -174,7 +182,7 @@ export const dataBTC = [
   },
   {
     key: '2',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -185,7 +193,7 @@ export const dataBTC = [
   },
   {
     key: '3',
-    star: true,
+    isCollected: true,
     exchangePairs: 'DCR/USDT',
     newPrice: '0.00000000',
     highsAndLows: '+12.10%',
@@ -196,7 +204,7 @@ export const dataBTC = [
   },
   {
     key: '4',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -207,7 +215,7 @@ export const dataBTC = [
   },
   {
     key: '5',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -221,8 +229,12 @@ export const dataBTC = [
 export const columnsETH = [
   {
     title: '',
-    dataIndex: 'star',
-    render: text => <img src={ text ? star1 : star2 } alt=""/>
+    dataIndex: 'isCollected',
+    render: text => {
+      return (
+        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />
+      )
+    }
   },
   {
     title: '交易对',
@@ -261,7 +273,7 @@ export const columnsETH = [
 export const dataETH= [
   {
     key: '1',
-    star: true,
+    isCollected: true,
     exchangePairs: 'WINGS/USDT',
     newPrice: '0.00000000',
     highsAndLows: '0.00%',
@@ -272,7 +284,7 @@ export const dataETH= [
   },
   {
     key: '2',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -283,7 +295,7 @@ export const dataETH= [
   },
   {
     key: '3',
-    star: true,
+    isCollected: true,
     exchangePairs: 'DCR/USDT',
     newPrice: '0.00000000',
     highsAndLows: '+12.10%',
@@ -294,7 +306,7 @@ export const dataETH= [
   },
   {
     key: '4',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -305,7 +317,7 @@ export const dataETH= [
   },
   {
     key: '5',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -319,8 +331,12 @@ export const dataETH= [
 export const columnsBCT = [
   {
     title: '',
-    dataIndex: 'star',
-    render: text => <img src={ text ? star1 : star2 } alt=""/>
+    dataIndex: 'isCollected',
+    render: text => {
+      return (
+        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />
+      )
+    }
   },
   {
     title: '交易对',
@@ -359,7 +375,7 @@ export const columnsBCT = [
 export const dataBCT = [
   {
     key: '1',
-    star: true,
+    isCollected: true,
     exchangePairs: 'WINGS/USDT',
     newPrice: '0.00000000',
     highsAndLows: '0.00%',
@@ -370,7 +386,7 @@ export const dataBCT = [
   },
   {
     key: '2',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -381,7 +397,7 @@ export const dataBCT = [
   },
   {
     key: '3',
-    star: true,
+    isCollected: true,
     exchangePairs: 'DCR/USDT',
     newPrice: '0.00000000',
     highsAndLows: '+12.10%',
@@ -392,7 +408,7 @@ export const dataBCT = [
   },
   {
     key: '4',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -403,7 +419,7 @@ export const dataBCT = [
   },
   {
     key: '5',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -417,8 +433,12 @@ export const dataBCT = [
 export const columnsFree = [
   {
     title: '',
-    dataIndex: 'star',
-    render: text => <img src={ text ? star1 : star2 } alt=""/>
+    dataIndex: 'isCollected',
+    render: text => {
+      return (
+        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />
+      )
+    }
   },
   {
     title: '交易对',
@@ -457,7 +477,7 @@ export const columnsFree = [
 export const dataFree = [
   {
     key: '1',
-    star: true,
+    isCollected: true,
     exchangePairs: 'WINGS/USDT',
     newPrice: '0.00000000',
     highsAndLows: '0.00%',
@@ -468,7 +488,7 @@ export const dataFree = [
   },
   {
     key: '2',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -479,7 +499,7 @@ export const dataFree = [
   },
   {
     key: '3',
-    star: true,
+    isCollected: true,
     exchangePairs: 'DCR/USDT',
     newPrice: '0.00000000',
     highsAndLows: '+12.10%',
@@ -490,7 +510,7 @@ export const dataFree = [
   },
   {
     key: '4',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
@@ -501,7 +521,7 @@ export const dataFree = [
   },
   {
     key: '5',
-    star: false,
+    isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
     highsAndLows: '+7.51%',
