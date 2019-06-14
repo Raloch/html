@@ -33,13 +33,12 @@ import media from '../images/mediaBg.png'
 import wechatCode from '../images/wechat-cade.png'
 import Notices from '@/routers/Notice/NoticeMenu/noticeMenu'
 import sliders3 from '../images/banner3.jpg'
-import star1 from '../images/star1.png'
-import star2 from '../images/star2.png'
-import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT, columnsFree, dataFree } from '../components/marketList'
+import ExchangeMarket from '../components/Market'
 // import { withRouter } from 'react-router-dom'
 const Search = Input.Search;
 const FormItem = Form.Item
 const { TabPane } = Tabs
+
 @inject('Store')
 @observer
 // @withRouter
@@ -151,169 +150,6 @@ class BannerSlider extends Component {
 			</div>
 		)
 	}
-}
-
-// 主页交易所市场
-class ExchangeMarket extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            searchText: '',
-            activeKey: '1',
-            dataUSDT: dataUSDT,
-            dataBTC: dataBTC,
-            dataETH: dataETH,
-            dataBCT: dataBCT,
-            dataFree: dataFree,
-            USDTLoading: false,
-            BTCLoading: false,
-            ETHLoading: false,
-            BCTLoading: false,
-            FreeLoading: false,
-        }
-    }
-    // 标题栏切换回调
-    callback = (key) => {
-        this.state.activeKey = key
-    }
-    // 搜索币种
-    search = () => {
-        let arr, name, loadName
-        switch(this.state.activeKey) {
-            case '1':
-                arr = dataUSDT
-                name = 'dataUSDT',
-                loadName = 'USDTLoading'
-                this.setState({
-                    USDTLoading: true
-                })
-                break
-            case '2':
-                arr = dataBTC
-                name = 'dataBTC'
-                loadName = 'BTCLoading'
-                this.setState({
-                    BTCLoading: true
-                })
-                break
-            case '3':
-                arr = dataBTC
-                name = 'dataETH'
-                loadName = 'ETHLoading'
-                this.setState({
-                    ETHLoading: true
-                })
-                break
-            case '4':
-                arr = dataBTC
-                name = 'dataBCT'
-                loadName = 'BCTLoading'
-                this.setState({
-                    BCTLoading: true
-                })
-                break
-            case '5':
-                arr = dataBTC
-                name = 'dataFree'
-                loadName = 'FreeLoading'
-                this.setState({
-                    FreeLoading: true
-                })
-                break
-        }
-        if (this.state.searchText !== '') {
-            // 过滤不匹配的元素
-            let data = arr.filter(val => {
-                return val.exchangePairs.toLowerCase().includes(this.state.searchText.toLowerCase())
-            })
-            // setTimeout(() => { // 模拟延迟加载loading效果
-            //     this.setState({
-            //         [name]: data,
-            //         [loadName]: false
-            //     })
-            // }, 1000)
-            this.setState({
-                [name]: data,
-                [loadName]: false
-            })
-        } else {
-            this.setState({
-                [name]: arr,
-                [loadName]: false
-            })
-        }  
-    }
-    handleChange = (e) => {
-        this.setState({
-            searchText: e.target.value
-        })
-    }
-    // 点击star图标收藏
-    rowClick = (record, rowKey) => {
-        return {
-            onClick: e => {
-                if (e.target.className === 'collectStar') {
-                    switch(this.state.activeKey) {
-                        case '1':
-                            this.state.dataUSDT[record.key - 1].isCollected = !this.state.dataUSDT[record.key - 1].isCollected
-                            this.setState({
-                                dataUSDT
-                            })
-                            break
-                        case '2':
-                            this.state.dataBTC[record.key - 1].isCollected = !this.state.dataBTC[record.key - 1].isCollected
-                            this.setState({
-                                dataBTC
-                            })
-                            break
-                        case '3':
-                            this.state.dataETH[record.key - 1].isCollected = !this.state.dataETH[record.key - 1].isCollected
-                            this.setState({
-                                dataETH
-                            })
-                            break
-                        case '4':
-                            this.state.dataBCT[record.key - 1].isCollected = !this.state.dataBCT[record.key - 1].isCollected
-                            this.setState({
-                                dataBCT
-                            })
-                            break
-                    }
-                }
-            }
-        }
-    }
-    render() {
-        return (
-            <div className="exchange_market">
-                <Input
-                    placeholder="搜索币种"
-                    prefix={ <Icon onClick={ this.search } type="search" style={{ color: '#9a9a9a', cursor: 'pointer' }} /> }
-                    className="market_search_input"
-                    value={ this.state.searchText }
-                    onPressEnter={ this.search }
-                    onChange={ this.handleChange }
-                />
-                <Tabs defaultActiveKey={ this.state.activeKey } className="market_header" onChange={ this.callback }>
-                    <TabPane tab="USDT市场" className="market_header_title" key="1">
-                        <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
-                    </TabPane>
-                    <TabPane tab="BTC市场" key="2">
-                        <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
-                    </TabPane>
-                    <TabPane tab="ETH市场" key="3">
-                        <Table columns={ columnsETH } dataSource={ this.state.dataETH } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
-                    </TabPane>
-                    <TabPane tab="BCT市场" key="4">
-                        <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
-                    </TabPane>
-                    <TabPane tab={ <span><img style={{ marginBottom: 5, marginRight: 5 }} src={ star2 } />自选市场</span> } key="5">
-                        <Table columns={ columnsFree } dataSource={ this.state.dataFree } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
-                    </TabPane>
-                </Tabs>
-            </div>
-        );
-    }
 }
 
 // 主页功能福利展示区

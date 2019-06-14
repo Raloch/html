@@ -6,9 +6,9 @@ import { exchangeColumns, exchangeData } from '../components/currentExchangeList
 import { currentEntrustColumns, currentEntrustData } from '../components/currentEntrustList'
 import { historyEntrustColumns, historyEntrustData } from '../components/historyEntrustList'
 import { entrustMessageColumns1, entrustMessageData1, entrustMessageColumns2, entrustMessageData2 } from '../components/entrustMessageList'
-import star1 from '../images/star1.png'
+import Market from '../components/Market'
 import star2 from '../images/star2.png'
-import Kline from '../components/kline/Kline'
+import Kline from '../components/Kline/index'
 
 const { Header, Footer, Sider, Content } = Layout
 const { TabPane } = Tabs
@@ -32,83 +32,9 @@ class Trade extends Component {
       exchangeData: exchangeData // 最近交易
     }
   }
-  callback = (key) => {
-    this.state.activeKey = key
-  }
-  // 搜索币种
-  search = () => {
-    let arr, name, loadName
-    switch(this.state.activeKey) {
-      case '1':
-        arr = dataUSDT
-        name = 'dataUSDT',
-        loadName = 'USDTLoading'
-        this.setState({
-          USDTLoading: true
-        })
-        break
-      case '2':
-        arr = dataBTC
-        name = 'dataBTC'
-        loadName = 'BTCLoading'
-        this.setState({
-          BTCLoading: true
-        })
-        break
-      case '3':
-        arr = dataBTC
-        name = 'dataETH'
-        loadName = 'ETHLoading'
-        this.setState({
-          ETHLoading: true
-        })
-        break
-      case '4':
-        arr = dataBTC
-        name = 'dataBCT'
-        loadName = 'BCTLoading'
-        this.setState({
-          BCTLoading: true
-        })
-        break
-    }
-    if (this.state.searchText !== '') {
-      // 过滤不匹配的元素
-      let data = arr.filter(val => {
-        return val.coinsType.toLowerCase().includes(this.state.searchText.toLowerCase())
-      })
-      this.setState({
-        [name]: data,
-        [loadName]: false
-      })
-    } else {
-      this.setState({
-        [name]: arr,
-        [loadName]: false
-      })
-    }  
-  }
-  handleChange = (e) => {
-    this.setState({
-      searchText: e.target.value
-    })
-  }
   // 精度小数点
   accuracyChange = val => {
     console.log(val)
-  }
-  rowClick = (record, rowkey) => {
-    return {
-      onClick: (e) => {
-        if (e.target.className === 'collectStar') {
-          this.state.dataUSDT[rowkey].isCollected = !this.state.dataUSDT[rowkey].isCollected
-          this.setState({
-            dataUSDT
-          })
-        }
-        
-      }
-    }
   }
   render() {
     return (
@@ -117,38 +43,7 @@ class Trade extends Component {
           {/* 左边交易市场栏 */}
           <Sider width="20.4545%" className="trade-sider" theme="light">
             {/* 交易市场 */}
-            <div className="exchange-market">
-              <header>
-                <p>交易市场</p>
-                <Input
-                  placeholder="搜索币种"
-                  prefix={ <Icon onClick={ this.search } type="search" style={{ color: '#9a9a9a', cursor: 'pointer' }} /> }
-                  className="coins-search"
-                  value={ this.state.searchText }
-                  onPressEnter={ this.search }
-                  onChange={ this.handleChange }
-                />
-              </header>
-              <main>
-                <Tabs defaultActiveKey={ this.state.activeKey } onChange={ this.callback } tabBarExtraContent={ <Checkbox className="self-check">自选</Checkbox> }>
-                  <TabPane tab="USDT" key="1">
-                    <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } />
-                    {/* <div className="market_USDT" style={{ height: 569, overflow: 'auto' }}>
-                      <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } />
-                    </div> */}
-                  </TabPane>
-                  <TabPane tab="BTC" key="2">
-                    <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } />
-                  </TabPane>
-                  <TabPane tab="ETH" key="3">
-                    <Table columns={ columnsETH } dataSource={ this.state.dataETH } pagination={ false } />
-                  </TabPane>
-                  <TabPane tab="BCT" key="4">
-                    <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } pagination={ false } />
-                  </TabPane>
-                </Tabs>
-              </main>
-            </div>
+            <Market />
             <div className="line" style={{ height: 12, backgroundColor: '#eef1f7' }}></div>
             {/* 最新成交 */}
             <div className="new-exchange">

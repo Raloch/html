@@ -1,0 +1,124 @@
+p {
+  margin: 0;
+  padding: 0;
+}
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+@table-bgColor: rgba(247, 249, 255, 1);
+.exchange-market {
+  height: 660px;
+  background: rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  border: 1px solid #eee;
+  background: #fff;
+  header {
+    position: relative;
+    padding: 20px 0 10px 20px;
+    margin-bottom: 10px;
+    p {
+      line-height: 1em;
+      font-size: 16px;
+      color: #333;
+    }
+    .coins-search {
+      width: 44.4444%;
+      position: absolute;
+      top: 14px;
+      right: 20px;
+    }
+  }
+  main {
+    // 自选checkbox
+    .ant-checkbox-wrapper span {
+      color: #666666FF;
+      font-size: 14px;
+    }
+    .ant-tabs-extra-content {
+      line-height: 30px !important;
+      transform: translateY(1px);
+    }
+    .self-check {
+      // position: absolute;
+      // right: 10px;
+      // top: 5px;
+      color: #666666FF;
+      .ant-checkbox {
+        width: 12px;
+        height: 12px;
+        .ant-checkbox-input {
+          width: 12px;
+          height: 12px;
+        }
+        .ant-checkbox-inner {
+          width: 12px;
+          height: 12px;
+          &:after {
+            left: 3px !important;
+            top: 0 !important;
+            transform: rotate(45deg) scale(0.9) !important;
+          }
+        }
+      }
+    }
+    // 设置table选项的高度 -- padding
+    .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+      font-size: 12px;
+      padding: 4px 16px;
+      word-break: break-word;
+    }
+    // 设置标题栏标题的宽高
+    .ant-tabs-nav .ant-tabs-tab {
+      padding: 5px 0;
+      margin-right: 20px;
+    }
+    .ant-tabs-nav {
+      padding-left: 25px;
+    }
+    // table表格隔行变色
+    .ant-table-thead > tr > th {
+      background: @table-bgColor !important;
+    }
+    .ant-table-tbody > tr:nth-child(even) {
+      background: @table-bgColor;
+    }
+    // 去除标题栏margin-bottom
+    .ant-tabs-bar {
+      margin: 0;
+    }
+    // 交易市场table设置scroll
+    .scroll-table()
+  }
+}
+
+// 设置table滑轮样式
+.scroll-table {
+  .ant-table-header::-webkit-scrollbar {
+    width: 8px;
+    background: transparent;
+  }
+  .ant-table-body::-webkit-scrollbar {
+    width: 8px;
+    background: transparent;
+  }
+  .ant-table-header::-webkit-scrollbar-thumb {
+    width: 8px;
+    background: @table-bgColor;
+  }
+  .ant-table-body::-webkit-scrollbar-thumb {
+    width: 8px;
+    border-radius: 8px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.05);
+    background: hsla(0, 0, 75.7%, 0.8);
+  }
+  .ant-table-header::-webkit-scrollbar-track {
+    background: @table-bgColor;
+  }
+  .ant-table-body::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.15);
+    background: #fff;
+  }
+}

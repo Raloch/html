@@ -45,7 +45,7 @@ export const dataUSDT = [
   },
   {
     key: '2',
-    isCollected: false,
+    isCollected: true,
     coinsType: 'YC',
     newPrice: '1230.00000000',
     highsAndLows: '1.00%'
@@ -66,7 +66,7 @@ export const dataUSDT = [
   },
   {
     key: '5',
-    isCollected: false,
+    isCollected: true,
     coinsType: 'USDT',
     newPrice: '0.00000000',
     highsAndLows: '00.00%'
@@ -94,7 +94,7 @@ export const dataUSDT = [
   },
   {
     key: '9',
-    isCollected: false,
+    isCollected: true,
     coinsType: 'BKK',
     newPrice: '0.00000000',
     highsAndLows: '00.00%'
@@ -321,12 +321,17 @@ export const dataUSDT = [
 export const columnsBTC = [
   {
     title: '币种',
-    dataIndex: 'coinsType',
-    render: text => <td><img style={{ width: 12, cursor: 'pointer', marginRight: 5, marginBottom: 3 }} src={ text ? star1 : star2 } alt="" />{ text }</td>,
+    dataIndex: 'exchangePairs',
+    render: (text, record) => {
+      return (
+        <td><img className="collectStar" style={{ width: 12, cursor: 'pointer',   marginRight: 5, marginBottom: 3 }} src={ record.isCollected ? star2 : star1 } alt="" />{ text }</td>
+      )
+    },
     align: 'center',
     sorter: (a, b) => {
       return b.coinsType.charCodeAt(0) - a.coinsType.charCodeAt(0)
-    }
+    },
+    width: '32%'
   },
   {
     title: '最新价',
@@ -334,7 +339,8 @@ export const columnsBTC = [
     align: 'center',
     sorter: (a, b) => {
       return parseFloat(a.newPrice) - parseFloat(b.newPrice)
-    }
+    },
+    width: '39%'
   },
   {
     title: '涨跌',
@@ -343,52 +349,389 @@ export const columnsBTC = [
     sorter: (a, b) => {
       return parseFloat(a.highsAndLows) - parseFloat(b.highsAndLows)
     },
-    render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>
+    render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>,
+    width: '39%'
   }
 ]
 
 export const dataBTC = [
   {
     key: '1',
-    coinsType: 'BCH',
-    newPrice: '0.00000000',
-    highsAndLows: '-00.00%'
+    isCollected: false,
+    exchangePairs: 'ADA',
+    newPrice: '--',
+    highsAndLows: '--'
   },
   {
     key: '2',
-    coinsType: 'YC',
-    newPrice: '1230.00000000',
-    highsAndLows: '1.00%'
+    isCollected: false,
+    exchangePairs: 'ATOM',
+    newPrice: '--',
+    highsAndLows: '--'
   },
   {
     key: '3',
-    coinsType: 'SC',
-    newPrice: '10.01234000',
-    highsAndLows: '-0.10%'
+    isCollected: false,
+    exchangePairs: 'BAT',
+    newPrice: '--',
+    highsAndLows: '--'
   },
   {
     key: '4',
-    coinsType: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
+    isCollected: false,
+    exchangePairs: 'BCH',
+    newPrice: '--',
+    highsAndLows: '--'
   },
   {
     key: '5',
-    coinsType: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
+    isCollected: false,
+    exchangePairs: 'BSV',
+    newPrice: '--',
+    highsAndLows: '--'
   },
   {
     key: '6',
-    coinsType: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
+    isCollected: false,
+    exchangePairs: 'BTM',
+    newPrice: '--',
+    highsAndLows: '--'
   },
   {
     key: '7',
-    coinsType: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
+    isCollected: false,
+    exchangePairs: 'BTT',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '8',
+    isCollected: false,
+    exchangePairs: 'BTU',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '9',
+    isCollected: false,
+    exchangePairs: 'CET',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '10',
+    isCollected: false,
+    exchangePairs: 'CMT',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '11',
+    isCollected: false,
+    exchangePairs: 'CNN',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '12',
+    isCollected: false,
+    exchangePairs: 'CODY',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '13',
+    isCollected: false,
+    exchangePairs: 'CTXC',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '14',
+    isCollected: false,
+    exchangePairs: 'DASH',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '15',
+    isCollected: false,
+    exchangePairs: 'DCR',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '16',
+    isCollected: false,
+    exchangePairs: 'DERO',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '17',
+    isCollected: false,
+    exchangePairs: 'DOGE',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '18',
+    isCollected: false,
+    exchangePairs: 'EGT',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '19',
+    isCollected: false,
+    exchangePairs: 'EOS',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '20',
+    isCollected: false,
+    exchangePairs: 'ETC',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '21',
+    isCollected: false,
+    exchangePairs: 'ETH',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '22',
+    isCollected: false,
+    exchangePairs: 'GNT',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '23',
+    isCollected: false,
+    exchangePairs: 'HC',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '24',
+    isCollected: false,
+    exchangePairs: 'HOT',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '25',
+    isCollected: false,
+    exchangePairs: 'HYDRO',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '26',
+    isCollected: false,
+    exchangePairs: 'IOTA',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '27',
+    isCollected: false,
+    exchangePairs: 'KAN',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '28',
+    isCollected: false,
+    exchangePairs: 'LAMB',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '29',
+    isCollected: false,
+    exchangePairs: 'LFC',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '30',
+    isCollected: false,
+    exchangePairs: 'LINK',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '31',
+    isCollected: false,
+    exchangePairs: 'LOOM',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '32',
+    isCollected: false,
+    exchangePairs: 'LTC',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '33',
+    isCollected: false,
+    exchangePairs: 'NANO',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '34',
+    isCollected: false,
+    exchangePairs: 'NEO',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '35',
+    isCollected: false,
+    exchangePairs: 'NNB',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '36',
+    isCollected: false,
+    exchangePairs: 'OLT',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '37',
+    isCollected: false,
+    exchangePairs: 'OMG',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '38',
+    isCollected: false,
+    exchangePairs: 'ONG',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '39',
+    isCollected: false,
+    exchangePairs: 'ONT',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '40',
+    isCollected: false,
+    exchangePairs: 'QTUM',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '41',
+    isCollected: false,
+    exchangePairs: 'SC',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '42',
+    isCollected: false,
+    exchangePairs: 'SEELE',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '43',
+    isCollected: false,
+    exchangePairs: 'TCT',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '44',
+    isCollected: false,
+    exchangePairs: 'TRTL',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '45',
+    isCollected: false,
+    exchangePairs: 'TRX',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '46',
+    isCollected: false,
+    exchangePairs: 'ULT',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '47',
+    isCollected: false,
+    exchangePairs: 'VET',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '48',
+    isCollected: false,
+    exchangePairs: 'WWB',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '49',
+    isCollected: false,
+    exchangePairs: 'XLM',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '50',
+    isCollected: false,
+    exchangePairs: 'XMR',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '51',
+    isCollected: false,
+    exchangePairs: 'XRP',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '52',
+    isCollected: false,
+    exchangePairs: 'XZC',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '53',
+    isCollected: false,
+    exchangePairs: 'ZIL',
+    newPrice: '--',
+    highsAndLows: '--'
+  },
+  {
+    key: '54',
+    isCollected: false,
+    exchangePairs: 'ZRX',
+    newPrice: '--',
+    highsAndLows: '--'
   }
 ]
 
@@ -396,7 +739,11 @@ export const columnsETH = [
   {
     title: '币种',
     dataIndex: 'coinsType',
-    render: text => <td><img style={{ width: 12, cursor: 'pointer', marginRight: 5, marginBottom: 3 }} src={ text ? star1 : star2 } alt="" />{ text }</td>,
+    render: (text, record) => {
+      return (
+        <td><img className="collectStar" style={{ width: 12, cursor: 'pointer',   marginRight: 5, marginBottom: 3 }} src={ record.isCollected ? star2 : star1 } alt="" />{ text }</td>
+      )
+    },
     align: 'center',
     sorter: (a, b) => {
       return b.coinsType.charCodeAt(0) - a.coinsType.charCodeAt(0)
@@ -424,30 +771,35 @@ export const columnsETH = [
 export const dataETH = [
   {
     key: '1',
+    isCollected: true,
     coinsType: 'BCH',
     newPrice: '0.00000000',
     highsAndLows: '-00.00%'
   },
   {
     key: '2',
+    isCollected: false,
     coinsType: 'YC',
     newPrice: '1230.00000000',
     highsAndLows: '1.00%'
   },
   {
     key: '3',
+    isCollected: true,
     coinsType: 'SC',
     newPrice: '10.01234000',
     highsAndLows: '-0.10%'
   },
   {
     key: '4',
+    isCollected: false,
     coinsType: 'BKK',
     newPrice: '0.00000000',
     highsAndLows: '00.00%'
   },
   {
     key: '5',
+    isCollected: false,
     coinsType: 'USDT',
     newPrice: '0.00000000',
     highsAndLows: '00.00%'
@@ -458,7 +810,11 @@ export const columnsBCT = [
   {
     title: '币种',
     dataIndex: 'coinsType',
-    render: text => <td><img style={{ width: 12, cursor: 'pointer', marginRight: 5, marginBottom: 3 }} src={ text ? star1 : star2 } alt="" />{ text }</td>,
+    render: (text, record) => {
+      return (
+        <td><img className="collectStar" style={{ width: 12, cursor: 'pointer',   marginRight: 5, marginBottom: 3 }} src={ record.isCollected ? star2 : star1 } alt="" />{ text }</td>
+      )
+    },
     align: 'center',
     sorter: (a, b) => {
       return b.coinsType.charCodeAt(0) - a.coinsType.charCodeAt(0)
@@ -486,30 +842,35 @@ export const columnsBCT = [
 export const dataBCT = [
   {
     key: '1',
+    isCollected: true,
     coinsType: 'BCH',
     newPrice: '0.00000000',
     highsAndLows: '-00.00%'
   },
   {
     key: '2',
+    isCollected: true,
     coinsType: 'YC',
     newPrice: '1230.00000000',
     highsAndLows: '1.00%'
   },
   {
     key: '3',
+    isCollected: true,
     coinsType: 'SC',
     newPrice: '10.01234000',
     highsAndLows: '-0.10%'
   },
   {
     key: '4',
+    isCollected: false,
     coinsType: 'BKK',
     newPrice: '0.00000000',
     highsAndLows: '00.00%'
   },
   {
     key: '5',
+    isCollected: false,
     coinsType: 'USDT',
     newPrice: '0.00000000',
     highsAndLows: '00.00%'

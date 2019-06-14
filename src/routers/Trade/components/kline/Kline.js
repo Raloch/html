@@ -29,6 +29,8 @@ class Kline extends Component {
             ws.onopen = function() {
                 // Web Socket 已连接上
                 // start
+                ws.send(JSON.stringify({"id":2,"method":"depth.subscribe","params":["BTCUSDT",20,"1"]}))
+                ws.send(JSON.stringify({"id":1,"method":"server.ping","params":[]}))
             }
             ws.onmessage = function (evt) {
                 //var received_msg = evt.data;
