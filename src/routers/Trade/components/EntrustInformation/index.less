@@ -1,0 +1,80 @@
+.entrust-information {
+  header {
+    height: 50px;
+    padding: 10px 0 0 20px;
+    box-sizing: border-box;
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      color: #333333FF;
+    }
+    .accuracy {
+      font-size: 12px;
+      .ant-select-selection-selected-value {
+        font-size: 12px;
+      }
+      .ant-select-open .ant-select-selection, .ant-select-focused .ant-select-selection {
+        box-shadow: none;
+      }
+      // 设置下拉框样式(此option元素在root根元素外，需在全局设置)
+    }
+  }
+  main {
+    .ant-table-thead > tr > th {
+      font-weight: bold;
+      color: #333333FF;
+      font-size: 12px;
+      padding: 3px 0px;
+      word-break: break-word;
+      background:rgba(243,246,255,1);
+    }
+    .ant-table-tbody > tr > td {
+      font-size: 12px;
+      padding: 1px 0px;
+      word-break: break-word;
+      color: #666666FF;
+      border-bottom: 0;
+    }
+    .entrustMessage-table1 {
+      .ant-table-tbody > tr > td:nth-child(1) {
+        color: #E95454FF;
+      }
+    }
+    .entrustMessage-table2 {
+      .ant-table-thead {
+        display: none;
+      }
+      .ant-table-tbody > tr > td:nth-child(1) {
+        color: #1AB781FF;
+      }
+    }
+    .new-price {
+      height: 50px;
+      background:rgba(249,250,254,1);
+      line-height: 50px;
+      text-align: center;
+      p {
+        font-size: 12px;
+        color: #666666FF;
+        span {
+          font-size: 16px;
+          color: #E95454FF;
+        }
+        .arrow-down {
+          font-size: 18px;
+          color: #E95454FF;
+        }
+      }
+    }
+  }
+}
+
+// 设置下拉框样式(此option元素在root根元素外，需在全局设置)
+.ant-select-dropdown-menu {
+  max-height: 300px !important;
+}
+.ant-select-dropdown-menu-item {
+  text-align: center;
+  padding: 5px 20px !important;
+  font-size: 14px !important;
+}
