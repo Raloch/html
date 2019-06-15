@@ -329,9 +329,9 @@ export const columnsBTC = [
     },
     align: 'center',
     sorter: (a, b) => {
-      return b.coinsType.charCodeAt(0) - a.coinsType.charCodeAt(0)
+      return b.exchangePairs.charCodeAt(0) - a.exchangePairs.charCodeAt(0)
     },
-    width: '32%'
+    width: '34%'
   },
   {
     title: '最新价',
@@ -340,7 +340,7 @@ export const columnsBTC = [
     sorter: (a, b) => {
       return parseFloat(a.newPrice) - parseFloat(b.newPrice)
     },
-    width: '39%'
+    width: '38%'
   },
   {
     title: '涨跌',
@@ -350,7 +350,7 @@ export const columnsBTC = [
       return parseFloat(a.highsAndLows) - parseFloat(b.highsAndLows)
     },
     render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>,
-    width: '39%'
+    width: '38%'
   }
 ]
 

@@ -70,7 +70,7 @@ class Market extends Component {
         case '1':
           dataBTC.forEach((val, i) => {
             let keyArr = Object.keys(params)
-            let name = val.exchangePairs.replace('/', '')
+            let name = val.exchangePairs + 'BTC'
             if (keyArr.includes(name)) {
               let obj = params[name]
               val.newPrice = obj.last
@@ -102,19 +102,19 @@ class Market extends Component {
   displayBySelfCheckAndKey = key => {
     switch(key) {
       case '1':
-        let USDTCollected = dataUSDT.filter(val => {
-          return val.isCollected
-        })
-        this.setState({
-          dataUSDT: USDTCollected
-        })
-        break
-      case '2':
         let BTCCollected = dataBTC.filter(val => {
           return val.isCollected
         })
         this.setState({
           dataBTC: BTCCollected
+        })
+        break
+      case '2':
+        let USDTCollected = dataUSDT.filter(val => {
+          return val.isCollected
+        })
+        this.setState({
+          dataUSDT: USDTCollected
         })
         break
       case '3':

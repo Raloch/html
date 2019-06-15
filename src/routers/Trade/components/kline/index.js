@@ -10,7 +10,7 @@ class Kline extends Component {
     this.state = {  }
   }
   componentDidMount() {
-    this.WebSocketInit()
+    // this.WebSocketInit()
   }
   WebSocketInit = () => {
     let _this = this
