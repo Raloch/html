@@ -130,7 +130,7 @@ export const columnsBTC = [
     dataIndex: 'isCollected',
     render: text => {
       return (
-        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />
+        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
       )
     },
     align: 'center'
@@ -190,7 +190,7 @@ export const dataBTC = [
   },
   {
     key: '2',
-    isCollected: false,
+    isCollected: true,
     exchangePairs: 'ATOM/BTC',
     newPrice: '--',
     highsAndLows: '--',
@@ -212,7 +212,7 @@ export const dataBTC = [
   },
   {
     key: '4',
-    isCollected: false,
+    isCollected: true,
     exchangePairs: 'BCH/BTC',
     newPrice: '--',
     highsAndLows: '--',

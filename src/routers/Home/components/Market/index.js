@@ -13,8 +13,8 @@ class ExchangeMarket extends Component {
     this.state = {
       searchText: '',
       activeKey: '1',
-      dataUSDT: dataUSDT,
       dataBTC: dataBTC,
+      dataUSDT: dataUSDT,
       dataETH: dataETH,
       dataBCT: dataBCT,
       dataFree: dataFree,
@@ -22,7 +22,8 @@ class ExchangeMarket extends Component {
       BTCLoading: true,
       ETHLoading: false,
       BCTLoading: false,
-      FreeLoading: false
+      FreeLoading: false,
+      activeKeyBefore: '1'
     }
   }
   componentDidMount() {
@@ -66,45 +67,64 @@ class ExchangeMarket extends Component {
     let data = JSON.parse(res.data)
     if (data.method) {
       let params = data.params[0]
-      switch(this.state.activeKey) {
+      dataBTC.forEach((val, i) => {
+        let keyArr = Object.keys(params)
+        let name = val.exchangePairs.replace('/', '')
+        if (keyArr.includes(name)) {
+          let obj = params[name]
+          val.newPrice = obj.last
+          val.highestPrice = obj.high
+          val.minimumPrice = obj.low
+          val.dailyVolume = obj.volume
+          val.dailyTurnover = obj.deal + ' BTC'
+        }
+      })
+      this.setState({
+        BTCLoading: false
+      })
+    }
+  }
+  // 标题栏切换回调
+  coinsTypeChange = (key) => {
+    this.setState({
+      activeKey: key
+    })
+    if (this.state.searchText) {
+      this.setState({
+        searchText: ''
+      })
+      switch(this.state.activeKeyBefore) {
         case '1':
-          dataBTC.forEach((val, i) => {
-            let keyArr = Object.keys(params)
-            let name = val.exchangePairs.replace('/', '')
-            if (keyArr.includes(name)) {
-              let obj = params[name]
-              val.newPrice = obj.last
-              val.highestPrice = obj.high
-              val.minimumPrice = obj.low
-              val.dailyVolume = obj.volume
-              val.dailyTurnover = obj.deal + ' BTC'
-            }
-          })
           this.setState({
-            BTCLoading: false,
             dataBTC
+          })
+          break
+        case '2':
+          this.setState({
+            dataUSDT
+          })
+          break
+        case '3':
+          this.setState({
+            dataETH
+          })
+          break
+        case '4':
+          this.setState({
+            dataBCT
           })
           break
       }
     }
-  }
-  // 标题栏切换回调
-  callback = (key) => {
-    this.state.activeKey = key
+    this.setState({
+      activeKeyBefore: key
+    })
   }
   // 搜索币种
   search = () => {
     let arr, name, loadName
     switch(this.state.activeKey) {
       case '1':
-        arr = dataUSDT
-        name = 'dataUSDT',
-        loadName = 'USDTLoading'
-        this.setState({
-          USDTLoading: true
-        })
-        break
-      case '2':
         arr = dataBTC
         name = 'dataBTC'
         loadName = 'BTCLoading'
@@ -112,8 +132,16 @@ class ExchangeMarket extends Component {
           BTCLoading: true
         })
         break
+      case '2':
+        arr = dataUSDT
+        name = 'dataUSDT',
+        loadName = 'USDTLoading'
+        this.setState({
+          USDTLoading: true
+        })
+        break
       case '3':
-        arr = dataBTC
+        arr = dataETH
         name = 'dataETH'
         loadName = 'ETHLoading'
         this.setState({
@@ -121,19 +149,11 @@ class ExchangeMarket extends Component {
         })
         break
       case '4':
-        arr = dataBTC
+        arr = dataBCT
         name = 'dataBCT'
         loadName = 'BCTLoading'
         this.setState({
           BCTLoading: true
-        })
-        break
-      case '5':
-        arr = dataBTC
-        name = 'dataFree'
-        loadName = 'FreeLoading'
-        this.setState({
-          FreeLoading: true
         })
         break
     }
@@ -142,12 +162,7 @@ class ExchangeMarket extends Component {
       let data = arr.filter(val => {
         return val.exchangePairs.toLowerCase().includes(this.state.searchText.toLowerCase())
       })
-      // setTimeout(() => { // 模拟延迟加载loading效果
-      //   this.setState({
-      //     [name]: data,
-      //     [loadName]: false
-      //   })
-      // }, 1000)
+      // console.log(data)
       this.setState({
         [name]: data,
         [loadName]: false
@@ -162,6 +177,8 @@ class ExchangeMarket extends Component {
   handleChange = (e) => {
     this.setState({
       searchText: e.target.value
+    }, () => {
+      this.search()
     })
   }
   // 点击star图标收藏
@@ -169,32 +186,8 @@ class ExchangeMarket extends Component {
     return {
       onClick: e => {
         if (e.target.className === 'collectStar') {
-          switch(this.state.activeKey) {
-            case '1':
-              this.state.dataUSDT[record.key - 1].isCollected = !this.state.dataUSDT[record.key - 1].isCollected
-              this.setState({
-                  dataUSDT
-              })
-              break
-            case '2':
-              this.state.dataBTC[record.key - 1].isCollected = !this.state.dataBTC[record.key - 1].isCollected
-              this.setState({
-                  dataBTC
-              })
-              break
-            case '3':
-              this.state.dataETH[record.key - 1].isCollected = !this.state.dataETH[record.key - 1].isCollected
-              this.setState({
-                  dataETH
-              })
-              break
-            case '4':
-              this.state.dataBCT[record.key - 1].isCollected = !this.state.dataBCT[record.key - 1].isCollected
-              this.setState({
-                  dataBCT
-              })
-              break
-          }
+          // 用record设置收藏有点慢 -- 待解决方法，暂留
+          record.isCollected = !record.isCollected
         }
       }
     }
@@ -207,10 +200,10 @@ class ExchangeMarket extends Component {
           prefix={ <Icon onClick={ this.search } type="search" style={{ color: '#9a9a9a', cursor: 'pointer' }} /> }
           className="market_search_input"
           value={ this.state.searchText }
-          onPressEnter={ this.search }
+          // onPressEnter={ this.search }
           onChange={ this.handleChange }
         />
-        <Tabs defaultActiveKey={ this.state.activeKey } className="market_header" onChange={ this.callback }>
+        <Tabs defaultActiveKey={ this.state.activeKey } className="market_header" onChange={ this.coinsTypeChange }>
           <TabPane tab="BTC市场" key="1">
             <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ this.state.BTCLoading } onRow={ this.rowClick } />
           </TabPane>
