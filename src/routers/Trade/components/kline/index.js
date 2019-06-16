@@ -62,7 +62,7 @@ class Kline extends Component {
   }
   render() {
     return (
-      <div className="kline"></div>
+      <div className="k-line"></div>
     )
   }
 }

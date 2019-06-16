@@ -218,7 +218,6 @@ class Market extends Component {
           //     break
           // }
         } else {
-          console.log(this.props)
           this.props.loadNewDeal()
           this.props.ws.send(JSON.stringify({
             id: 5,

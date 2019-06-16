@@ -1,0 +1,165 @@
+.transaction {
+  height: 435px;
+  border: 1px solid #eee;
+  box-sizing: border-box;
+  // 设置标签栏背景色
+  .ant-tabs-bar {
+    margin-bottom: 0;
+    background: #004098FF;
+    padding-left: 20px;
+  }
+  // 被选中tabs的标签样式
+  .ant-tabs-tab-active {
+    background: #fff;
+    width: 120px;
+    color: #00A0E9FF !important;
+    // 利用伪元素设置active框头部蓝色线条
+    &::before {
+      content: '';
+      background: #00A0E9FF;
+      width: 120px;
+      height: 6px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
+  .ant-tabs-nav .ant-tabs-tab {
+    margin-right: 0;
+  }
+  .ant-tabs-tab {
+    text-align: center;
+    width: 120px;
+    color: #DDE7FF;
+  }
+  .rate {
+    position: absolute;
+    top: 0;
+    right: 23px;
+    color: #DDE7FF;
+    overflow: hidden;
+    line-height: 45px;
+    .rate-taker {
+      margin-right: 37px;
+    }
+  }
+  // 限价交易内容
+  .present-price, .market-price {
+    padding: 18px 20px 0 20px;
+    box-sizing: border-box;
+    overflow: hidden;
+    .purchase, .sellout {
+      // width: 452px;
+      width: 45.8417%;
+      header {
+        margin-bottom: 20px;
+        padding-left: 16px;
+        box-sizing: border-box;
+        div {
+          overflow: hidden;
+          margin-bottom: 8px;
+          h3 {
+            font-size: 16px;
+            color: #333333FF;
+            font-weight: bold;
+            margin: 0;
+            line-height: 1;
+          }
+        }
+        .validBTC {
+          font-size: 12px;
+          color: #333333FF;
+          letter-spacing: 1px;
+          line-height: 1;
+          text-align: right;
+        }
+      }
+      // 限价交易
+      main {
+        width: 100%;
+        .input-purchase {
+          margin-bottom: 30px;
+          .purchase-price, .purchase-number {
+            position: relative;
+            input {
+              text-align: right;
+            }
+            p {
+              position: absolute;
+              top: 0;
+              left: 15px;
+              line-height: 40px;
+              font-size: 14px;
+              color: #333333FF;
+              margin: 0;
+              span {
+                color: #999999FF;
+              }
+            }
+          }
+          p {
+            text-align: right;
+            font-size: 12px;
+            line-height: 1;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            color: #666666FF;
+            letter-spacing: 1px;
+          }
+        }
+        .transaction-steps {
+          width: 100%;
+          // 更改步骤条的宽度（设置了progressDot后不会自适应父级宽度，可能是版本问题）
+          .ant-steps-item {
+            width: 22%;
+            transform: translateX(-70%);
+          }
+          // 设置步骤条的颜色
+          .ant-steps-item-finish .ant-steps-icon-dot, .ant-steps-item-process .ant-steps-icon-dot, .ant-steps-item-finish > .ant-steps-item-tail:after {
+            background: #1AB781FF;
+          }
+          // 设置完成和进行时步骤的文字颜色
+          .ant-steps-item-process .ant-steps-item-description, .ant-steps-item-finish .ant-steps-item-description {
+            color: #1AB781FF;
+          }
+        }
+        .expected-turnover {
+          margin-top: 15px;
+          font-size: 14px;
+          color: #333333FF;
+          margin-bottom: 25px;
+          span {
+            color: #1AB781FF;
+            font-weight: bold;
+            letter-spacing: 1px;
+          }
+        }
+        .ant-btn-primary {
+          background: #1AB781FF;
+          border-color: #1AB781FF;
+        }
+      }
+    }
+    .sellout {
+      main {
+        .transaction-steps {
+          .ant-steps-item-finish .ant-steps-icon-dot, .ant-steps-item-process .ant-steps-icon-dot, .ant-steps-item-finish > .ant-steps-item-tail:after {
+            background: #E95454FF;
+          }
+          .ant-steps-item-process .ant-steps-item-description, .ant-steps-item-finish .ant-steps-item-description {
+            color: #E95454FF;
+          }
+        }
+        .expected-turnover {
+          span {
+            color: #E95454FF;
+          }
+        }
+        .ant-btn-primary {
+          background: #E95454FF;
+          border-color: #E95454FF;
+        }
+      }
+    }
+  }
+}
