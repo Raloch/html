@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
-import { Checkbox, Tabs, Table, Input, Icon, message } from 'antd'
+import { Checkbox, Tabs, Table, Input, Icon } from 'antd'
 import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT } from '../coinsList'
 import { exchangeColumns, exchangeData } from '../currentExchangeList'
 import './index.less'
 
-let ws = null
 const { TabPane } = Tabs
 
 class Market extends Component {

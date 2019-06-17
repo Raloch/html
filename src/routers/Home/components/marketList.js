@@ -8,7 +8,7 @@ export const columnsUSDT = [
     dataIndex: 'isCollected',
     render: text => {
       return (
-        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />
+        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
       )
     },
     align: 'center'
@@ -57,7 +57,7 @@ export const columnsUSDT = [
 
 export const dataUSDT = [
   {
-    key: '1',
+    key: 'USDT1',
     isCollected: true,
     exchangePairs: 'WINGS/USDT',
     newPrice: '0.00000000',
@@ -68,7 +68,7 @@ export const dataUSDT = [
     dailyTurnover: '0.00000006 BTC'
   },
   {
-    key: '2',
+    key: 'USDT2',
     isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
@@ -79,8 +79,8 @@ export const dataUSDT = [
     dailyTurnover: '0.00000004 BTC'
   },
   {
-    key: '3',
-    isCollected: true,
+    key: 'USDT3',
+    isCollected: false,
     exchangePairs: 'DCR/USDT',
     newPrice: '0.00000000',
     highsAndLows: '+12.10%',
@@ -90,7 +90,7 @@ export const dataUSDT = [
     dailyTurnover: '0.00000199 BTC'
   },
   {
-    key: '4',
+    key: 'USDT4',
     isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
@@ -101,7 +101,7 @@ export const dataUSDT = [
     dailyTurnover: '0.00002305 BTC'
   },
   {
-    key: '5',
+    key: 'USDT5',
     isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
@@ -112,7 +112,7 @@ export const dataUSDT = [
     dailyTurnover: '0.00099999 BTC'
   },
   {
-    key: '6',
+    key: 'USDT6',
     isCollected: true,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
@@ -779,7 +779,7 @@ export const columnsETH = [
     dataIndex: 'isCollected',
     render: text => {
       return (
-        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />
+        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
       )
     }
   },
@@ -819,7 +819,7 @@ export const columnsETH = [
 
 export const dataETH= [
   {
-    key: '1',
+    key: 'ETH1',
     isCollected: true,
     exchangePairs: 'WINGS/USDT',
     newPrice: '0.00000000',
@@ -830,7 +830,7 @@ export const dataETH= [
     dailyTurnover: '0.00000000 BTC'
   },
   {
-    key: '2',
+    key: 'ETH2',
     isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
@@ -841,7 +841,7 @@ export const dataETH= [
     dailyTurnover: '0.00000000 BTC'
   },
   {
-    key: '3',
+    key: 'ETH3',
     isCollected: true,
     exchangePairs: 'DCR/USDT',
     newPrice: '0.00000000',
@@ -852,7 +852,7 @@ export const dataETH= [
     dailyTurnover: '0.00000000 BTC'
   },
   {
-    key: '4',
+    key: 'ETH4',
     isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
@@ -863,7 +863,7 @@ export const dataETH= [
     dailyTurnover: '0.00000000 BTC'
   },
   {
-    key: '5',
+    key: 'ETH5',
     isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
@@ -881,7 +881,7 @@ export const columnsBCT = [
     dataIndex: 'isCollected',
     render: text => {
       return (
-        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />
+        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
       )
     }
   },
@@ -921,7 +921,7 @@ export const columnsBCT = [
 
 export const dataBCT = [
   {
-    key: '1',
+    key: 'BCT1',
     isCollected: true,
     exchangePairs: 'WINGS/USDT',
     newPrice: '0.00000000',
@@ -932,7 +932,7 @@ export const dataBCT = [
     dailyTurnover: '0.00000000 BTC'
   },
   {
-    key: '2',
+    key: 'BCT2',
     isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
@@ -943,8 +943,8 @@ export const dataBCT = [
     dailyTurnover: '0.00000000 BTC'
   },
   {
-    key: '3',
-    isCollected: true,
+    key: 'BCT3',
+    isCollected: false,
     exchangePairs: 'DCR/USDT',
     newPrice: '0.00000000',
     highsAndLows: '+12.10%',
@@ -954,7 +954,7 @@ export const dataBCT = [
     dailyTurnover: '0.00000000 BTC'
   },
   {
-    key: '4',
+    key: 'BCT4',
     isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
@@ -965,7 +965,7 @@ export const dataBCT = [
     dailyTurnover: '0.00000000 BTC'
   },
   {
-    key: '5',
+    key: 'BCT5',
     isCollected: false,
     exchangePairs: 'CTXC/USDT',
     newPrice: '0.00000001',
@@ -977,13 +977,13 @@ export const dataBCT = [
   }
 ]
 
-export const columnsFree = [
+export const columnsCollect = [
   {
     title: '',
     dataIndex: 'isCollected',
     render: text => {
       return (
-        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star1 : star2 } alt="" />
+        <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
       )
     }
   },
@@ -1018,63 +1018,5 @@ export const columnsFree = [
     sorter: (a, b) => {
       return parseFloat(a.dailyTurnover) - parseFloat(b.dailyTurnover)
     }
-  }
-]
-
-export const dataFree = [
-  {
-    key: '1',
-    isCollected: true,
-    exchangePairs: 'WINGS/USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '0.00%',
-    highestPrice: '0.00000000',
-    minimumPrice: '0.00000000',
-    dailyVolume: '0.00000000 WINGS',
-    dailyTurnover: '0.00000000 BTC'
-  },
-  {
-    key: '2',
-    isCollected: false,
-    exchangePairs: 'CTXC/USDT',
-    newPrice: '0.00000001',
-    highsAndLows: '+7.51%',
-    highestPrice: '0.00000001',
-    minimumPrice: '0.00000000',
-    dailyVolume: '0.00000000 CTXC',
-    dailyTurnover: '0.00000000 BTC'
-  },
-  {
-    key: '3',
-    isCollected: true,
-    exchangePairs: 'DCR/USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '+12.10%',
-    highestPrice: '0.00000000',
-    minimumPrice: '0.00000000',
-    dailyVolume: '0.00000000 DCR',
-    dailyTurnover: '0.00000000 BTC'
-  },
-  {
-    key: '4',
-    isCollected: false,
-    exchangePairs: 'CTXC/USDT',
-    newPrice: '0.00000001',
-    highsAndLows: '+7.51%',
-    highestPrice: '0.00000001',
-    minimumPrice: '0.00000000',
-    dailyVolume: '0.00000000 CTXC',
-    dailyTurnover: '0.00000000 BTC'
-  },
-  {
-    key: '5',
-    isCollected: false,
-    exchangePairs: 'CTXC/USDT',
-    newPrice: '0.00000001',
-    highsAndLows: '+7.51%',
-    highestPrice: '0.00000001',
-    minimumPrice: '0.00000000',
-    dailyVolume: '0.00000000 CTXC',
-    dailyTurnover: '0.00000000 BTC'
   }
 ]

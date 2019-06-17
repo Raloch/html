@@ -61,7 +61,7 @@ export const currentEntrustData = [
     noDeal: '1.00000000',
     alreadyDeal: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   },
   {
     key: '2',
@@ -72,105 +72,6 @@ export const currentEntrustData = [
     noDeal: '1.00000000',
     alreadyDeal: '1.00000000',
     entrustAveragePrice: '0.00000230',
-    operation: '撤销'
-  },
-  {
-    key: '3',
-    entrustTime: '2018-07-23 10:54:23',
-    direction: '买入',
-    entrustPrice: '市价',
-    entrustNumber: '1.00000000',
-    noDeal: '1.00000000',
-    alreadyDeal: '1.00000000',
-    entrustAveragePrice: '0.00000230',
-    operation: '撤销'
-  },
-  {
-    key: '4',
-    entrustTime: '2018-07-24 10:54:23',
-    direction: '买入',
-    entrustPrice: '12345.000012',
-    entrustNumber: '1.00000000',
-    noDeal: '1.00000000',
-    alreadyDeal: '1.00000000',
-    entrustAveragePrice: '0.00000230',
-    operation: '撤销'
-  },
-  {
-    key: '5',
-    entrustTime: '2018-07-23 10:54:23',
-    direction: '买入',
-    entrustPrice: '市价',
-    entrustNumber: '1.00000000',
-    noDeal: '1.00000000',
-    alreadyDeal: '1.00000000',
-    entrustAveragePrice: '0.00000230',
-    operation: '撤销'
-  },
-  {
-    key: '6',
-    entrustTime: '2018-07-24 10:54:23',
-    direction: '买入',
-    entrustPrice: '12345.000012',
-    entrustNumber: '1.00000000',
-    noDeal: '1.00000000',
-    alreadyDeal: '1.00000000',
-    entrustAveragePrice: '0.00000230',
-    operation: '撤销'
-  },
-  {
-    key: '7',
-    entrustTime: '2018-07-23 10:54:23',
-    direction: '买入',
-    entrustPrice: '市价',
-    entrustNumber: '1.00000000',
-    noDeal: '1.00000000',
-    alreadyDeal: '1.00000000',
-    entrustAveragePrice: '0.00000230',
-    operation: '撤销'
-  },
-  {
-    key: '8',
-    entrustTime: '2018-07-24 10:54:23',
-    direction: '买入',
-    entrustPrice: '12345.000012',
-    entrustNumber: '1.00000000',
-    noDeal: '1.00000000',
-    alreadyDeal: '1.00000000',
-    entrustAveragePrice: '0.00000230',
-    operation: '撤销'
-  },
-  {
-    key: '9',
-    entrustTime: '2018-07-23 10:54:23',
-    direction: '买入',
-    entrustPrice: '市价',
-    entrustNumber: '1.00000000',
-    noDeal: '1.00000000',
-    alreadyDeal: '1.00000000',
-    entrustAveragePrice: '0.00000230',
-    operation: '撤销'
-  },
-  {
-    key: '10',
-    entrustTime: '2018-07-24 10:54:23',
-    direction: '买入',
-    entrustPrice: '12345.000012',
-    entrustNumber: '1.00000000',
-    noDeal: '1.00000000',
-    alreadyDeal: '1.00000000',
-    entrustAveragePrice: '0.00000230',
-    operation: '撤销'
-  },
-  {
-    key: '11',
-    entrustTime: '2018-07-24 10:54:23',
-    direction: '买入',
-    entrustPrice: '12345.000012',
-    entrustNumber: '1.00000000',
-    noDeal: '1.00000000',
-    alreadyDeal: '1.00000000',
-    entrustAveragePrice: '0.00000230',
-    operation: '撤销'
+    operation: '成交明细'
   }
 ]

@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { Input, Icon, Tabs, Table, message, Empty } from 'antd'
-import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT, columnsFree, dataFree } from '../marketList'
+import { Input, Icon, Tabs, Table, message } from 'antd'
+import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT, columnsCollect } from '../marketList'
 import './index.less'
+import Empty from '../../../../components/Empty'
 import star2 from '../../images/star2.png'
 
 const { TabPane } = Tabs
@@ -17,12 +18,12 @@ class ExchangeMarket extends Component {
       dataUSDT: dataUSDT,
       dataETH: dataETH,
       dataBCT: dataBCT,
-      dataFree: dataFree,
+      collectData: [],
       USDTLoading: false,
       BTCLoading: true,
       ETHLoading: false,
       BCTLoading: false,
-      FreeLoading: false,
+      CollectLoading: false,
       activeKeyBefore: '1'
     }
   }
@@ -88,37 +89,57 @@ class ExchangeMarket extends Component {
   coinsTypeChange = (key) => {
     this.setState({
       activeKey: key
-    })
-    if (this.state.searchText) {
-      this.setState({
-        searchText: ''
-      })
-      switch(this.state.activeKeyBefore) {
-        case '1':
-          this.setState({
-            dataBTC
-          })
-          break
-        case '2':
-          this.setState({
-            dataUSDT
-          })
-          break
-        case '3':
-          this.setState({
-            dataETH
-          })
-          break
-        case '4':
-          this.setState({
-            dataBCT
-          })
-          break
+    }, () => {
+      if (this.state.searchText) {
+        this.setState({
+          searchText: ''
+        })
+        switch(this.state.activeKeyBefore) {
+          case '1':
+            this.setState({
+              dataBTC
+            })
+            break
+          case '2':
+            this.setState({
+              dataUSDT
+            })
+            break
+          case '3':
+            this.setState({
+              dataETH
+            })
+            break
+          case '4':
+            this.setState({
+              dataBCT
+            })
+            break
+        }
       }
-    }
-    this.setState({
-      activeKeyBefore: key
+      this.setState({
+        activeKeyBefore: key
+      })
+      if (this.state.activeKey === '5') {
+        let BTCCollect = dataBTC.filter(val => {
+          return val.isCollected
+        })
+        let USDTCollect = dataUSDT.filter(val => {
+          return val.isCollected
+        })
+        let ETHCollect = dataETH.filter(val => {
+          return val.isCollected
+        })
+        let BCTCollect = dataBCT.filter(val => {
+          return val.isCollected
+        })
+        let data = [...BTCCollect, ...USDTCollect, ...ETHCollect, ...BCTCollect]
+        this.setState({
+          collectData: data
+        })
+      }
     })
+    
   }
   // 搜索币种
   search = () => {
@@ -203,7 +224,7 @@ class ExchangeMarket extends Component {
           // onPressEnter={ this.search }
           onChange={ this.handleChange }
         />
-        <Tabs defaultActiveKey={ this.state.activeKey } className="market_header" onChange={ this.coinsTypeChange }>
+        <Tabs defaultActiveKey="1" className="market_header" onChange={ this.coinsTypeChange }>
           <TabPane tab="BTC市场" key="1">
             <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ this.state.BTCLoading } onRow={ this.rowClick } />
           </TabPane>
@@ -211,13 +232,17 @@ class ExchangeMarket extends Component {
             <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
           </TabPane>
           <TabPane tab="ETH市场" key="3">
-            <Table columns={ columnsETH } dataSource={ this.state.dataETH } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
+            <Table columns={ columnsETH } dataSource={ this.state.dataETH } pagination={ false } loading={ this.state.ETHLoading } onRow={ this.rowClick } />
           </TabPane>
           <TabPane tab="BCT市场" key="4">
-            <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
+            <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } pagination={ false } loading={ this.state.BCTLoading } onRow={ this.rowClick } />
           </TabPane>
           <TabPane tab={ <span><img style={{ marginBottom: 5, marginRight: 5 }} src={ star2 } />自选市场</span> } key="5">
-            <Table columns={ columnsFree } dataSource={ this.state.dataFree } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
+            <Table columns={ columnsCollect } dataSource={ this.state.collectData } pagination={ false } loading={ this.state.CollectLoading } onRow={ this.rowClick } locale={{
+              emptyText: (
+                <Empty height="120" text="暂无收藏" />
+              )
+            }} />
           </TabPane>
         </Tabs>
       </div>

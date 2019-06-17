@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
 import './index.less'
-import { Layout, Input, Icon, Tabs, Table, Select, Steps, Button, Checkbox, message } from 'antd'
+import { Layout, message } from 'antd'
 import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT } from '../components/coinsList'
-import { exchangeColumns, exchangeData } from '../components/currentExchangeList'
-import { historyEntrustColumns, historyEntrustData } from '../components/historyEntrustList'
-import { entrustMessageColumns1, entrustMessageData1, entrustMessageColumns2, entrustMessageData2 } from '../components/entrustMessageList'
-import star2 from '../images/star2.png'
+import { exchangeData } from '../components/currentExchangeList'
 
 import Market from '../components/Market'
 import CoinsTypeData from '../components/CoinsTypeData'
@@ -17,7 +14,7 @@ import CurrentEntrust from '../components/CurrentEntrust'
 import HistoryEntrust from '../components/HistoryEntrust'
 import NewDeal from '../components/NewDeal'
 
-const { Header, Footer, Sider, Content } = Layout
+const { Footer, Sider, Content } = Layout
 
 let ws = null
 
@@ -56,6 +53,7 @@ class Trade extends Component {
           method: 'server.ping',
           params: []
         }
+        // 交易市场
         let data2 = {
           id: 2,
           method: 'state.subscribe',
@@ -109,7 +107,7 @@ class Trade extends Component {
   }
   // 接收websocket数据设置币币交易 -- 交易市场数据展示
   updateMarket = res => {
-    let data = JSON.parse(res.data)
+    const data = JSON.parse(res.data)
     // 交易市场 -- data2
     if (data.method === 'state.update') {
       let params = data.params[0]
