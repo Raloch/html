@@ -3,6 +3,7 @@ import './index.less'
 import { Layout, message } from 'antd'
 import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT } from '../components/coinsList'
 import { exchangeData } from '../components/currentExchangeList'
+import { BeforeSendGet, BeforeSendPost } from '../../../components/Ajax'
 
 import Market from '../components/Market'
 import CoinsTypeData from '../components/CoinsTypeData'
@@ -33,11 +34,27 @@ class Trade extends Component {
       ETHLoading: false,
       BCTLoading: false,
       exchangeData: exchangeData, // 最近交易
-      currentExchangeLoading: true
+      currentExchangeLoading: true,
+      // transaction -- 限价交易
+      buyButtonLoading: false,
+      sellButtonLoading: false,
+      // currentEntrust -- 当前委托
+      currentEntrustData: []
     }
   }
   componentDidMount() {
     this.WebSocketInit()
+
+    // 当前委托
+    let obj = {
+      market: 'BTCUSDT',
+      offset: '0, 100'
+    }
+    this.getCurrentTrustData(obj)
+    // 设置定时器更新当前委托数据
+    setInterval(() => {
+      this.getCurrentTrustData(obj)
+    }, 5000);
   }
   WebSocketInit = () => {
     let _this = this
@@ -159,6 +176,90 @@ class Trade extends Component {
       }
     }
   }
+  // 限价单
+  buyLimit = obj => {
+    this.setState({
+      buyButtonLoading: true
+    }, () => {
+      let _this = this
+      BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
+        if (d.code === 0) {
+          message.success('买入成功')
+          // console.log('限价单 ' + JSON.stringify(d.result))
+          _this.getCurrentTrustData({
+            market: 'BTCUSDT',
+            offset: '0, 100'
+          })
+          setTimeout(() => {
+            _this.setState({
+              buyButtonLoading: false
+            })
+          }, 1000)
+        }
+      })
+    })
+  }
+  sellLimit = obj => {
+    this.setState({
+      sellButtonLoading: true
+    }, () => {
+      let _this = this
+      BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
+        if (d.code === 0) {
+          message.success('卖出成功')
+          // console.log('限价单 ' + JSON.stringify(d.result))
+          _this.getCurrentTrustData({
+            market: 'BTCUSDT',
+            offset: '0, 100'
+          })
+          setTimeout(() => {
+            _this.setState({
+              sellButtonLoading: false
+            })
+          }, 1000)
+        }
+      })
+    })
+  }
+  // 当前委托接口获取数据
+  getCurrentTrustData = obj => {
+    let _this = this
+    BeforeSendGet('/api/v1/user/order/pending', obj, function(d) {
+      if (d.code === 0) {
+        let data = []
+        // console.log(d.result.records)
+        d.result.records.forEach((val, i) => {
+          data[i] = {
+            key: `${ val.id }`,
+            ctime: val.ctime,
+            side: val.side,
+            price: val.price,
+            amount: val.amount,
+            left: val.left,
+            deal_stock: val.deal_stock,
+            deal_money: val.deal_money,
+            operation: '撤销'
+          }
+        })
+        _this.setState({
+          currentEntrustData: data
+        })
+      }
+    })
+  }
+  // 撤销当前委托
+  revoke = obj => {
+    let _this = this
+    BeforeSendPost('/api/v1/user/order/cancel', obj, function(d) {
+      if (d.code === 0) {
+        message.success('撤销成功')
+        _this.getCurrentTrustData({
+          market: 'BTCUSDT',
+          offset: '0, 100'
+        })
+      }
+    })
+  }
   // 精度小数点
   accuracyChange = val => {
     // console.log(val)
@@ -185,7 +286,7 @@ class Trade extends Component {
                   {/* k线 */}
                   <Kline></Kline>
                   {/* 限价交易 */}
-                  <Transaction />
+                  <Transaction buyButtonLoading={ this.state.buyButtonLoading } buyLimit={ this.buyLimit } sellButtonLoading={ this.state.sellButtonLoading } sellLimit={ this.sellLimit } />
                 </Content>
                 <Sider width="28.0979%" className="trade-right-layout-content-layout-sider" theme="light">
                   {/* 委托信息 */}
@@ -196,7 +297,7 @@ class Trade extends Component {
             </Content>
             <Footer className="right-footer">
               {/* 当前委托 */}
-              <CurrentEntrust />
+              <CurrentEntrust currentEntrustData={ this.state.currentEntrustData } revoke={ this.revoke } />
               {/* 历史委托 */}
               <HistoryEntrust />
               {/* 币种资料 */}

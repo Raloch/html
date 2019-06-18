@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import './index.less'
-import { Tabs, Input, Steps, Button } from 'antd'
+import { Tabs, Input, Steps, Button, message, Modal, Form } from 'antd'
+import { BeforeSendGet, BeforeSendPost } from '@/components/Ajax/index'
 
 const { TabPane } = Tabs
 const { Step } = Steps
@@ -8,7 +9,107 @@ const { Step } = Steps
 class Transaction extends Component {
   constructor(props) {
     super(props)
-    this.state = {}
+    this.state = {
+      buyPrice: '',
+      buyAmount: '',
+      validBTC: 0, // 可用余额
+      visible: false,
+      rechargeNumber: Number,
+      sellAmount: '',
+      sellPrice: '',
+      sellButtonLoading: false
+    }
+  }
+  componentDidMount() {
+    const _this = this
+    let obj = {
+      assets: ''
+    }
+    BeforeSendGet('/api/v1/user/balance/query', obj, function(d) {
+      if (d.code === 0) {
+        _this.setState({
+          validBTC: d.result.BTC.available
+        })
+      }
+    })
+  }
+  handleBuyPrice = e => {
+    this.setState({
+      buyPrice: e.target.value
+    })
+  }
+  handleBuyAmount = e => {
+    this.setState({
+      buyAmount: e.target.value
+    })
+  }
+  handleSellPrice = e => {
+    this.setState({
+      sellPrice: e.target.value
+    })
+  }
+  handleSellAmount = e => {
+    this.setState({
+      sellAmount: e.target.value
+    })
+  }
+  showModal = () => {
+    this.setState({
+      visible: true,
+      rechargeNumber: ''
+    })
+  }
+  // 充值
+  recharge = () => {
+    let _this = this
+    let obj = {
+      asset: 'BTC',
+      change: this.state.rechargeNumber
+    }
+    BeforeSendPost('/api/v1/user/balance/update', obj, function(d) {
+      if (d.code === 0) {
+        message.success('充值成功')
+        let obj = {
+          assets: ''
+        }
+        BeforeSendGet('/api/v1/user/balance/query', obj, function(d) {
+          if (d.code === 0) {
+            _this.setState({
+              validBTC: d.result.BTC.available
+            })
+          }
+        })
+        _this.setState({
+          visible: false
+        })
+      }
+    })
+  }
+  buy = () => {
+    this.props.buyLimit({
+      market: 'BTCUSDT',
+      side: 'buy',
+      amount: this.state.buyAmount,
+      price: this.state.buyPrice
+    })
+  }
+  sell = () => {
+    this.props.sellLimit({
+      market: 'BTCUSDT',
+      side: 'sell',
+      amount: this.state.sellAmount,
+      price: this.state.sellPrice
+    })
+  }
+  handleCancel = () => {
+    this.setState({
+      visible: false
+    })
+  }
+  handleRechargeNumber = e => {
+    this.setState({
+      rechargeNumber: e.target.value
+    })
   }
   render() {
     return (
@@ -19,19 +120,19 @@ class Transaction extends Component {
               <header>
                 <div>
                   <h3 className="fl">买入BCH</h3>
-                  <a className="fr" href="javascript:void(0)">充值 ></a>
+                  <a className="fr" href="javascript:void(0)" onClick={ this.showModal }>充值 ></a>
                 </div>
-                <p className="validBTC">可用: 0BTC</p>
+                <p className="validBTC">可用: { this.state.validBTC }BTC</p>
               </header>
               <main>
                 <div className="input-purchase">
                   <div className="purchase-price">
-                    <Input size="large" />
+                    <Input value={ this.state.buyPrice } onChange={ this.handleBuyPrice } size="large" />
                     <p>买入价<span> (BTC)</span></p>
                   </div>
                   <p>≈0.01 CNY</p>
                   <div className="purchase-number">
-                    <Input size="large" />
+                    <Input value={ this.state.buyAmount } onChange={ this.handleBuyAmount } size="large" />
                     <p>买入量<span> (BCH)</span></p>
                   </div>
                 </div>
@@ -45,7 +146,7 @@ class Transaction extends Component {
                   </Steps>
                 </div>
                 <p className="expected-turnover">预计交易额: <span>0BTC</span></p>
-                <Button type="primary" size="large" block>买入</Button>
+                <Button type="primary" size="large" onClick={ this.buy } loading={ this.props.buyButtonLoading } block>买入</Button>
               </main>
             </div>
             <div className="sellout fr">
@@ -59,12 +160,12 @@ class Transaction extends Component {
               <main>
                 <div className="input-purchase">
                   <div className="purchase-price">
-                    <Input size="large" />
+                    <Input value={ this.state.sellPrice } onChange={ this.handleSellPrice } size="large" />
                     <p>卖出价<span> (BTC)</span></p>
                   </div>
                   <p>≈0.01 CNY</p>
                   <div className="purchase-number">
-                    <Input size="large" />
+                    <Input value={ this.state.sellAmount } onChange={ this.handleSellAmount } size="large" />
                     <p>卖出量<span> (BCH)</span></p>
                   </div>
                 </div>
@@ -78,7 +179,7 @@ class Transaction extends Component {
                   </Steps>
                 </div>
                 <p className="expected-turnover">预计交易额: <span>0BTC</span></p>
-                <Button type="primary" size="large" block>卖出</Button>
+                <Button type="primary" size="large" onClick={ this.sell } loading={ this.props.sellButtonLoading } block>卖出</Button>
               </main>
             </div>
           </TabPane>
@@ -155,9 +256,45 @@ class Transaction extends Component {
             <p className="rate-maker fr">Maker费率: 0.01%</p>
           </div>
         </Tabs>
+        <RModal
+          visible={ this.state.visible }
+          onCancel={ this.handleCancel }
+          onOk={ this.recharge }
+          rechargeNumber={ this.state.rechargeNumber }
+          handleRechargeNumber={ this.handleRechargeNumber }
+        />
       </div>
     )
   }
 }
+
+class RechargeModal extends Component {
+  render() {
+    const { visible, onCancel, onOk, form, rechargeNumber, handleRechargeNumber } = this.props
+    const { getFieldDecorator } = form
+    return (
+      <Modal
+        visible={ visible }
+        title="充值"
+        okText="确认"
+        onCancel={ onCancel }
+        onOk={ onOk }
+      >
+        <Form >
+          <Form.Item>
+            { getFieldDecorator('number', {
+              rules: [{
+                required: true,
+                message: '请输入充值数量'
+              }]
+            })(<Input value={ rechargeNumber } onChange={ handleRechargeNumber } placeholder="请输入充值数量" />) }
+          </Form.Item>
+        </Form>
+      </Modal>
+    )
+  }
+}
+
+const RModal = Form.create({ name: 'form_in_modal' })(RechargeModal)
 
 export default Transaction

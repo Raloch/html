@@ -21,7 +21,6 @@ let token = Cookies.get('token') ? "?token=" + Cookies.get('token') : "?";
 
 // }
 
-
 let Cgicallget = function(url,obj,fun) {
     var objstr = "";
     if(obj) {
@@ -286,4 +285,85 @@ let paramError = function(type) {
     return msg;
 }
 
-export {Cgicallget,Cgicallgets,CgicallPost,CgicallPut,ObjClone,GetErrorMsg}
+// 潘
+let BeforeSendGet = function (url, obj, fun) {
+    var objstr = "";
+    if (obj) {
+        for (var k in obj) {
+            objstr += "&" + k + "=" + encodeURIComponent($.trim(obj[k]));
+        }
+    }
+    url = version + url + "?_=" + new Date().getTime() + objstr;
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: 'json',
+        beforeSend: function (xhr) {
+            token = Cookies.get("token")
+            xhr.setRequestHeader("Authorization", token);
+        },
+        success: function (d) {
+            d = initBackDatas(d);
+            fun(d)
+        }
+    });
+}
+// 潘
+let BeforeSendPost = function (url, obj, fun) {
+    var sobj = {};
+    for (var k in obj) {
+        if (typeof obj[k] === "object") {
+            sobj[k] = (k == "password") ? JSON.stringify(obj[k]) : JSON.stringify($.trim(obj[k]));
+        } else {
+            sobj[k] = (k == "password") ? obj[k] : $.trim(obj[k]);
+        }
+    }
+    url = version + url;
+    // token = Cookies.get("token")
+    $.ajax({
+        type: "POST",
+        url: url,
+        // headers: {
+        //     "Authorization": token
+        // },
+        data: sobj,
+        dataType: 'json',
+        beforeSend: function (xhr) {
+            token = Cookies.get("token")
+            xhr.setRequestHeader("Authorization", token)
+        },
+        success: function (d) {
+            d = initBackDatas(d);
+            fun(d)
+        }
+    });
+}
+
+// 潘
+let BeforeSendPut = function(url, obj, fun){
+    var sobj = {};
+    for (var k in obj) {
+        if (typeof obj[k] === "object") {
+            sobj[k] = (k == "password") ? JSON.stringify(obj[k]) : JSON.stringify($.trim(obj[k]));
+        } else {
+            sobj[k] = (k == "password") ? obj[k] : $.trim(obj[k]);
+        }
+    }
+    url = version + url;
+    $.ajax({
+        url:url,
+        type: "PUT",
+        dataType: "json",
+        data: sobj,
+        beforeSend: function (xhr) {
+            token = Cookies.get("token")
+            xhr.setRequestHeader("Authorization", token);
+        },
+        success:function(d){
+            d = initBackDatas(d);
+            fun(d);
+        }
+    });
+}
+
+export {Cgicallget,Cgicallgets,CgicallPost,CgicallPut,ObjClone,GetErrorMsg,BeforeSendGet,BeforeSendPost,BeforeSendPut}

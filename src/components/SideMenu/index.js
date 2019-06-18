@@ -7,7 +7,7 @@ import './index.less'
 import Cookies from 'js-cookie'
 import menuConfig from '@/config/menu'
 import menuLoginBefore from '@/config/menuLoginBefore'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { Cgicallget, BeforeSendPost, GetErrorMsg} from '@/components/Ajax'
 import logo from '@/routers/Layouts/assets/logo-vv.png'
 import Fire from '@/routers/Layouts/assets/fire.png'
 
@@ -97,7 +97,7 @@ class SideMenu extends Component {
         Cookies.remove('transactionverification', { path: '/' })
         this.setState({'loginState': (Cookies.get('account')?true:false)})
         // 退出登录请求
-        CgicallPost("/api/v1/user/logout", '', function(d){
+        BeforeSendPost("/api/v1/user/logout", '', function(d){
             if(d.code === 0) {
             }else {
                 // message.error('退出登录失败！')

@@ -86,8 +86,11 @@ class Login extends Component {
         let _this = this;
         CgicallPost("/api/v1/visitor/login",obj,function(d){
             if (d.code === 0) {
+                console.log(d)
                 message.success('登录成功!');
-                Cookies.set('account', d.result.account)
+                Cookies.set('account', 'Ryan')
+                Cookies.set('loginState', Cookies.get('account') ? true : false)
+                Cookies.set('token', "Bearer " + d.result.token)
                 _this.props.history.push('/home')
             } else {
                 message.error(d.message)
