@@ -2,10 +2,13 @@ import React, { Component } from 'react'
 import './index.less'
 import { Tabs, Input, Steps, Button, message, Modal, Form } from 'antd'
 import { BeforeSendGet, BeforeSendPost } from '@/components/Ajax/index'
+import { inject, observer } from 'mobx-react'
 
 const { TabPane } = Tabs
 const { Step } = Steps
 
+@inject('Store')
+@observer
 class Transaction extends Component {
   constructor(props) {
     super(props)
@@ -86,20 +89,22 @@ class Transaction extends Component {
     })
   }
   buy = () => {
-    this.props.buyLimit({
+    let obj = {
       market: 'BTCUSDT',
       side: 'buy',
       amount: this.state.buyAmount,
       price: this.state.buyPrice
-    })
+    }
+    this.props.Store.buyCoins(obj)
   }
   sell = () => {
-    this.props.sellLimit({
+    let obj = {
       market: 'BTCUSDT',
       side: 'sell',
       amount: this.state.sellAmount,
       price: this.state.sellPrice
-    })
+    }
+    this.props.Store.sellCoins(obj)
   }
   handleCancel = () => {
     this.setState({
@@ -112,6 +117,7 @@ class Transaction extends Component {
     })
   }
   render() {
+    const { buyButtonLoading, sellButtonLoading } = this.props.Store.transactionData
     return (
       <div className="transaction">
         <Tabs defaultActiveKey="1" onChange={ this.transactionChange }>
@@ -146,7 +152,7 @@ class Transaction extends Component {
                   </Steps>
                 </div>
                 <p className="expected-turnover">预计交易额: <span>0BTC</span></p>
-                <Button type="primary" size="large" onClick={ this.buy } loading={ this.props.buyButtonLoading } block>买入</Button>
+                <Button type="primary" size="large" onClick={ this.buy } loading={ buyButtonLoading } block>买入</Button>
               </main>
             </div>
             <div className="sellout fr">
@@ -179,7 +185,7 @@ class Transaction extends Component {
                   </Steps>
                 </div>
                 <p className="expected-turnover">预计交易额: <span>0BTC</span></p>
-                <Button type="primary" size="large" onClick={ this.sell } loading={ this.props.sellButtonLoading } block>卖出</Button>
+                <Button type="primary" size="large" onClick={ this.sell } loading={ sellButtonLoading } block>卖出</Button>
               </main>
             </div>
           </TabPane>

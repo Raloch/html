@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './index.less'
 import { Table } from 'antd'
-import { exchangeColumns, exchangeData } from '../currentExchangeList'
+import { exchangeColumns } from '../currentExchangeList'
 
 class NewDeal extends Component {
   constructor(props) {

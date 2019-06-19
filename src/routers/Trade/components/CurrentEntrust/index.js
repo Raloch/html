@@ -1,18 +1,30 @@
 import React, { Component } from 'react'
 import './index.less'
 import Cookies from 'js-cookie'
-import { Table } from 'antd'
+import { Table, message } from 'antd'
 import moment from 'moment'
-import { BeforeSendGet } from '../../../../components/Ajax/index'
+import { inject, observer } from 'mobx-react'
+import { BeforeSendPost } from '../../../../components/Ajax'
 
 import Empty from '../../../../components/Empty'
 
+@inject('Store')
+@observer
 class CurrentEntrust extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      currentEntrustData: []
-    }
+  componentDidMount() {
+    this.props.Store.currentDataInit()
+  }
+  revoke = obj => {
+    let _this = this
+    BeforeSendPost('/api/v1/user/order/cancel', obj, function(d) {
+      if (d.code === 0) {
+        message.success('撤销成功')
+        _this.props.Store.getCurrentData({
+          market: 'BTCUSDT',
+          offset: '0, 100'
+        })
+      }
+    })
   }
   render() {
     const currentEntrustColumns = [
@@ -73,12 +85,13 @@ class CurrentEntrust extends Component {
             orderid: record.key
           }
           return (
-            <span onClick={ () => this.props.revoke(obj) } style={{ cursor: 'pointer' }}>{ text }</span>
+            <span onClick={ () => this.revoke(obj) } style={{ cursor: 'pointer' }}>{ text }</span>
           )
         }
       }
     ]
-    const data = Cookies.get('loginState') ? this.props.currentEntrustData : []
+    const { currentEntrustData, currentLoading } = this.props.Store.currentData
+    const data = Cookies.get('loginState') ? currentEntrustData : []
     return (
       <div className="current-entrust">
         <header>当前委托</header>
@@ -93,6 +106,7 @@ class CurrentEntrust extends Component {
                 <Empty height="120" />
               )
             }}
+            loading={ currentLoading }
           />
         </main>
       </div>
