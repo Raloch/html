@@ -11,22 +11,42 @@ import Empty from '../../../../components/Empty'
 @inject('Store')
 @observer
 class CurrentEntrust extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      total: 40,
+      pageSize: 10,
+      current: 1
+    }
+  }
   componentDidMount() {
     this.props.Store.currentDataInit()
   }
-  revoke = obj => {
+  // 撤销
+  revoke = id => {
     let _this = this
+    let obj = {
+      market: this.props.Store.currentCoinsType,
+      orderid: id
+    }
     BeforeSendPost('/api/v1/user/order/cancel', obj, function(d) {
       if (d.code === 0) {
         message.success('撤销成功')
-        _this.props.Store.getCurrentData({
-          market: 'BTCUSDT',
-          offset: '0, 100'
-        })
+        _this.props.Store.getCurrentData()
       }
     })
   }
+  // 页数改变数据更新
+  pageChange = page => {
+    this.setState({
+      current: page
+    }, () => {
+      this.props.Store.currentPageChange(page - 1)
+      this.props.Store.getCurrentData()
+    })
+  }
   render() {
+    const { total, pageSize, current } = this.state
     const currentEntrustColumns = [
       {
         title: '委托时间',
@@ -80,32 +100,38 @@ class CurrentEntrust extends Component {
         align: 'center',
         width: '12%',
         render: (text, record) => {
-          let obj = {
-            market: 'BTCUSDT',
-            orderid: record.key
-          }
           return (
-            <span onClick={ () => this.revoke(obj) } style={{ cursor: 'pointer' }}>{ text }</span>
+            <span onClick={ () => this.revoke(record.key) } style={{ cursor: 'pointer' }}>{ text }</span>
           )
         }
       }
     ]
     const { currentEntrustData, currentLoading } = this.props.Store.currentData
     const data = Cookies.get('loginState') ? currentEntrustData : []
+    const paginationProps = {
+      showQuickJumper: true,
+      total: total,
+      pageSize: pageSize,
+      size: 'small',
+      current: current,
+      onChange: this.pageChange
+    }
     return (
       <div className="current-entrust">
         <header>当前委托</header>
         <main>
           <Table
-            scroll={{ y: 380 }}
+            // scroll={{ y: 380 }}
             columns={ currentEntrustColumns }
             dataSource={ data }
-            pagination={ false }
+            pagination={ paginationProps }
             locale={{
               emptyText: (
                 <Empty height="120" />
               )
             }}
+            // 设置唯一行id，否则会出现超出pageSize的行数
+            rowKey={ record => record.key + record.time }
             loading={ currentLoading }
           />
         </main>

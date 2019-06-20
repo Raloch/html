@@ -15,7 +15,7 @@ export const exchangeColumns = [
     render: (text, record) => <span style={{ color: `${ record.type === 'buy' ? '#00b275' : '#ef5057' }` }}>{ text }</span>
   },
   {
-    title: '成交量(BTC)',
+    title: '成交量(ADA)',
     dataIndex: 'amount',
     align: 'center'
   }

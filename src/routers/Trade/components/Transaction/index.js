@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './index.less'
-import { Tabs, Input, Steps, Button, message, Modal, Form } from 'antd'
+import { Tabs, Input, Steps, Button, message, Modal, Form, InputNumber } from 'antd'
 import { BeforeSendGet, BeforeSendPost } from '@/components/Ajax/index'
 import { inject, observer } from 'mobx-react'
 
@@ -36,25 +36,17 @@ class Transaction extends Component {
       }
     })
   }
-  handleBuyPrice = e => {
-    this.setState({
-      buyPrice: e.target.value
-    })
+  handleBuyPrice = num => {
+    this.props.Store.handleBuyPrice(num)
   }
-  handleBuyAmount = e => {
-    this.setState({
-      buyAmount: e.target.value
-    })
+  handleBuyAmount = num => {
+    this.props.Store.handleBuyAmount(num)
   }
-  handleSellPrice = e => {
-    this.setState({
-      sellPrice: e.target.value
-    })
+  handleSellPrice = num => {
+    this.props.Store.handleSellPrice(num)
   }
-  handleSellAmount = e => {
-    this.setState({
-      sellAmount: e.target.value
-    })
+  handleSellAmount = num => {
+    this.props.Store.handleSellAmount(num)
   }
   showModal = () => {
     this.setState({
@@ -117,7 +109,9 @@ class Transaction extends Component {
     })
   }
   render() {
-    const { buyButtonLoading, sellButtonLoading } = this.props.Store.transactionData
+    const store = this.props.Store
+    const { buyButtonLoading, sellButtonLoading, buyPrice, buyAmount, sellPrice, sellAmount } = store.transactionData
+    const { coinsTypeTitle, coinsType } = this.props.Store.currencyTrading
     return (
       <div className="transaction">
         <Tabs defaultActiveKey="1" onChange={ this.transactionChange }>
@@ -125,21 +119,21 @@ class Transaction extends Component {
             <div className="purchase fl">
               <header>
                 <div>
-                  <h3 className="fl">买入BCH</h3>
+                  <h3 className="fl">买入{ coinsType }</h3>
                   <a className="fr" href="javascript:void(0)" onClick={ this.showModal }>充值 ></a>
                 </div>
-                <p className="validBTC">可用: { this.state.validBTC }BTC</p>
+                <p className="validBTC">可用: { this.state.validBTC }{ coinsTypeTitle }</p>
               </header>
               <main>
                 <div className="input-purchase">
                   <div className="purchase-price">
-                    <Input value={ this.state.buyPrice } onChange={ this.handleBuyPrice } size="large" />
-                    <p>买入价<span> (BTC)</span></p>
+                    <InputNumber min={0} value={ buyPrice } onChange={ this.handleBuyPrice } size="large" />
+                    <p>买入价<span> ({ coinsTypeTitle })</span></p>
                   </div>
                   <p>≈0.01 CNY</p>
                   <div className="purchase-number">
-                    <Input value={ this.state.buyAmount } onChange={ this.handleBuyAmount } size="large" />
-                    <p>买入量<span> (BCH)</span></p>
+                    <InputNumber min={0} value={ buyAmount } onChange={ this.handleBuyAmount } size="large" />
+                    <p>买入量<span> ({ coinsType })</span></p>
                   </div>
                 </div>
                 <div className="transaction-steps">
@@ -151,28 +145,28 @@ class Transaction extends Component {
                     <Step title="" description="100%" />
                   </Steps>
                 </div>
-                <p className="expected-turnover">预计交易额: <span>0BTC</span></p>
+                <p className="expected-turnover">预计交易额: <span>{ store.estimateBuyPrice }{ coinsTypeTitle }</span></p>
                 <Button type="primary" size="large" onClick={ this.buy } loading={ buyButtonLoading } block>买入</Button>
               </main>
             </div>
             <div className="sellout fr">
               <header>
                 <div>
-                  <h3 className="fl">卖出BCH</h3>
+                  <h3 className="fl">卖出{ coinsType }</h3>
                   <a className="fr" href="javascript:void(0)">充值 ></a>
                 </div>
-                <p className="validBTC">可用: 0BTC</p>
+                <p className="validBTC">可用: 0{ coinsTypeTitle }</p>
               </header>
               <main>
                 <div className="input-purchase">
                   <div className="purchase-price">
-                    <Input value={ this.state.sellPrice } onChange={ this.handleSellPrice } size="large" />
-                    <p>卖出价<span> (BTC)</span></p>
+                    <InputNumber min={0} value={ sellPrice } onChange={ this.handleSellPrice } size="large" />
+                    <p>卖出价<span> ({ coinsTypeTitle })</span></p>
                   </div>
                   <p>≈0.01 CNY</p>
                   <div className="purchase-number">
-                    <Input value={ this.state.sellAmount } onChange={ this.handleSellAmount } size="large" />
-                    <p>卖出量<span> (BCH)</span></p>
+                    <InputNumber min={0} value={ sellAmount } onChange={ this.handleSellAmount } size="large" />
+                    <p>卖出量<span> ({ coinsType })</span></p>
                   </div>
                 </div>
                 <div className="transaction-steps">
@@ -184,7 +178,7 @@ class Transaction extends Component {
                     <Step title="" description="100%" />
                   </Steps>
                 </div>
-                <p className="expected-turnover">预计交易额: <span>0BTC</span></p>
+                <p className="expected-turnover">预计交易额: <span>{ store.estimateSellPrice }{ coinsTypeTitle }</span></p>
                 <Button type="primary" size="large" onClick={ this.sell } loading={ sellButtonLoading } block>卖出</Button>
               </main>
             </div>
@@ -193,21 +187,21 @@ class Transaction extends Component {
             <div className="purchase fl">
               <header>
                 <div>
-                  <h3 className="fl">买入BCH</h3>
+                  <h3 className="fl">买入{ coinsType }</h3>
                   <a className="fr" href="javascript:void(0)">充值 ></a>
                 </div>
-                <p className="validBTC">可用: 0BTC</p>
+                <p className="validBTC">可用: 0{ coinsTypeTitle }</p>
               </header>
               <main>
                 <div className="input-purchase">
                   <div className="purchase-price">
                     <Input size="large" />
-                    <p>买入价<span> (BTC)</span></p>
+                    <p>买入价<span> ({ coinsTypeTitle })</span></p>
                   </div>
                   <p style={{ height: 12, width: '100%' }}></p>
                   <div className="purchase-number">
                     <Input size="large" />
-                    <p>交易额<span> (BCH)</span></p>
+                    <p>交易额<span> ({ coinsType })</span></p>
                   </div>
                 </div>
                 <div className="transaction-steps">
@@ -226,21 +220,21 @@ class Transaction extends Component {
             <div className="sellout fr">
               <header>
                 <div>
-                  <h3 className="fl">卖出BCH</h3>
+                  <h3 className="fl">卖出{ coinsType }</h3>
                   <a className="fr" href="javascript:void(0)">充值 ></a>
                 </div>
-                <p className="validBTC">可用: 0BTC</p>
+                <p className="validBTC">可用: 0{ coinsTypeTitle }</p>
               </header>
               <main>
                 <div className="input-purchase">
                   <div className="purchase-price">
                     <Input size="large" />
-                    <p>卖出价<span> (BTC)</span></p>
+                    <p>卖出价<span> ({ coinsTypeTitle })</span></p>
                   </div>
                   <p style={{ height: 12, width: '100%' }}></p>
                   <div className="purchase-number">
                     <Input size="large" />
-                    <p>卖出量<span> (BCH)</span></p>
+                    <p>卖出量<span> ({ coinsType })</span></p>
                   </div>
                 </div>
                 <div className="transaction-steps">

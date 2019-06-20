@@ -13,12 +13,25 @@ class HistoryEntrust extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      total: 100,
+      pageSize: 10,
+      current: 1
     }
   }
   componentDidMount() {
     this.props.Store.historyDataInit()
   }
+  // 页数改变数据更新
+  pageChange = page => {
+    this.setState({
+      current: page
+    }, () => {
+      this.props.Store.historyPageChange(page - 1)
+      this.props.Store.getHistoryData()
+    })
+  }
   render() {
+    const { total, pageSize, current } = this.state
     const historyEntrustColumns = [
       {
         title: '委托时间',
@@ -75,20 +88,30 @@ class HistoryEntrust extends Component {
     ]
     const { historyEntrustData, historyLoading } = this.props.Store.historyData
     const data = Cookies.get('loginState') ? historyEntrustData : []
+    const paginationProps = {
+      showQuickJumper: true,
+      total: total,
+      pageSize: pageSize,
+      size: 'small',
+      current: current,
+      onChange: this.pageChange
+    }
     return (
       <div className="history-entrust">
         <header>历史委托</header>
         <main>
           <Table
-            scroll={{ y: 380 }}
+            // scroll={{ y: 380 }}
             columns={ historyEntrustColumns }
             dataSource={ data }
-            pagination={ false }
+            pagination={ paginationProps }
             locale={{
               emptyText: (
                 <Empty height="120" />
               )
             }}
+            // 设置唯一行id，否则会出现超出pageSize的行数
+            rowKey={ record => record.key + record.time }
             loading={ historyLoading }
           />
         </main>

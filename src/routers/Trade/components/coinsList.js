@@ -809,7 +809,7 @@ export const dataETH = [
 export const columnsBCT = [
   {
     title: '币种',
-    dataIndex: 'coinsType',
+    dataIndex: 'exchangePairs',
     render: (text, record) => {
       return (
         <td><img className="collectStar" style={{ width: 12, cursor: 'pointer',   marginRight: 5, marginBottom: 3 }} src={ record.isCollected ? star2 : star1 } alt="" />{ text }</td>
@@ -817,7 +817,7 @@ export const columnsBCT = [
     },
     align: 'center',
     sorter: (a, b) => {
-      return b.coinsType.charCodeAt(0) - a.coinsType.charCodeAt(0)
+      return b.exchangePairs.charCodeAt(0) - a.exchangePairs.charCodeAt(0)
     }
   },
   {
@@ -843,35 +843,35 @@ export const dataBCT = [
   {
     key: '1',
     isCollected: true,
-    coinsType: 'BCH',
+    exchangePairs: 'BWD',
     newPrice: '0.00000000',
     highsAndLows: '-00.00%'
   },
   {
     key: '2',
     isCollected: true,
-    coinsType: 'YC',
+    exchangePairs: 'YC',
     newPrice: '1230.00000000',
     highsAndLows: '1.00%'
   },
   {
     key: '3',
     isCollected: true,
-    coinsType: 'SC',
+    exchangePairs: 'SC',
     newPrice: '10.01234000',
     highsAndLows: '-0.10%'
   },
   {
     key: '4',
     isCollected: false,
-    coinsType: 'BKK',
+    exchangePairs: 'BKK',
     newPrice: '0.00000000',
     highsAndLows: '00.00%'
   },
   {
     key: '5',
     isCollected: false,
-    coinsType: 'USDT',
+    exchangePairs: 'USDT',
     newPrice: '0.00000000',
     highsAndLows: '00.00%'
   }

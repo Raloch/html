@@ -81,8 +81,19 @@
           margin-bottom: 30px;
           .purchase-price, .purchase-number {
             position: relative;
+            .ant-input-number {
+              width: 100%;
+              .ant-input-number-input {
+                color: #333333FF;
+              }
+            }
+            // 隐藏数字输入框的上下箭头按钮
+            // .ant-input-number-handler-wrap {
+            //   display: none;
+            // }
             input {
               text-align: right;
+              padding-right: 30px;
             }
             p {
               position: absolute;
@@ -133,6 +144,11 @@
             font-weight: bold;
             letter-spacing: 1px;
           }
+          i {
+            font-style: normal;
+            font-size: 12px;
+            color: #E95454FF;
+          }
         }
         .ant-btn-primary {
           background: #1AB781FF;
@@ -162,4 +178,13 @@
       }
     }
   }
+}
+
+// 余额不足
+.creditRunLow::after {
+  font-size: 12px;
+  color: #E95454FF;
+  content: '可用余额不足';
+  top: 40px;
+  margin-left: 10px;
 }

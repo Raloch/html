@@ -2,9 +2,12 @@ import React, { Component } from 'react'
 import './index.less'
 import { Layout } from 'antd'
 import star2 from '../../images/star2.png'
+import { inject, observer } from 'mobx-react'
 
 const { Header } = Layout
 
+@inject('Store')
+@observer
 class TypeHeader extends Component {
   constructor(props) {
     super(props)
@@ -14,7 +17,7 @@ class TypeHeader extends Component {
     return (
       <Header className="trade-right-layout-header">
         <div className="coinType fl">
-          <img src={star2} alt=""/> BCH/USDT
+          <img src={star2} alt=""/> { this.props.Store.currencyTrading.coinsType }/{ this.props.Store.currencyTrading.coinsTypeTitle }
         </div>
         <div className="newPrice fl">
           <div className="newPrice-left fl">

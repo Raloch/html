@@ -3,9 +3,12 @@ import { Checkbox, Tabs, Table, Input, Icon } from 'antd'
 import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT } from '../coinsList'
 import { exchangeColumns, exchangeData } from '../currentExchangeList'
 import './index.less'
+import { inject, observer } from 'mobx-react'
 
 const { TabPane } = Tabs
 
+@inject('Store')
+@observer
 class Market extends Component {
   constructor(props) {
     super(props)
@@ -25,11 +28,36 @@ class Market extends Component {
       activeKeyBefore: '1'
     }
   }
+  componentDidMount() {
+    exchangeColumns[2].title = `成交量(${ this.props.Store.currencyTrading.coinsType })`
+  }
   // 币种改变 -- 根据自选框有无选中展示数据
   activeKeyChange = (key) => {
     this.setState({
       activeKey: key
     })
+    let typeTitle = ''
+    let type = ''
+    switch(key) {
+      case '1':
+        typeTitle = 'BTC'
+        type = this.state.dataBTC[0].exchangePairs
+        break
+      case '2':
+        typeTitle = 'USDT'
+        type = this.state.dataUSDT[0].exchangePairs
+        break
+      case '3':
+        typeTitle = 'ETH'
+        type = this.state.dataETH[0].exchangePairs
+        break
+      case '4':
+        typeTitle = 'BCT'
+        type = this.state.dataBCT[0].exchangePairs
+        break
+    }
+    this.props.Store.coinsTypeTitleHandle(typeTitle)
+    this.props.Store.coinsTypeHandle(type)
     if (this.state.searchText) {
       this.setState({
         searchText: ''
@@ -190,33 +218,8 @@ class Market extends Component {
       onClick: (e) => {
         if (e.target.className === 'collectStar') {
           record.isCollected = !record.isCollected
-          // switch(this.state.activeKey) {
-          //   case '1':
-          //     this.state.dataBTC[rowkey].isCollected = !this.state.dataBTC[rowkey].isCollected
-          //     this.setState({
-          //       dataBTC
-          //     })
-          //     break
-          //   case '2':
-          //     this.state.dataUSDT[rowkey].isCollected = !this.state.dataUSDT[rowkey].isCollected
-          //     this.setState({
-          //       dataUSDT
-          //     })
-          //     break
-          //   case '3':
-          //     this.state.dataETH[rowkey].isCollected = !this.state.dataETH[rowkey].isCollected
-          //     this.setState({
-          //       dataETH
-          //     })
-          //     break
-          //   case '4':
-          //     this.state.dataBCT[rowkey].isCollected = !this.state.dataBCT[rowkey].isCollected
-          //     this.setState({
-          //       dataBCT
-          //     })
-          //     break
-          // }
         } else {
+          this.props.Store.currencyTrading.coinsType = record.exchangePairs
           this.props.loadNewDeal()
           this.props.ws.send(JSON.stringify({
             id: 5,

@@ -38,9 +38,6 @@ class Trade extends Component {
       BCTLoading: false,
       exchangeData: exchangeData, // 最近交易
       currentExchangeLoading: true,
-      // transaction -- 限价交易
-      buyButtonLoading: false,
-      sellButtonLoading: false,
       // currentEntrust -- 当前委托
       currentEntrustData: []
     }
