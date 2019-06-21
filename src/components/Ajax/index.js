@@ -65,7 +65,8 @@ let CgicallPost = function(url,obj,fun) {
             sobj[k] =(k == "password")?obj[k]:$.trim(obj[k]);
         }
     }
-    url = version + url + token;
+    // url = version + url + token;
+    url = version + url;
     $.post(url, sobj, function(d, x, s) {
         d = initBackDatas(d);
         // if (typeof d != "undefined" && typeof d.status != "undefined" && typeof d.data != "undefined" && d.status == 1 && (d.data.indexOf("quitlogin") > -1 || d.data.indexOf("otherlogin") > -1)) {

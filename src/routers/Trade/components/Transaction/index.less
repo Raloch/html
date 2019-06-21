@@ -14,15 +14,15 @@
     width: 120px;
     color: #00A0E9FF !important;
     // 利用伪元素设置active框头部蓝色线条
-    &::before {
-      content: '';
-      background: #00A0E9FF;
-      width: 120px;
-      height: 6px;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+    // &::before {
+    //   content: '';
+    //   background: #00A0E9FF;
+    //   width: 120px;
+    //   height: 6px;
+    //   position: absolute;
+    //   top: 0;
+    //   left: 0;
+    // }
   }
   .ant-tabs-nav .ant-tabs-tab {
     margin-right: 0;
@@ -182,9 +182,10 @@
 
 // 余额不足
 .creditRunLow::after {
+  position: absolute;
   font-size: 12px;
   color: #E95454FF;
   content: '可用余额不足';
   top: 40px;
-  margin-left: 10px;
+  left: 10px;
 }

@@ -57,15 +57,16 @@ class Regist extends Component {
                     username: email,
                     // password: sha256(sha256(password) + sha256(password) + this.state.pwKey),
                     password: md5(password),
-                    code: emailCode
+                    code: emailCode,
+                    level: gradeStr // 添加验证码强度
                 }
-                var _this = this;
-                CgicallPost("/api/v1/visitor/email-register",obj,function(d){
+                var _this = this
+                CgicallPost("/api/v1/visitor/email-register", obj, function(d){
                     if(d.code === 0) {
                         message.success("注册成功！")
                         Cookies.set('account', d.result.account)
-                        _this.state.account = d.result.account;
-                        _this.props.history.push('/home');
+                        _this.state.account = d.result.account
+                        _this.props.history.push('/home')
                     }else {
                         message.error(GetErrorMsg(d))
                     }
@@ -80,7 +81,7 @@ class Regist extends Component {
     componentWillMount() {
         if(Cookies.get('account')) {
             if(this.props.history.length < 3) this.props.history.push('/home')
-            else this.props.history.goBack();
+            else this.props.history.goBack()
         } 
     }
     render() {

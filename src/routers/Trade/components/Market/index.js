@@ -208,10 +208,6 @@ class Market extends Component {
       this.search()
     })
   }
-  // 精度小数点
-  accuracyChange = val => {
-    console.log(val)
-  }
   // 点击收藏按钮收藏
   rowClick = (record, rowkey) => {
     return {
@@ -268,9 +264,6 @@ class Market extends Component {
           <Tabs defaultActiveKey={ this.state.activeKey } onChange={ this.activeKeyChange } tabBarExtraContent={ <Checkbox checked={ this.state.selfCheckValue } onChange={ this.selfCheckedData } className="self-check">自选</Checkbox> }>
             <TabPane tab="BTC" key="1">
               <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } loading={ this.props.BTCLoading } />
-              {/* <div className="market_USDT" style={{ height: 569, overflow: 'auto' }}>
-                <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } />
-              </div> */}
             </TabPane>
             <TabPane tab="USDT" key="2">
               <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } />

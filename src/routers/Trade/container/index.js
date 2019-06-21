@@ -39,7 +39,8 @@ class Trade extends Component {
       exchangeData: exchangeData, // 最近交易
       currentExchangeLoading: true,
       // currentEntrust -- 当前委托
-      currentEntrustData: []
+      currentEntrustData: [],
+      ifFetch: true // 设置dataBTC数据时，market子组件无法更新到，需要该变量传值改变来强制更新market组件
     }
   }
   componentDidMount() {
@@ -77,17 +78,17 @@ class Trade extends Component {
           params: ['BTCUSDT', 34, 0]
         }
         // 最新成交
-        let data5 = {                                                                          
+        let data5 = {
           id: 5,
           method: 'deals.subscribe',
           params: ['BTCUSDT']
         }
-        let data6 = {                                                                          
+        let data6 = {
           id: 6,
           method: 'kline.query',
           params: ['BTCUSDT', 1559268744, 1560564804, 900]
         }
-        let data7 = {                                                                          
+        let data7 = {
           id: 7,
           method: 'kline.subscribe',
           params: ['BTCUSDT', 900]
@@ -128,7 +129,7 @@ class Trade extends Component {
       })
       this.setState({
         BTCLoading: false,
-        dataBTC
+        ifFetch: !this.state.ifFetch
       })
     }
     // 最近成交 -- data5
@@ -165,10 +166,6 @@ class Trade extends Component {
       }
     }
   }
-  // 精度小数点
-  accuracyChange = val => {
-    // console.log(val)
-  }
   render() {
     return (
       <div className="trade">
@@ -176,7 +173,7 @@ class Trade extends Component {
           {/* 左边交易市场栏 */}
           <Sider width="20.4545%" className="trade-sider" theme="light">
             {/* 交易市场 */}
-            <Market BTCLoading={ this.state.BTCLoading } loadNewDeal={ this.loadNewDeal } ws={ ws } />
+            <Market BTCLoading={ this.state.BTCLoading } loadNewDeal={ this.loadNewDeal } ws={ ws } dataBTC={ this.state.dataBTC } ifFetch={ this.state.ifFetch } />
             <div className="line" style={{ height: 12, backgroundColor: '#eef1f7' }}></div>
             {/* 最新成交 */}
             <NewDeal currentExchangeLoading={ this.state.currentExchangeLoading } exchangeData={ this.state.exchangeData } />

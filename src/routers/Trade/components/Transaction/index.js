@@ -13,14 +13,8 @@ class Transaction extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      buyPrice: '',
-      buyAmount: '',
-      validBTC: 0, // 可用余额
       visible: false,
-      rechargeNumber: Number,
-      sellAmount: '',
-      sellPrice: '',
-      sellButtonLoading: false
+      rechargeNumber: Number
     }
   }
   componentDidMount() {
@@ -30,9 +24,7 @@ class Transaction extends Component {
     }
     BeforeSendGet('/api/v1/user/balance/query', obj, function(d) {
       if (d.code === 0) {
-        _this.setState({
-          validBTC: d.result.BTC.available
-        })
+        _this.props.Store.setAvailableBalance(d.result.BTC.available)
       }
     })
   }
@@ -84,8 +76,8 @@ class Transaction extends Component {
     let obj = {
       market: 'BTCUSDT',
       side: 'buy',
-      amount: this.state.buyAmount,
-      price: this.state.buyPrice
+      amount: this.props.Store.transactionData.buyAmount1,
+      price: this.props.Store.transactionData.buyPrice1
     }
     this.props.Store.buyCoins(obj)
   }
@@ -93,8 +85,8 @@ class Transaction extends Component {
     let obj = {
       market: 'BTCUSDT',
       side: 'sell',
-      amount: this.state.sellAmount,
-      price: this.state.sellPrice
+      amount: this.props.Store.transactionData.sellAmount1,
+      price: this.props.Store.transactionData.sellPrice1
     }
     this.props.Store.sellCoins(obj)
   }
@@ -110,30 +102,34 @@ class Transaction extends Component {
   }
   render() {
     const store = this.props.Store
-    const { buyButtonLoading, sellButtonLoading, buyPrice, buyAmount, sellPrice, sellAmount } = store.transactionData
-    const { coinsTypeTitle, coinsType } = this.props.Store.currencyTrading
+    const ifShowBuyWarn = store.ifBuyEnough ? '' : 'creditRunLow'
+    const ifShowSellWarn = store.ifSellEnough ? '' : 'creditRunLow'
+    const ifBuyButtonDisabled1 = !(store.transactionData.buyPrice1 && store.transactionData.buyAmount1) || !store.ifBuyEnough
+    const ifSellButtonDisabled1 = !(store.transactionData.sellPrice1 && store.transactionData.sellAmount1) || !store.ifSellEnough
+    const ifBuyButtonDisabled2 = !(store.transactionData.buyPrice2 && store.transactionData.buyAmount2) || !store.ifBuyEnough
+    const ifSellButtonDisabled2 = !(store.transactionData.sellPrice2 && store.transactionData.sellAmount2) || !store.ifSellEnough
     return (
       <div className="transaction">
-        <Tabs defaultActiveKey="1" onChange={ this.transactionChange }>
+        <Tabs activeKey={ store.transactionData.activeKey } onChange={ store.transactionChange }>
           <TabPane className="present-price" tab="限价交易" key="1">
             <div className="purchase fl">
               <header>
                 <div>
-                  <h3 className="fl">买入{ coinsType }</h3>
+                  <h3 className="fl">买入{ store.currencyTrading.coinsType }</h3>
                   <a className="fr" href="javascript:void(0)" onClick={ this.showModal }>充值 ></a>
                 </div>
-                <p className="validBTC">可用: { this.state.validBTC }{ coinsTypeTitle }</p>
+                <p className="validBTC">可用: { store.transactionData.availableBalance }{ store.currencyTrading.coinsTypeTitle }</p>
               </header>
               <main>
                 <div className="input-purchase">
                   <div className="purchase-price">
-                    <InputNumber min={0} value={ buyPrice } onChange={ this.handleBuyPrice } size="large" />
-                    <p>买入价<span> ({ coinsTypeTitle })</span></p>
+                    <InputNumber min={0} value={ store.transactionData.buyPrice1 } onChange={ this.handleBuyPrice } size="large" />
+                    <p>买入价<span> ({ store.currencyTrading.coinsTypeTitle })</span></p>
                   </div>
                   <p>≈0.01 CNY</p>
-                  <div className="purchase-number">
-                    <InputNumber min={0} value={ buyAmount } onChange={ this.handleBuyAmount } size="large" />
-                    <p>买入量<span> ({ coinsType })</span></p>
+                  <div className={ `purchase-number ${ ifShowBuyWarn }` }>
+                    <InputNumber min={0} value={ store.transactionData.buyAmount1 } onChange={ this.handleBuyAmount } size="large" />
+                    <p>买入量<span> ({ store.currencyTrading.coinsType })</span></p>
                   </div>
                 </div>
                 <div className="transaction-steps">
@@ -145,28 +141,28 @@ class Transaction extends Component {
                     <Step title="" description="100%" />
                   </Steps>
                 </div>
-                <p className="expected-turnover">预计交易额: <span>{ store.estimateBuyPrice }{ coinsTypeTitle }</span></p>
-                <Button type="primary" size="large" onClick={ this.buy } loading={ buyButtonLoading } block>买入</Button>
+                <p className="expected-turnover">预计交易额: <span>{ store.estimateBuyPrice }{ store.currencyTrading.coinsTypeTitle }</span></p>
+                <Button type="primary" size="large" onClick={ this.buy } loading={ store.transactionData.buyButtonLoading1 } disabled={ ifBuyButtonDisabled1 } block>买入</Button>
               </main>
             </div>
             <div className="sellout fr">
               <header>
                 <div>
-                  <h3 className="fl">卖出{ coinsType }</h3>
-                  <a className="fr" href="javascript:void(0)">充值 ></a>
+                  <h3 className="fl">卖出{ store.currencyTrading.coinsType }</h3>
+                  <a className="fr" href="javascript:void(0)" onClick={ this.showModal }>充值 ></a>
                 </div>
-                <p className="validBTC">可用: 0{ coinsTypeTitle }</p>
+                <p className="validBTC">可用: { store.transactionData.availableBalance }{ store.currencyTrading.coinsTypeTitle }</p>
               </header>
               <main>
                 <div className="input-purchase">
                   <div className="purchase-price">
-                    <InputNumber min={0} value={ sellPrice } onChange={ this.handleSellPrice } size="large" />
-                    <p>卖出价<span> ({ coinsTypeTitle })</span></p>
+                    <InputNumber min={0} value={ store.transactionData.sellPrice1 } onChange={ this.handleSellPrice } size="large" />
+                    <p>卖出价<span> ({ store.currencyTrading.coinsTypeTitle })</span></p>
                   </div>
                   <p>≈0.01 CNY</p>
-                  <div className="purchase-number">
-                    <InputNumber min={0} value={ sellAmount } onChange={ this.handleSellAmount } size="large" />
-                    <p>卖出量<span> ({ coinsType })</span></p>
+                  <div className={ `purchase-number ${ ifShowSellWarn }` }>
+                    <InputNumber min={0} value={ store.transactionData.sellAmount1 } onChange={ this.handleSellAmount } size="large" />
+                    <p>卖出量<span> ({ store.currencyTrading.coinsType })</span></p>
                   </div>
                 </div>
                 <div className="transaction-steps">
@@ -178,8 +174,8 @@ class Transaction extends Component {
                     <Step title="" description="100%" />
                   </Steps>
                 </div>
-                <p className="expected-turnover">预计交易额: <span>{ store.estimateSellPrice }{ coinsTypeTitle }</span></p>
-                <Button type="primary" size="large" onClick={ this.sell } loading={ sellButtonLoading } block>卖出</Button>
+                <p className="expected-turnover">预计交易额: <span>{ store.estimateSellPrice }{ store.currencyTrading.coinsTypeTitle }</span></p>
+                <Button type="primary" size="large" onClick={ this.sell } loading={ store.transactionData.sellButtonLoading1 } disabled={ ifSellButtonDisabled1 } block>卖出</Button>
               </main>
             </div>
           </TabPane>
@@ -187,21 +183,21 @@ class Transaction extends Component {
             <div className="purchase fl">
               <header>
                 <div>
-                  <h3 className="fl">买入{ coinsType }</h3>
-                  <a className="fr" href="javascript:void(0)">充值 ></a>
+                  <h3 className="fl">买入{ store.currencyTrading.coinsType }</h3>
+                  <a className="fr" href="javascript:void(0)" onClick={ this.showModal }>充值 ></a>
                 </div>
-                <p className="validBTC">可用: 0{ coinsTypeTitle }</p>
+                <p className="validBTC">可用: { store.transactionData.availableBalance }{ store.currencyTrading.coinsTypeTitle }</p>
               </header>
               <main>
                 <div className="input-purchase">
                   <div className="purchase-price">
-                    <Input size="large" />
-                    <p>买入价<span> ({ coinsTypeTitle })</span></p>
+                    <InputNumber value={ store.transactionData.buyPrice2 } onChange={ this.handleBuyPrice } min={0} size="large" />
+                    <p>买入价<span> ({ store.currencyTrading.coinsTypeTitle })</span></p>
                   </div>
                   <p style={{ height: 12, width: '100%' }}></p>
-                  <div className="purchase-number">
-                    <Input size="large" />
-                    <p>交易额<span> ({ coinsType })</span></p>
+                  <div className={ `purchase-number ${ ifShowBuyWarn }` }>
+                    <InputNumber value={ store.transactionData.buyAmount2 } onChange={ this.handleBuyAmount } min={0} size="large" />
+                    <p>交易额<span> ({ store.currencyTrading.coinsType })</span></p>
                   </div>
                 </div>
                 <div className="transaction-steps">
@@ -214,27 +210,27 @@ class Transaction extends Component {
                   </Steps>
                 </div>
                 <p className="expected-turnover" style={{ width: '100%', height: 21 }}><span></span></p>
-                <Button type="primary" size="large" block>买入</Button>
+                <Button type="primary" size="large" onClick={ this.buy } loading={ store.transactionData.buyButtonLoading2 } disabled={ ifBuyButtonDisabled2 } block>买入</Button>
               </main>
             </div>
             <div className="sellout fr">
               <header>
                 <div>
-                  <h3 className="fl">卖出{ coinsType }</h3>
-                  <a className="fr" href="javascript:void(0)">充值 ></a>
+                  <h3 className="fl">卖出{ store.currencyTrading.coinsType }</h3>
+                  <a className="fr" href="javascript:void(0)" onClick={ this.showModal }>充值 ></a>
                 </div>
-                <p className="validBTC">可用: 0{ coinsTypeTitle }</p>
+                <p className="validBTC">可用: { store.transactionData.availableBalance }{ store.currencyTrading.coinsTypeTitle }</p>
               </header>
               <main>
                 <div className="input-purchase">
                   <div className="purchase-price">
-                    <Input size="large" />
-                    <p>卖出价<span> ({ coinsTypeTitle })</span></p>
+                    <InputNumber min={0} value={ store.transactionData.sellPrice2 } onChange={ this.handleSellPrice } size="large" />
+                    <p>卖出价<span> ({ store.currencyTrading.coinsTypeTitle })</span></p>
                   </div>
                   <p style={{ height: 12, width: '100%' }}></p>
-                  <div className="purchase-number">
-                    <Input size="large" />
-                    <p>卖出量<span> ({ coinsType })</span></p>
+                  <div className={ `purchase-number ${ ifShowSellWarn }` }>
+                    <InputNumber min={0} value={ store.transactionData.sellAmount2 } onChange={ this.handleSellAmount } size="large" />
+                    <p>卖出量<span> ({ store.currencyTrading.coinsType })</span></p>
                   </div>
                 </div>
                 <div className="transaction-steps">
@@ -247,7 +243,7 @@ class Transaction extends Component {
                   </Steps>
                 </div>
                 <p className="expected-turnover" style={{ width: '100%', height: 21 }}><span></span></p>
-                <Button type="primary" size="large" block>卖出</Button>
+                <Button type="primary" size="large" onClick={ this.sell } loading={ store.transactionData.sellButtonLoading2 } disabled={ ifSellButtonDisabled2 } block>卖出</Button>
               </main>
             </div>
           </TabPane>

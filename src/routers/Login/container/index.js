@@ -77,16 +77,18 @@ class Login extends Component {
         }
         setTimeout(() => {
             // this.setState({ loading: false, visiblePhone: false,LoginLoading:false });
-            this.setState({ loading: false, LoginLoading:false });
+            this.setState({ loading: false, LoginLoading: false });
         }, 3000);
         
     }
     // 登录验证
     PhoneVerify = (obj) => {
+        if (obj.code.length === 0) {
+            obj.code = '100000'
+        }
         let _this = this;
         CgicallPost("/api/v1/visitor/login",obj,function(d){
             if (d.code === 0) {
-                console.log(d)
                 message.success('登录成功!');
                 Cookies.set('account', 'Ryan')
                 Cookies.set('loginState', Cookies.get('account') ? true : false)
@@ -200,7 +202,7 @@ class Login extends Component {
                 CgicallPost('/api/v1/visitor/check-user', objs, function(d) {
                     if (d.code === 0) {
                         // 判断邮箱是否绑定了手机号码
-                        Cgicallgets("/api/v1/visitor/bind-info",obj,function(d) {
+                        Cgicallgets("/api/v1/visitor/bind-info", obj, function(d) {
                             if (d.code === 0) {
                                 if (d.result.Phone) {
                                     _this.setState({
@@ -208,12 +210,17 @@ class Login extends Component {
                                     })
                                     _this.drawingImg(_this.state.userName);
                                 } else {
-                                    let obj = {
-                                        username: _this.state.userName,
-                                        password: md5(_this.state.password),
-                                        code: ''
-                                    }
-                                    _this.PhoneVerify(obj)
+                                    let captcha1 = new TencentCaptcha('2038116476', function(res) {
+                                        if (res.ret === 0) {
+                                            let obj = {
+                                                username: _this.state.userName,
+                                                password: md5(_this.state.password),
+                                                code: ''
+                                            }
+                                            _this.PhoneVerify(obj)
+                                        }
+                                    })
+                                    captcha1.show()
                                 }
                             } else {
                                 message.error(GetErrorMsg(d))

@@ -44,78 +44,194 @@ class Store {
 
   /* --- 限价交易 start --- */
   @observable transactionData = {
-    buyButtonLoading: false,
-    sellButtonLoading: false,
-    buyPrice: '',
-    buyAmount: '',
-    sellPrice: '',
-    sellAmount: ''
+    activeKey: '1',
+    availableBalance: 0,
+    buyButtonLoading1: false,
+    sellButtonLoading1: false,
+    buyPrice1: '',
+    buyAmount1: '',
+    sellPrice1: '',
+    sellAmount1: '',
+    buyButtonLoading2: false,
+    sellButtonLoading2: false,
+    buyPrice2: '',
+    buyAmount2: '',
+    sellPrice2: '',
+    sellAmount2: ''
+  }
+  @computed get ifBuyEnough() {
+    const { activeKey, availableBalance, buyPrice1, buyAmount1, buyPrice2, buyAmount2 } = this.transactionData
+    if (activeKey === '1') {
+      if (buyPrice1 && buyAmount1) {
+        return parseFloat(availableBalance) - parseFloat(buyPrice1) * parseFloat(buyAmount1) > 0
+      } else {
+        return true
+      }
+    } else {
+      if (buyPrice2 && buyAmount2) {
+        return parseFloat(availableBalance) - parseFloat(buyPrice2) * parseFloat(buyAmount2) > 0
+      } else {
+        return true
+      }
+    }
+  }
+  @computed get ifSellEnough() {
+    const { activeKey, availableBalance, sellPrice1, sellAmount1, sellPrice2, sellAmount2 } = this.transactionData
+    if (activeKey === '1') {
+      if (sellPrice1 && sellAmount1) {
+        return parseFloat(availableBalance) - parseFloat(sellPrice1) * parseFloat(sellAmount1) > 0
+      } else {
+        return true
+      }
+    } else {
+      if (sellPrice2 && sellAmount2) {
+        return parseFloat(availableBalance) - parseFloat(sellPrice2) * parseFloat(sellAmount2) > 0
+      } else {
+        return true
+      }
+    }
   }
   // 预计交易额 -- 买入
   @computed get estimateBuyPrice() {
-    const { buyPrice, buyAmount } = this.transactionData
-    if (buyPrice && buyAmount) {
-      return parseFloat(buyPrice) * parseFloat(buyAmount)
+    const { activeKey, buyPrice1, buyAmount1, buyPrice2, buyAmount2 } = this.transactionData
+    if (activeKey === '1') {
+      if (buyPrice1 && buyAmount1) {
+        return parseFloat(buyPrice1) * parseFloat(buyAmount1)
+      } else {
+        return 0
+      }
     } else {
-      return 0
+      if (buyPrice2 && buyAmount2) {
+        return parseFloat(buyPrice2) * parseFloat(buyAmount2)
+      } else {
+        return 0
+      }
     }
   }
   // 预计交易额 -- 卖出
   @computed get estimateSellPrice() {
-    const { sellPrice, sellAmount } = this.transactionData
-    if (sellPrice && sellAmount) {
-      return parseFloat(sellPrice) * parseFloat(sellAmount)
+    const { activeKey, sellPrice1, sellAmount1, sellPrice2, sellAmount2 } = this.transactionData
+    if (activeKey === '1') {
+      if (sellPrice1 && sellAmount1) {
+        return parseFloat(sellPrice1) * parseFloat(sellAmount1)
+      } else {
+        return 0
+      }
     } else {
-      return 0
+      if (sellPrice2 && sellAmount2) {
+        return parseFloat(sellPrice2) * parseFloat(sellAmount2)
+      } else {
+        return 0
+      }
     }
   }
+  // 限价交易/市价交易  key值切换
+  @action transactionChange = key => {
+    this.transactionData.activeKey = key
+  }
+  // 可用余额获取
+  @action setAvailableBalance = num => {
+    this.transactionData.availableBalance = num
+  }
   @action handleBuyPrice = num => {
-    this.transactionData.buyPrice = num
+    if (this.transactionData.activeKey === '1') {
+      this.transactionData.buyPrice1 = num
+    } else {
+      this.transactionData.buyPrice2 = num
+    }
   }
   @action handleBuyAmount = num => {
-    this.transactionData.buyAmount = num
+    if (this.transactionData.activeKey === '1') {
+      this.transactionData.buyAmount1 = num
+    } else {
+      this.transactionData.buyAmount2 = num
+    }
   }
   @action handleSellPrice = num => {
-    this.transactionData.sellPrice = num
+    if (this.transactionData.activeKey === '1') {
+      this.transactionData.sellPrice1 = num
+    } else {
+      this.transactionData.sellPrice2 = num
+    }
   }
   @action handleSellAmount = num => {
-    this.transactionData.sellAmount = num
+    if (this.transactionData.activeKey === '1') {
+      this.transactionData.sellAmount1 = num
+    } else {
+      this.transactionData.sellAmount2 = num
+    }
   }
   // 买入
   @action buyCoins = obj => {
-    this.transactionData.buyButtonLoading = true
-    let _this = this
-    BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
-      if (d.code === 0) {
-        message.success('买入成功')
-        // 更新当前委托
-        _this.getCurrentData()
-        // 更新历史委托 -- 挂单出去后当前委托立即更新，历史委托不是及时更新，需要定时器来等待历史委托的更新
-        setTimeout(() => {
-          _this.getHistoryData()
-        }, 200)
-        setTimeout(() => {
-          _this.transactionData.buyButtonLoading = false
-        }, 1000)
-      }
-    })
+    if (this.transactionData.activeKey === '1') {
+      this.transactionData.buyButtonLoading1 = true
+      let _this = this
+      BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
+        if (d.code === 0) {
+          message.success('买入成功')
+          // 更新当前委托
+          _this.getCurrentData()
+          // 更新历史委托 -- 挂单出去后当前委托立即更新，历史委托不是及时更新，需要定时器来等待历史委托的更新
+          setTimeout(() => {
+            _this.getHistoryData()
+          }, 200)
+          setTimeout(() => {
+            _this.transactionData.buyButtonLoading1 = false
+          }, 1000)
+        }
+      })
+    } else {
+      this.transactionData.buyButtonLoading2 = true
+      let _this = this
+      BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
+        if (d.code === 0) {
+          message.success('买入成功')
+          // 更新当前委托
+          _this.getCurrentData()
+          // 更新历史委托 -- 挂单出去后当前委托立即更新，历史委托不是及时更新，需要定时器来等待历史委托的更新
+          setTimeout(() => {
+            _this.getHistoryData()
+          }, 200)
+          setTimeout(() => {
+            _this.transactionData.buyButtonLoading2 = false
+          }, 1000)
+        }
+      })
+    }
   }
   // 卖出
   @action sellCoins = obj => {
-    this.transactionData.sellButtonLoading = true
-    let _this = this
-    BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
-      if (d.code === 0) {
-        message.success('卖出成功')
-        // 更新当前委托
-        _this.getCurrentData()
-        // 更新历史委托
-        _this.getHistoryData()
-        setTimeout(() => {
-          _this.transactionData.sellButtonLoading = false
-        }, 1000)
-      }
-    })
+    if (this.transactionData.activeKey === '1') {
+      this.transactionData.sellButtonLoading1 = true
+      let _this = this
+      BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
+        if (d.code === 0) {
+          message.success('卖出成功')
+          // 更新当前委托
+          _this.getCurrentData()
+          // 更新历史委托
+          _this.getHistoryData()
+          setTimeout(() => {
+            _this.transactionData.sellButtonLoading1 = false
+          }, 1000)
+        }
+      })
+    } else {
+      this.transactionData.sellButtonLoading2 = true
+      let _this = this
+      BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
+        if (d.code === 0) {
+          message.success('卖出成功')
+          // 更新当前委托
+          _this.getCurrentData()
+          // 更新历史委托
+          _this.getHistoryData()
+          setTimeout(() => {
+            _this.transactionData.sellButtonLoading2 = false
+          }, 1000)
+        }
+      })
+    }
   }
   /* --- 限价交易 end --- */
 

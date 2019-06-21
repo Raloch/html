@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './index.less'
 import Cookies from 'js-cookie'
-import { Table } from 'antd'
+import { Table, Modal } from 'antd'
 import moment from 'moment'
 import { inject, observer } from 'mobx-react'
 
@@ -15,7 +15,8 @@ class HistoryEntrust extends Component {
     this.state = {
       total: 100,
       pageSize: 10,
-      current: 1
+      current: 1,
+      isExchangeDetail: true
     }
   }
   componentDidMount() {
@@ -28,6 +29,16 @@ class HistoryEntrust extends Component {
     }, () => {
       this.props.Store.historyPageChange(page - 1)
       this.props.Store.getHistoryData()
+    })
+  }
+  showExchangeDetailModal = () => {
+    this.setState({
+      isExchangeDetail: true
+    })
+  }
+  hideExchangeModal = () => {
+    this.setState({
+      isExchangeDetail: false
     })
   }
   render() {
@@ -83,7 +94,8 @@ class HistoryEntrust extends Component {
         title: '操作',
         dataIndex: 'operation',
         align: 'center',
-        width: '12%'
+        width: '12%',
+        render: text => <span style={{ cursor: 'pointer' }} onClick={ this.showExchangeDetailModal }>{ text }</span>
       }
     ]
     const { historyEntrustData, historyLoading } = this.props.Store.historyData
@@ -115,6 +127,9 @@ class HistoryEntrust extends Component {
             loading={ historyLoading }
           />
         </main>
+        <div className="exchangeDetail-dialog">
+          <div className="content"></div>
+        </div>
       </div>
     )
   }
