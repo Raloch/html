@@ -55,5 +55,67 @@
       box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.15);
       background: #fff;
     }
+    .title {
+      width: 100%;
+      height: 24px;
+      line-height: 24px;
+      font-size: 12px;
+      color: #333;
+      font-weight: bold;
+      background: #F3F6FF;
+      position: relative;
+      text-align: center;
+      p {
+        position: absolute;
+        top: 0;
+      }
+      p:nth-child(1) {
+        width: 33%;
+        left: 0%;
+      }
+      p:nth-child(2) {
+        width: 33%;
+        left: 33%;
+      }
+      p:nth-child(3) {
+        width: 34%;
+        left: 66%;
+      }
+    }
+    .content {
+      width: 100%;
+      background: #fff;
+      ul {
+        padding: 0;
+        margin: 0;
+        position: relative;
+        text-align: center;
+        line-height: 24px;
+        border-bottom: 1px solid #eee;
+        height: 24px;
+        li {
+          padding: 0;
+          margin: 0;
+          position: absolute;
+          list-style: none;
+          font-size: 12px;
+          color: #666;
+          top: 0;
+          &:nth-child(1) {
+            left: 0;
+            width: 33%;
+          }
+          &:nth-child(2) {
+            left: 33%;
+            width: 33%;
+            color: #E95454;
+          }
+          &:nth-child(3) {
+            left: 66%;
+            width: 34%;
+          }
+        }
+      }
+    }
   }
 }

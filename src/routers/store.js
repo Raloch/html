@@ -78,6 +78,24 @@ class Store {
   }
   @action updateMarket = res => {
     const data = JSON.parse(res.data)
+    // 交易市场 -- data2
+    if (data.method === 'state.update') {
+      let params = data.params[0]
+      // 循环获取的数据更新本地数据
+      dataBTC.forEach((val, i) => {
+        let keyArr = Object.keys(params)
+        let name = val.exchangePairs + 'BTC'
+        if (keyArr.includes(name)) {
+          let obj = params[name]
+          val.newPrice = obj.last
+        }
+      })
+      this.setState({
+        BTCLoading: false,
+        ifFetch: !this.state.ifFetch
+      })
+    }
+    // 最近成交 -- data5
     if (data.method === 'deals.update') {
       if (data.params[1].length > 100) {
         let arr = []
@@ -90,42 +108,26 @@ class Store {
             type: val.type
           }
         })
-        this.newDeal.newDealData = arr.slice(0, 38)
+        this.newDeal.newDealData = arr
         this.newDeal.newDealLoading = false
       } else {
-        let top = $(window).scrollTop()
-        $(window).on('scroll.unable', function() {
-          $(window).scrollTop(top)
-        })
-        let len = this.newDeal.newDealData.length
-        let newLen = data.params[1].length
-        for (let i = len - 1; i > newLen - 1; i--) {
-          this.newDeal.newDealData[i].key = this.newDeal.newDealData[i - newLen].key
-          this.newDeal.newDealData[i].time = this.newDeal.newDealData[i - newLen].time
-          this.newDeal.newDealData[i].price = this.newDeal.newDealData[i - newLen].price
-          this.newDeal.newDealData[i].amount = this.newDeal.newDealData[i - newLen].amount
-          this.newDeal.newDealData[i].type = this.newDeal.newDealData[i - newLen].type
-        }
+        let arr = []
         data.params[1].forEach((val, i) => {
-          this.newDeal.newDealData[i] = {
+          arr[i] = {
             key: `${val.id}`,
             time: val.time,
             price: val.price,
             amount: val.amount,
             type: val.type
           }
-          // newDealData[i].key = `${val.id}`
-          // newDealData[i].time = val.time
-          // newDealData[i].price = val.price
-          // newDealData[i].amount = val.amount
-          // newDealData[i].type = val.type
         })
-        this.add()
+        this.updateNewDeal([...arr, ...this.newDeal.newDealData])
       }
     }
   }
-  @action add = () => {
-    this.newDeal.isRender++
+  // 更新最近成交
+  @action updateNewDeal = arr => {
+    this.newDeal.newDealData = arr
   }
   
   // 币币交易当前页面币种

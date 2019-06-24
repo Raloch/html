@@ -16,11 +16,6 @@ class NewDeal extends Component {
   componentDidMount() {
     this.props.Store.tradeWsInit()
   }
-  componentDidUpdate(prevProps, prevState) {
-    setTimeout(() => {
-      $(window).unbind("scroll.unable")
-    }, 100)
-  }
   render() {
     const exchangeColumns = [
       {
@@ -44,10 +39,25 @@ class NewDeal extends Component {
     return (
       <div className="new-deal">
         <header>
-          <p>最近成交{ this.props.Store.newDeal.isRender }</p>
+          <p>最近成交</p>
         </header>
         <main>
-          <Table loading={ this.props.Store.newDeal.newDealLoading } columns={ exchangeColumns } dataSource={ this.props.Store.newDeal.newDealData } pagination={ false } />
+          {/* 使用Table，数据更新时滚动条会向下滑动一行的距离 -- 暂时无法解决，用ul>li来写 */}
+          {/* <Table loading={ this.props.Store.newDeal.newDealLoading } columns={ exchangeColumns } dataSource={ this.props.Store.newDeal.newDealData.slice(0, 38) } pagination={ false } /> */}
+          <div className="title">
+            <p>时间</p>
+            <p>价格 (BTC)</p>
+            <p>成交量 (ADA)</p>
+          </div>
+          <div className="content">
+            { this.props.Store.newDeal.newDealData.slice(0, 38).map(val => (
+              <ul>
+                <li>{ moment(parseFloat(val.time)).format('HH:mm:ss') }</li>
+                <li style={{ color: val.type === 'buy' ? '#00b275' : '#ef5057' }}>{ val.price }</li>
+                <li>{ val.amount }</li>
+              </ul>
+            )) }
+          </div>
         </main>
       </div>
     )
