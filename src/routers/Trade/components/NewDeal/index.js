@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './index.less'
-import { Table } from 'antd'
+import { Spin } from 'antd'
 import moment from 'moment'
 import { inject, observer } from 'mobx-react'
 import $ from 'jquery'
@@ -46,18 +46,25 @@ class NewDeal extends Component {
           {/* <Table loading={ this.props.Store.newDeal.newDealLoading } columns={ exchangeColumns } dataSource={ this.props.Store.newDeal.newDealData.slice(0, 38) } pagination={ false } /> */}
           <div className="title">
             <p>时间</p>
-            <p>价格 (BTC)</p>
-            <p>成交量 (ADA)</p>
+            <p>价格 ({ this.props.Store.currencyTrading.coinsTypeTitle })</p>
+            <p>成交量 ({ this.props.Store.currencyTrading.coinsType })</p>
           </div>
-          <div className="content">
-            { this.props.Store.newDeal.newDealData.slice(0, 38).map(val => (
-              <ul>
-                <li>{ moment(parseFloat(val.time)).format('HH:mm:ss') }</li>
-                <li style={{ color: val.type === 'buy' ? '#00b275' : '#ef5057' }}>{ val.price }</li>
-                <li>{ val.amount }</li>
-              </ul>
-            )) }
-          </div>
+          { this.props.Store.newDeal.newDealData.length > 0 ? (
+            <div className="content">
+              { this.props.Store.newDeal.newDealData.slice(0, 38).map(val => (
+                <ul>
+                  <li>{ moment(parseFloat(val.time * 1000)).format('HH:mm:ss') }</li>
+                  <li style={{ color: val.type === 'buy' ? '#00b275' : '#ef5057' }}>{ val.price }</li>
+                  <li>{ val.amount }</li>
+                </ul>
+              )) }
+            </div>
+          ) : (
+            <div className="loading">
+              <Spin />
+            </div>
+          ) }
+            
         </main>
       </div>
     )
