@@ -21,7 +21,7 @@ export const exchangeColumns = [
   }
 ]
 
-export const exchangeData = [
+export const newDealData = [
   // {
   //   key: '1',
   //   time: 0,

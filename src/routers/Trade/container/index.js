@@ -44,7 +44,7 @@ class Trade extends Component {
     }
   }
   componentDidMount() {
-    this.WebSocketInit()
+    // this.WebSocketInit()
   }
   WebSocketInit = () => {
     let _this = this

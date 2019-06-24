@@ -10,6 +10,7 @@
 import { observable, action, computed } from 'mobx'
 import { BeforeSendGet, BeforeSendPost } from '../components/Ajax'
 import { message } from 'antd'
+import $ from  'jquery'
 
 class Store {
   @observable userInfo = {
@@ -24,10 +25,108 @@ class Store {
   }
 
   // 鲁锐 -- start
-  /* ---------------------------------------------- 币币交易 start ----------------------------------------------- */
-
   // 遮罩层
   @observable isCover = false
+  /* ---------------------------------------------- 币币交易 start ----------------------------------------------- */
+
+  @observable ws = null
+  @action tradeWsInit = () => {
+    let _this = this
+    if ("WebSocket" in window) {
+    // 您的浏览器支持websocket
+      if (this.ws === null) {
+        this.ws = new WebSocket('wss://socket.coinex.com/')
+      }
+      this.ws.onopen = function() {
+        message.success('websocket已连接')
+        let data1 = {
+          id: 1,
+          method: 'server.ping',
+          params: []
+        }
+        // 交易市场
+        let data2 = {
+          id: 2,
+          method: 'state.subscribe',
+          params: []
+        }
+        // 最近成交记录 -- 模板
+        let data4 = {
+          id: 4,
+          method: 'deals.query',
+          params: ['BTCUSDT', 34, 0]
+        }
+        // 最新成交
+        let data5 = {
+          id: 5,
+          method: 'deals.subscribe',
+          params: ['BTCUSDT']
+        }
+        _this.ws.send(JSON.stringify(data1))
+        // _this.ws.send(JSON.stringify(data2))
+        _this.ws.send(JSON.stringify(data5))
+      }
+      this.ws.onmessage = function(res) {
+        _this.updateMarket(res)
+      }
+      this.ws.onclose = function(res) {
+        message.warn('websocket连接关闭')
+      }
+    } else {
+      message.error('您的浏览器不支持websocket')
+    }
+  }
+  @action updateMarket = res => {
+    const data = JSON.parse(res.data)
+    if (data.method === 'deals.update') {
+      if (data.params[1].length > 100) {
+        let arr = []
+        data.params[1].forEach((val, i) => {
+          arr[i] = {
+            key: `${val.id}`,
+            time: val.time,
+            price: val.price,
+            amount: val.amount,
+            type: val.type
+          }
+        })
+        this.newDeal.newDealData = arr.slice(0, 38)
+        this.newDeal.newDealLoading = false
+      } else {
+        let top = $(window).scrollTop()
+        $(window).on('scroll.unable', function() {
+          $(window).scrollTop(top)
+        })
+        let len = this.newDeal.newDealData.length
+        let newLen = data.params[1].length
+        for (let i = len - 1; i > newLen - 1; i--) {
+          this.newDeal.newDealData[i].key = this.newDeal.newDealData[i - newLen].key
+          this.newDeal.newDealData[i].time = this.newDeal.newDealData[i - newLen].time
+          this.newDeal.newDealData[i].price = this.newDeal.newDealData[i - newLen].price
+          this.newDeal.newDealData[i].amount = this.newDeal.newDealData[i - newLen].amount
+          this.newDeal.newDealData[i].type = this.newDeal.newDealData[i - newLen].type
+        }
+        data.params[1].forEach((val, i) => {
+          this.newDeal.newDealData[i] = {
+            key: `${val.id}`,
+            time: val.time,
+            price: val.price,
+            amount: val.amount,
+            type: val.type
+          }
+          // newDealData[i].key = `${val.id}`
+          // newDealData[i].time = val.time
+          // newDealData[i].price = val.price
+          // newDealData[i].amount = val.amount
+          // newDealData[i].type = val.type
+        })
+        this.add()
+      }
+    }
+  }
+  @action add = () => {
+    this.newDeal.isRender++
+  }
   
   // 币币交易当前页面币种
   @observable currencyTrading = {
@@ -44,6 +143,14 @@ class Store {
   @action coinsTypeHandle = type => {
     this.currencyTrading.coinsType = type
   }
+
+  /* --- 最近成交 start --- */
+  @observable newDeal = {
+    newDealData: [],
+    newDealLoading: true,
+    isRender: 0
+  }
+  /* --- 最近成交 end --- */
 
   /* --- 限价交易 start --- */
   @observable transactionData = {
