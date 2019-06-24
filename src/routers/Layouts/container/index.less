@@ -610,6 +610,55 @@ input:-ms-input-placeholder {
         }
     }
 }
+.exchang-detail {
+    padding-bottom: 60px;
+    .card-exhibition {
+      height: 133px;
+      background: #F7F9FEFF;
+      margin-bottom: 14px;
+      padding-top: 32px;
+      padding-left: 95px;
+      div {
+        margin-right: 34px;
+        width: 162px;
+        height: 70px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        float: left;
+        padding-top: 10px;
+        text-align: center;
+        p:nth-child(1) {
+          font-size: 16px;
+          color: #00A0E9FF;
+        }
+        p:nth-child(2) {
+          font-size: 12px;
+          color: #999999FF;
+        }
+      }
+    }
+    .table-exhibition {
+      height: 80px;
+      .ant-table-thead > tr > th {
+        background: #f9fafe !important;
+        border-top: 1px solid #e8e8e8;
+        color: #333333FF;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 10px 16px;
+      }
+      .ant-table-tbody > tr > td {
+        background: #fff;
+        color: #666666FF;
+        padding: 10px 16px;
+      }
+    }
+}
+
+.exchange-details {
+    .ant-modal-body {
+        padding: 0 !important;
+    }
+}
 .ant-tabs.onlyOne {
     .ant-tabs-bar {
         border-bottom: none;
@@ -1277,4 +1326,14 @@ input:-ms-input-placeholder {
             }
         }
     }
+}
+// 弹窗遮罩层
+.cover-layer {
+    top: 0;
+    left: 0;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 99;
 }

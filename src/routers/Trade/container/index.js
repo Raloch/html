@@ -36,15 +36,25 @@ class Trade extends Component {
       BTCLoading: true,
       ETHLoading: false,
       BCTLoading: false,
-      exchangeData: exchangeData, // 最近交易
+      exchangeData: [], // 最近交易
       currentExchangeLoading: true,
       // currentEntrust -- 当前委托
       currentEntrustData: [],
-      ifFetch: true // 设置dataBTC数据时，market子组件无法更新到，需要该变量传值改变来强制更新market组件
+      ifFetch: true, // 设置dataBTC数据时，market子组件无法更新到，需要该变量传值改变来强制更新market组件
+      isFetch: true
     }
   }
   componentDidMount() {
     this.WebSocketInit()
+    // for (let i = 0; i < 38; i++) {
+    //   this.state.exchangeData[i] = {
+    //     key: i,
+    //     time: '0',
+    //     price: '--',
+    //     amount: '--',
+    //     type: 'buy'
+    //   }
+    // }
   }
   WebSocketInit = () => {
     let _this = this
@@ -94,13 +104,14 @@ class Trade extends Component {
           params: ['BTCUSDT', 900]
         }
         ws.send(JSON.stringify(data1))
-        ws.send(JSON.stringify(data2))
+        // ws.send(JSON.stringify(data2))
         ws.send(JSON.stringify(data5))
       }
       ws.onmessage = function(res) {
         _this.updateMarket(res)
       }
       ws.onclose = function(res) {
+        console.log(res)
         message.warn('websocket连接关闭')
       }
     } else {
@@ -138,7 +149,7 @@ class Trade extends Component {
         let arr = []
         data.params[1].forEach((val, i) => {
           arr[i] = {
-            key: `${val.id}`,
+            key: `${val.id + val.time}`,
             time: val.time,
             price: val.price,
             amount: val.amount,
@@ -147,21 +158,32 @@ class Trade extends Component {
         })
         this.setState({
           currentExchangeLoading: false,
-          exchangeData: arr
+          exchangeData: arr.slice(38)
         })
       } else {
         let arr = []
+        let newDataLen = data.params[1].length
+        let len =  this.state.exchangeData.length
+        for (let i = len - 1; i > newDataLen - 1; i--) {
+          this.state.exchangeData[i] = this.state.exchangeData[i - newDataLen]
+        }
         data.params[1].forEach((val, i) => {
-          arr[i] = {
-            key: `${val.id}`,
-            time: val.time,
-            price: val.price,
-            amount: val.amount,
-            type: val.type
-          }
+          // this.state.exchangeData[i] = {
+          //   key: `${val.id}`,
+          //   time: val.time,
+          //   price: val.price,
+          //   amount: val.amount,
+          //   type: val.type
+          // }
+          this.state.exchangeData[i].key = `${val.id}`
+          this.state.exchangeData[i].time = val.time
+          this.state.exchangeData[i].price = val.price
+          this.state.exchangeData[i].amount = val.amount
+          this.state.exchangeData[i].type = val.type
         })
+        // 用一个布尔值强制渲染子组件，该布尔值无需添加到子组件props中
         this.setState({
-          exchangeData: [...arr, ...this.state.exchangeData].slice(0, 38)
+          isFetch: !this.state.isFetch
         })
       }
     }

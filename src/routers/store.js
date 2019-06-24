@@ -26,6 +26,9 @@ class Store {
   // 鲁锐 -- start
   /* ---------------------------------------------- 币币交易 start ----------------------------------------------- */
 
+  // 遮罩层
+  @observable isCover = false
+  
   // 币币交易当前页面币种
   @observable currencyTrading = {
     coinsTypeTitle: 'BTC',
@@ -322,7 +325,8 @@ class Store {
             alreadyDeal: '--',
             deal: val.deal,
             avePrice: '--',
-            operation: '交易明细'
+            operation: '交易明细',
+            fee: val.fee
           }
         })
         _this.historyData.historyEntrustData = data

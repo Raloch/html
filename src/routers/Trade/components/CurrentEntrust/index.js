@@ -20,7 +20,11 @@ class CurrentEntrust extends Component {
     }
   }
   componentDidMount() {
-    this.props.Store.currentDataInit()
+    if (Cookies.get('account')) {
+      this.props.Store.currentDataInit()
+    } else {
+      this.props.Store.currentData.currentLoading = false
+    }
   }
   // 撤销
   revoke = id => {
@@ -108,14 +112,14 @@ class CurrentEntrust extends Component {
     ]
     const { currentEntrustData, currentLoading } = this.props.Store.currentData
     const data = Cookies.get('loginState') ? currentEntrustData : []
-    const paginationProps = {
+    const paginationProps = Cookies.get('loginState') ? {
       showQuickJumper: true,
       total: total,
       pageSize: pageSize,
       size: 'small',
       current: current,
       onChange: this.pageChange
-    }
+    } : null
     return (
       <div className="current-entrust">
         <header>当前委托</header>

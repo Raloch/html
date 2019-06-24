@@ -2,26 +2,6 @@
 @table-bgColor: rgba(247, 249, 255, 1);
 
 .history-entrust {
-  // 设置padding来缩小高度
-  .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
-    font-size: 12px;
-    padding: 10px 16px;
-    word-break: break-word;
-  }
-  .ant-table-tbody > tr > td:nth-child(2) {
-    color: #1AB781FF;
-  }
-  .ant-table-tbody > tr > td:nth-child(8) {
-    color: #00A0E9FF;
-  }
-  // 隔行变色
-  .ant-table-thead > tr > th {
-    background: #fff !important;
-    font-weight: bold;
-  }
-  .ant-table-tbody > tr:nth-child(odd) {
-    background: @table-entrust-bgColor;
-  }
   header {
     font-size: 16px;
     line-height: 40px;
@@ -34,16 +14,69 @@
     .scroll-table();
     border: 1px solid rgba(238,238,238,1);
     box-sizing: border-box;
+    // 设置padding来缩小高度
+    .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+      font-size: 12px;
+      padding: 10px 16px;
+      word-break: break-word;
+    }
+    .ant-table-tbody > tr > td:nth-child(2) {
+      color: #1AB781FF;
+    }
+    .ant-table-tbody > tr > td:nth-child(8) {
+      color: #00A0E9FF;
+    }
+    // 隔行变色
+    .ant-table-thead > tr > th {
+      background: #fff !important;
+      font-weight: bold;
+    }
+    .ant-table-tbody > tr:nth-child(odd) {
+      background: @table-entrust-bgColor;
+    }
   }
-  // 交易明细弹框
-  .exchangeDetail-dialog {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.65);
-    z-index: 999;
+  .exchang-detail {
+    padding-bottom: 60px;
+    .card-exhibition {
+      height: 133px;
+      background: #F7F9FEFF;
+      margin-bottom: 14px;
+      padding-top: 32px;
+      padding-left: 95px;
+      div {
+        margin-right: 34px;
+        width: 162px;
+        height: 70px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        float: left;
+        padding-top: 10px;
+        text-align: center;
+        p:nth-child(1) {
+          font-size: 16px;
+          color: #00A0E9FF;
+        }
+        p:nth-child(2) {
+          font-size: 12px;
+          color: #999999FF;
+        }
+      }
+    }
+    .table-exhibition {
+      height: 80px;
+      .ant-table-thead > tr > th {
+        background: #f9fafe !important;
+        border-top: 1px solid #e8e8e8;
+        color: #333333FF;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 10px 16px;
+      }
+      .ant-table-tbody > tr > td {
+        background: #fff;
+        color: #666666FF;
+        padding: 10px 16px;
+      }
+    }
   }
 }
 

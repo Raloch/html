@@ -5,7 +5,10 @@ import Main from '../components/Main'
 import Bottom from '../components/Bottom'
 import './index.less'
 import Cookies from 'js-cookie'
+import { observer, inject } from 'mobx-react'
 
+@inject('Store')
+@observer
 class Layouts extends Component {
     // logout = () =>{
     //     Cookies.remove('JSESSIONID', { path: '/' })
@@ -24,6 +27,9 @@ class Layouts extends Component {
                 </div>
                
                 <Bottom />
+
+                {/* 弹窗遮罩层 */}
+                <div className="cover-layer" style={{ display: this.props.Store.isCover ? 'block' : 'none' }}></div>
             </div>
         )
     }

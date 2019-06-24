@@ -3,6 +3,7 @@ import './index.less'
 import { Tabs, Input, Steps, Button, message, Modal, Form, InputNumber } from 'antd'
 import { BeforeSendGet, BeforeSendPost } from '@/components/Ajax/index'
 import { inject, observer } from 'mobx-react'
+import Cookies from 'js-cookie'
 
 const { TabPane } = Tabs
 const { Step } = Steps
@@ -18,15 +19,17 @@ class Transaction extends Component {
     }
   }
   componentDidMount() {
-    const _this = this
-    let obj = {
-      assets: ''
-    }
-    BeforeSendGet('/api/v1/user/balance/query', obj, function(d) {
-      if (d.code === 0) {
-        _this.props.Store.setAvailableBalance(d.result.BTC.available)
+    if (Cookies.get('account')) {
+      const _this = this
+      let obj = {
+        assets: ''
       }
-    })
+      BeforeSendGet('/api/v1/user/balance/query', obj, function(d) {
+        if (d.code === 0) {
+          _this.props.Store.setAvailableBalance(d.result.BTC.available)
+        }
+      })
+    }
   }
   handleBuyPrice = num => {
     this.props.Store.handleBuyPrice(num)
