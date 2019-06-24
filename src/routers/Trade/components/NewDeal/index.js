@@ -16,7 +16,7 @@ class NewDeal extends Component {
           <p>最近成交</p>
         </header>
         <main>
-          <Table loading={ this.props.currentExchangeLoading } columns={ exchangeColumns } dataSource={ this.props.exchangeData } pagination={ false } />
+          <Table loading={ this.props.currentExchangeLoading } columns={ exchangeColumns } dataSource={ this.props.exchangeData.slice(0, 38) } pagination={ false } />
         </main>
       </div>
     )
