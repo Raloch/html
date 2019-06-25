@@ -104,7 +104,7 @@ class CodeModal extends Component {
 }
 class PhoneCodes extends Component {
     componentDidMount() {
-        console.log(this.props)
+        // console.log(this.props)
     }
     render() {
         const { getFieldDecorator } = this.props.form

@@ -35,7 +35,9 @@ class Login extends Component {
         codeValue: '',
         codeDisType:false,
         pwKey: 'fdec3af2f062f9d5893d22ffb46164d7ffcbee648cffb96af79121e7b274d979',
-        hidePhone: '' // 登录输入手机验证码时显示的半隐藏手机号码
+        hidePhone: '', // 登录输入手机验证码时显示的半隐藏手机号码
+        ip: '',
+        address: ''
     }
     showModalPhone = () => {
         let arr = [];
@@ -90,7 +92,7 @@ class Login extends Component {
         CgicallPost("/api/v1/visitor/login",obj,function(d){
             if (d.code === 0) {
                 message.success('登录成功!');
-                Cookies.set('account', 'Ryan')
+                Cookies.set('account', obj.username)
                 Cookies.set('loginState', Cookies.get('account') ? true : false)
                 Cookies.set('token', "Bearer " + d.result.token)
                 _this.props.history.push('/home')
@@ -98,6 +100,97 @@ class Login extends Component {
                 message.error(d.message)
             }
         });
+    }
+    // PhoneVerify = (obj) => {
+    //     let _this = this;
+    //     var account = _this.state.userName
+    //     if (obj.code.length == 0) {
+    //         obj.code = "100000"
+    //     }
+    //     CgicallPost("/api/v1/visitor/login", obj, function (d) {
+    //         // let System = _this.getOperationSys();
+    //         // let Browser = _this.getBrowser();
+    //         let LoginMethod = System + ' ' + Browser;
+    //         let token = "Bearer " + d.result.token;
+    //         let obj1 = {
+    //             username: account,
+    //             loginip: _this.state.ip,
+    //             loginaddr: _this.state.address,
+    //             loginmethod: LoginMethod
+    //         }
+    //         if (d.code === 0) {
+    //             CgicallPost("/api/v1/visitor/logs/set-log", obj1, function (e) {
+    //                 if (e.code === 0) {
+    //                     // message.success('获取登录历史信息!')
+    //                 } else {
+    //                     message.error(e.message)
+    //                 }
+    //             })
+    //             message.success('登录成功!');
+    //             Cookies.set('token', token)
+    //             Cookies.set('account', account)
+    //             _this.props.history.push('/home')
+    //         } else {
+    //             message.error(d.message)
+    //         }
+    //     })
+    // }
+    // componentWillMount() {
+    //     var script = document.createElement('script');
+    //     script.type = 'text/javascript';
+    //     script.src = 'http://pv.sohu.com/cityjson?ie=utf-8'; 
+    //     document.body.appendChild(script)
+    //     setTimeout(() => {
+    //         var obj = window.returnCitySN
+    //         this.setState({
+    //             ip: obj.cip,
+    //             address: obj.cname
+    //         })
+    //     }, 500);
+    //     if (Cookies.get('account')) {
+    //         if (this.props.history.length < 3) this.props.history.push('/home')
+    //         else this.props.history.goBack();
+    //     }
+    // }
+    // 获取操作系统名称
+    getOperationSys = () => {
+        var OS = '';
+        var OSArray = {};
+        var UserAgent = navigator.userAgent.toLowerCase();
+        OSArray.Windows = (navigator.platform == 'Win32') || (navigator.platform == 'Windows');
+        OSArray.Mac = (navigator.platform == 'Mac68K') || (navigator.platform == 'MacPPC')
+            || (navigator.platform == 'Macintosh') || (navigator.platform == 'MacIntel');
+        OSArray.iphone = UserAgent.indexOf('iPhone') > -1;
+        OSArray.ipod = UserAgent.indexOf('iPod') > -1;
+        OSArray.ipad = UserAgent.indexOf('iPad') > -1;
+        OSArray.Android = UserAgent.indexOf('Android') > -1;
+        for (var i in OSArray) {
+            if (OSArray[i]) {
+                OS = i;
+            }
+        }
+        return OS;
+    }
+    // 获取浏览器名称
+    getBrowser = () => {
+        var UserAgent = navigator.userAgent.toLowerCase();
+        var browser = null;
+        var browserArray = {
+            IE: window.ActiveXObject || "ActiveXObject" in window, // IE
+            Chrome: UserAgent.indexOf('chrome') > -1 && UserAgent.indexOf('safari') > -1, // Chrome浏览器
+            Firefox: UserAgent.indexOf('firefox') > -1, // 火狐浏览器
+            Opera: UserAgent.indexOf('opera') > -1, // Opera浏览器
+            Safari: UserAgent.indexOf('safari') > -1 && UserAgent.indexOf('chrome') == -1, // safari浏览器
+            Edge: UserAgent.indexOf('edge') > -1,// Edge浏览器
+            QQBrowser: /qqbrowser/.test(UserAgent), // qq浏览器
+            WeixinBrowser: /MicroMessenger/i.test(UserAgent) // 微信浏览器
+        };
+        for (var i in browserArray) {
+            if (browserArray[i]) {
+                browser = i;
+            }
+        }
+        return browser;
     }
     GoogleVerify = (obj) => {
         let _this = this;
@@ -187,8 +280,8 @@ class Login extends Component {
                     // password : sha256(sha256(password) + sha256(password) +this.state.pwKey)
                     // password: md5(password)
                 }
-                this.state.userName =  userName;
-                this.state.password =  password;
+                this.state.userName = userName;
+                this.state.password = password;
                 var _this = this;
                 this.setState({ LoginLoading: true });
                 setTimeout(function(){

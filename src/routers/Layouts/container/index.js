@@ -18,7 +18,7 @@ class Layouts extends Component {
     render() {
         this.clsArr = this.props.location.pathname.split('/');
         this.cls = this.clsArr[1]?(this.clsArr[1]+'Wrapper'):''
-        console.log(this.cls);
+        // console.log(this.cls);
         return (
             <div className='Layouts_wrap clearFix'>
                 <div className={"main-wrapper " + this.cls}>

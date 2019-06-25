@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Checkbox, Tabs, Table, Input, Icon } from 'antd'
 import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT } from '../coinsList'
-import { exchangeColumns, exchangeData } from '../currentExchangeList'
+import { exchangeData } from '../currentExchangeList'
 import './index.less'
 import { inject, observer } from 'mobx-react'
 
@@ -19,17 +19,12 @@ class Market extends Component {
       dataBTC: dataBTC,
       dataETH: dataETH,
       dataBCT: dataBCT,
-      USDTLoading: false,
-      BTCLoading: false,
-      ETHLoading: false,
-      BCTLoading: false,
       exchangeData: exchangeData, // 最近交易
       selfCheckValue: false,
       activeKeyBefore: '1'
     }
   }
   componentDidMount() {
-    exchangeColumns[2].title = `成交量(${ this.props.Store.currencyTrading.coinsType })`
   }
   // 币种改变 -- 根据自选框有无选中展示数据
   activeKeyChange = (key) => {
@@ -156,33 +151,21 @@ class Market extends Component {
         arr = dataBTC
         name = 'dataBTC'
         loadName = 'BTCLoading'
-        this.setState({
-          BTCLoading: true
-        })
         break
       case '2':
         arr = dataUSDT
         name = 'dataUSDT',
         loadName = 'USDTLoading'
-        this.setState({
-          USDTLoading: true
-        })
         break
       case '3':
-        arr = dataBTC
+        arr = dataETH
         name = 'dataETH'
         loadName = 'ETHLoading'
-        this.setState({
-          ETHLoading: true
-        })
         break
       case '4':
         arr = dataBTC
         name = 'dataBCT'
         loadName = 'BCTLoading'
-        this.setState({
-          BCTLoading: true
-        })
         break
     }
     if (this.state.searchText !== '') {
@@ -191,13 +174,13 @@ class Market extends Component {
         return val.exchangePairs.toLowerCase().includes(this.state.searchText.toLowerCase())
       })
       this.setState({
-        [name]: data,
-        [loadName]: false
+        [name]: data
+        // [loadName]: false
       })
     } else {
       this.setState({
-        [name]: arr,
-        [loadName]: false
+        [name]: arr
+        // [loadName]: false
       })
     }  
   }
@@ -216,13 +199,12 @@ class Market extends Component {
           record.isCollected = !record.isCollected
         } else {
           this.props.Store.currencyTrading.coinsType = record.exchangePairs
-          this.props.loadNewDeal()
-          this.props.ws.send(JSON.stringify({
+          this.props.Store.newDeal.newDealLoading = true
+          this.props.Store.wsSend({
             id: 5,
             method: 'deals.subscribe',
             params: [record.exchangePairs + 'BTC']
-          }))
-          exchangeColumns[2].title = `成交量(${ record.exchangePairs })`
+          })
         }
       }
     }
@@ -247,6 +229,9 @@ class Market extends Component {
     }
   }
   render() {
+    const store = this.props.Store
+    // isUpdate为mobx中用来强制更新该页面
+    let isUpdate = store.market.isUpdate
     return (
       <div className="exchange-market">
         <header>
@@ -263,7 +248,7 @@ class Market extends Component {
         <main>
           <Tabs defaultActiveKey={ this.state.activeKey } onChange={ this.activeKeyChange } tabBarExtraContent={ <Checkbox checked={ this.state.selfCheckValue } onChange={ this.selfCheckedData } className="self-check">自选</Checkbox> }>
             <TabPane tab="BTC" key="1">
-              <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } loading={ this.props.BTCLoading } />
+              <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } loading={ store.market.BTCLoading } />
             </TabPane>
             <TabPane tab="USDT" key="2">
               <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } />

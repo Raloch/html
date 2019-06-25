@@ -100,6 +100,7 @@ class SideMenu extends Component {
         // 退出登录请求
         BeforeSendPost("/api/v1/user/logout", '', function(d){
             if(d.code === 0) {
+                message.success('退出登录')
             }else {
                 // message.error('退出登录失败！')
             }
@@ -136,6 +137,7 @@ class SideMenu extends Component {
             let arrInfo = Cookies.get('account').split("@");
             let arrInfoN = arrInfo?arrInfo[arrInfo.length - 2]:'';
             if(arrInfo && arrInfoN) {
+                // 设置用户名显示
                 userInfoEmail = Cookies.get('account').substring(0,3) + '***' + arrInfoN[arrInfoN.length - 1]  + '@' +  arrInfo[arrInfo.length - 1];
             }  
         }
@@ -151,7 +153,7 @@ class SideMenu extends Component {
                     {this.menuReviver.map((item,i)=>
                         item.list && item.list.length > 0 ?
                             item.key?
-                            (<SubMenu key={item.key} className={item.type} trigger="hover" title={<span><span className={'font icon-' +item.icon}></span><span>{(item.key == "/users")?userInfoEmail:item.title}</span></span>}>
+                            (<SubMenu key={item.key} className={item.type} trigger="hover" title={<span><span className={'font icon-' +item.icon}></span>&nbsp;<span>{(item.key == "/users")?userInfoEmail:item.title}</span></span>}>
                                 {/*点击用户账号下拉菜单*/}
                                 {item.list.map((listItem,ii)=>
                                     <Menu.Item

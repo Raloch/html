@@ -10,7 +10,7 @@
 import { observable, action, computed } from 'mobx'
 import { BeforeSendGet, BeforeSendPost } from '../components/Ajax'
 import { message } from 'antd'
-import $ from  'jquery'
+import { dataBTC } from './Trade/components/coinsList'
 
 class Store {
   @observable userInfo = {
@@ -29,6 +29,24 @@ class Store {
   @observable isCover = false
   /* ---------------------------------------------- 币币交易 start ----------------------------------------------- */
 
+  
+  // 币币交易当前页面币种
+  @observable currencyTrading = {
+    coinsTypeTitle: 'BTC',
+    coinsType: 'ADA'
+  }
+  @computed get currentCoinsType() {
+    return 'BTCUSDT'
+    // return this.currencyTrading.coinsType + this.currencyTrading.coinsTypeTitle
+  }
+  @action coinsTypeTitleHandle = type => {
+    this.currencyTrading.coinsTypeTitle = type
+  }
+  @action coinsTypeHandle = type => {
+    this.currencyTrading.coinsType = type
+  }
+
+  // websocket
   @observable ws = null
   @action tradeWsInit = () => {
     let _this = this
@@ -63,7 +81,7 @@ class Store {
           params: ['BTCUSDT']
         }
         _this.ws.send(JSON.stringify(data1))
-        // _this.ws.send(JSON.stringify(data2))
+        _this.ws.send(JSON.stringify(data2))
         _this.ws.send(JSON.stringify(data5))
       }
       this.ws.onmessage = function(res) {
@@ -75,6 +93,9 @@ class Store {
     } else {
       message.error('您的浏览器不支持websocket')
     }
+  }
+  @action wsSend = obj => {
+    this.ws.send(JSON.stringify(obj))
   }
   @action updateMarket = res => {
     const data = JSON.parse(res.data)
@@ -90,10 +111,8 @@ class Store {
           val.newPrice = obj.last
         }
       })
-      this.setState({
-        BTCLoading: false,
-        ifFetch: !this.state.ifFetch
-      })
+      this.market.isUpdate = !this.market.isUpdate
+      this.market.BTCLoading = false
     }
     // 最近成交 -- data5
     if (data.method === 'deals.update') {
@@ -129,22 +148,13 @@ class Store {
   @action updateNewDeal = arr => {
     this.newDeal.newDealData = arr
   }
-  
-  // 币币交易当前页面币种
-  @observable currencyTrading = {
-    coinsTypeTitle: 'BTC',
-    coinsType: 'ADA'
+
+  /* --- 交易市场 start --- */
+  @observable market = {
+    BTCLoading: true,
+    isUpdate: true
   }
-  @computed get currentCoinsType() {
-    return 'BTCUSDT'
-    // return this.currencyTrading.coinsType + this.currencyTrading.coinsTypeTitle
-  }
-  @action coinsTypeTitleHandle = type => {
-    this.currencyTrading.coinsTypeTitle = type
-  }
-  @action coinsTypeHandle = type => {
-    this.currencyTrading.coinsType = type
-  }
+  /* --- 交易市场 end --- */
 
   /* --- 最近成交 start --- */
   @observable newDeal = {

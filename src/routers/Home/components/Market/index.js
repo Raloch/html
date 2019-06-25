@@ -7,6 +7,7 @@ import star2 from '../../images/star2.png'
 
 const { TabPane } = Tabs
 let ws = null
+let collectData = []
 
 class ExchangeMarket extends Component {
   constructor(props) {
@@ -18,12 +19,13 @@ class ExchangeMarket extends Component {
       dataUSDT: dataUSDT,
       dataETH: dataETH,
       dataBCT: dataBCT,
-      collectData: [],
+      collectData: collectData,
+      collectDataCache: [],
       USDTLoading: false,
       BTCLoading: true,
       ETHLoading: false,
       BCTLoading: false,
-      CollectLoading: false,
+      collectLoading: false,
       activeKeyBefore: '1'
     }
   }
@@ -134,8 +136,9 @@ class ExchangeMarket extends Component {
           return val.isCollected
         })
         let data = [...BTCCollect, ...USDTCollect, ...ETHCollect, ...BCTCollect]
+        collectData = data
         this.setState({
-          collectData: data
+          collectData
         })
       }
     })
@@ -177,13 +180,19 @@ class ExchangeMarket extends Component {
           BCTLoading: true
         })
         break
+      case '5':
+        arr = collectData
+        name = 'collectData'
+        loadName = 'collectLoading'
+        this.setState({
+          collectLoading: true
+        })
     }
     if (this.state.searchText !== '') {
       // 过滤不匹配的元素
       let data = arr.filter(val => {
         return val.exchangePairs.toLowerCase().includes(this.state.searchText.toLowerCase())
       })
-      // console.log(data)
       this.setState({
         [name]: data,
         [loadName]: false
@@ -226,16 +235,32 @@ class ExchangeMarket extends Component {
         />
         <Tabs defaultActiveKey="1" className="market_header" onChange={ this.coinsTypeChange }>
           <TabPane tab="BTC市场" key="1">
-            <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ this.state.BTCLoading } onRow={ this.rowClick } />
+            <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ this.state.BTCLoading } onRow={ this.rowClick } locale={{
+              emptyText: (
+                <Empty height="120" text="无匹配数据" />
+              )
+            }} />
           </TabPane>
           <TabPane tab="USDT市场" key="2">
-            <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } />
+            <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } loading={ this.state.USDTLoading } onRow={ this.rowClick } locale={{
+              emptyText: (
+                <Empty height="120" text="无匹配数据" />
+              )
+            }} />
           </TabPane>
           <TabPane tab="ETH市场" key="3">
-            <Table columns={ columnsETH } dataSource={ this.state.dataETH } pagination={ false } loading={ this.state.ETHLoading } onRow={ this.rowClick } />
+            <Table columns={ columnsETH } dataSource={ this.state.dataETH } pagination={ false } loading={ this.state.ETHLoading } onRow={ this.rowClick } locale={{
+              emptyText: (
+                <Empty height="120" text="无匹配数据" />
+              )
+            }} />
           </TabPane>
           <TabPane tab="BCT市场" key="4">
-            <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } pagination={ false } loading={ this.state.BCTLoading } onRow={ this.rowClick } />
+            <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } pagination={ false } loading={ this.state.BCTLoading } onRow={ this.rowClick } locale={{
+              emptyText: (
+                <Empty height="120" text="无匹配数据" />
+              )
+            }} />
           </TabPane>
           <TabPane tab={ <span><img style={{ marginBottom: 5, marginRight: 5 }} src={ star2 } />自选市场</span> } key="5">
             <Table columns={ columnsCollect } dataSource={ this.state.collectData } pagination={ false } loading={ this.state.CollectLoading } onRow={ this.rowClick } locale={{

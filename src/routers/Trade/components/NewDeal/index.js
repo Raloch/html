@@ -3,7 +3,7 @@ import './index.less'
 import { Spin } from 'antd'
 import moment from 'moment'
 import { inject, observer } from 'mobx-react'
-import $ from 'jquery'
+import Empty from '../../../../components/Empty'
 
 @inject('Store')
 @observer
@@ -13,29 +13,7 @@ class NewDeal extends Component {
     this.state = {
     }
   }
-  componentDidMount() {
-    this.props.Store.tradeWsInit()
-  }
   render() {
-    const exchangeColumns = [
-      {
-        title: '时间',
-        dataIndex: 'time',
-        align: 'center',
-        render: text => moment(parseFloat(text) * 1000).format('HH:mm:ss')
-      },
-      {
-        title: '价格(BTC)',
-        dataIndex: 'price',
-        align: 'center',
-        render: (text, record) => <span style={{ color: `${ record.type === 'buy' ? '#00b275' : '#ef5057' }` }}>{ text }</span>
-      },
-      {
-        title: '成交量(ADA)',
-        dataIndex: 'amount',
-        align: 'center'
-      }
-    ]
     return (
       <div className="new-deal">
         <header>
@@ -49,7 +27,7 @@ class NewDeal extends Component {
             <p>价格 ({ this.props.Store.currencyTrading.coinsTypeTitle })</p>
             <p>成交量 ({ this.props.Store.currencyTrading.coinsType })</p>
           </div>
-          { this.props.Store.newDeal.newDealData.length > 0 ? (
+          { !this.props.Store.newDeal.newDealLoading ? this.props.Store.newDeal.newDealData.length === 0 ? <Empty height="200" /> : (
             <div className="content">
               { this.props.Store.newDeal.newDealData.slice(0, 38).map(val => (
                 <ul>
@@ -61,7 +39,7 @@ class NewDeal extends Component {
             </div>
           ) : (
             <div className="loading">
-              <Spin />
+              <Spin />&nbsp;&nbsp;&nbsp;加载中...
             </div>
           ) }
             

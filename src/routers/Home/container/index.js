@@ -46,7 +46,7 @@ class Home extends Component {
     constructor() {
         super()
         this.store = new store() // 在这里实例化，保证每次加载组件数据的初始化。
-        console.log(this.store);
+        // console.log(this.store);
     }
     state = {
         loading: false,
@@ -60,7 +60,7 @@ class Home extends Component {
         this.props.history.push('/notice');
     }
     setDtkey = (key,event) => {
-	    console.log ( event );
+	    // console.log ( event );
 	    sessionStorage.dtkey = key;
 	    this.props.history.push('/notice');
     }
@@ -116,7 +116,7 @@ class Home extends Component {
 
 class BannerSlider extends Component {
 	getNotice = (event) => {
-        console.log(event.clickedIndex,2222)
+        // console.log(event.clickedIndex,2222)
         /*轮播图对应索引*/
         if( event.clickedIndex){
 		    this.props.getNotice (event.clickedIndex+1);
