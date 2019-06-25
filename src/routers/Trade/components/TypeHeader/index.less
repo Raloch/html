@@ -4,12 +4,15 @@
   border: 1px solid #eee;
   margin-bottom: 12px;
   padding: 0;
+  position: relative;
   .coinType {
+    position: absolute;
+    top: 0;
+    left: 19px;
     height: 100%;
     line-height: 58px !important;
     font-size: 18px;
     font-weight: bold;
-    margin: 0 3.0979% 0 19px;
     color: #333333FF;
     img {
       width: 12px;
@@ -17,11 +20,12 @@
     }
   }
   .newPrice {
-    // margin-right: 61px;
+    position: absolute;
     overflow: hidden;
-    margin-right: 4.3948%;
+    top: 0;
+    left: 13.8328%;
     .newPrice-left {
-      margin-right: 11px;
+      margin-right: 5px;
       text-align: center;
       height: 58px;
       .newPrice-box {
@@ -45,8 +49,9 @@
   }
   .highAndLow {
     padding-top: 12px;
-    // margin-right: 95px;
-    margin-right: 4.8443%;
+    position: absolute;
+    top: 0;
+    left: 32.0593%;
     text-align: center;
     .title {
       font-size: 12px;
@@ -59,9 +64,10 @@
     }
   }
   .highestPrice, .lowestPrice, .volume, .turnover {
+    position: absolute;
+    top: 0;
     padding-top: 12px;
     text-align: center;
-    margin-right: 4%;
     .title {
       font-size: 12px;
       color: #999999FF;
@@ -71,5 +77,17 @@
       font-size: 14px;
       color: #E95454FF;
     }
+  }
+  .highestPrice {
+    left: 41.6426%;
+  }
+  .lowestPrice {
+    left: 54.3227%;
+  }
+  .volume {
+    left: 66.8587%;
+  }
+  .turnover {
+    left: 79.6829%;
   }
 }

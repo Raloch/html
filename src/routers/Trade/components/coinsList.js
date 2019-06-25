@@ -324,7 +324,7 @@ export const columnsBTC = [
     dataIndex: 'exchangePairs',
     render: (text, record) => {
       return (
-        <td><img className="collectStar" style={{ width: 12, cursor: 'pointer',   marginRight: 5, marginBottom: 3 }} src={ record.isCollected ? star2 : star1 } alt="" />{ text }</td>
+        <span><img className="collectStar" style={{ width: 12, cursor: 'pointer', marginRight: 5, marginBottom: 3 }} src={ record.isCollected ? star2 : star1 } alt="" />{ text }</span>
       )
     },
     align: 'center',

@@ -25,11 +25,7 @@ class Layouts extends Component {
                     <Left logout={this.logout} />
                     <Main />
                 </div>
-               
                 <Bottom />
-
-                {/* 弹窗遮罩层 */}
-                <div className="cover-layer" style={{ display: this.props.Store.isCover ? 'block' : 'none' }}></div>
             </div>
         )
     }

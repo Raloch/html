@@ -6,7 +6,6 @@ import moment from 'moment'
 import { inject, observer } from 'mobx-react'
 
 import Empty from '../../../../components/Empty'
-import ModalDialog from '../../../../components/Modal'
 
 @inject('Store')
 @observer
@@ -234,40 +233,6 @@ class HistoryEntrust extends Component {
             </div>
           </div>
         </Modal>
-        {/* <ModalDialog visible={ isExchangeDetail } width="940px" title="成交明细" height="54px" onCancel={ this.CloseExchangeModal }>
-          <div className="exchang-detail">
-            <div className="card-exhibition">
-              <div>
-                <p>0.00000000</p>
-                <p>成交均价 (BTC)</p>
-              </div>
-              <div>
-                <p>0.00000000</p>
-                <p>成交数量 (BCH)</p>
-              </div>
-              <div>
-                <p>0.00000000</p>
-                <p>成交金额 (BTC)</p>
-              </div>
-              <div>
-                <p>0.00000000</p>
-                <p>手续费 (BCH)</p>
-              </div>
-            </div>
-            <div className="table-exhibition">
-              <Table
-                columns={ exchangeDetailColumns }
-                dataSource={ exchangeDetailData }
-                pagination={ false }
-                locale={{
-                  emptyText: (
-                    <Empty height="40" />
-                  )
-                }}
-              />
-            </div>
-          </div>
-        </ModalDialog> */}
       </div>
     )
   }
