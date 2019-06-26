@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import './index.less'
 import { Tabs, Input, Steps, Button, message, Modal, Form, InputNumber } from 'antd'
 import { BeforeSendGet, BeforeSendPost } from '@/components/Ajax/index'
@@ -14,8 +15,7 @@ class Transaction extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      visible: false,
-      rechargeNumber: Number
+      visible: false
     }
   }
   componentDidMount() {
@@ -49,32 +49,6 @@ class Transaction extends Component {
       rechargeNumber: ''
     })
   }
-  // 充值
-  recharge = () => {
-    let _this = this
-    let obj = {
-      asset: 'BTC',
-      change: this.state.rechargeNumber
-    }
-    BeforeSendPost('/api/v1/user/balance/update', obj, function(d) {
-      if (d.code === 0) {
-        message.success('充值成功')
-        let obj = {
-          assets: ''
-        }
-        BeforeSendGet('/api/v1/user/balance/query', obj, function(d) {
-          if (d.code === 0) {
-            _this.setState({
-              validBTC: d.result.BTC.available
-            })
-          }
-        })
-        _this.setState({
-          visible: false
-        })
-      }
-    })
-  }
   buy = () => {
     let obj = {
       market: 'BTCUSDT',
@@ -98,9 +72,33 @@ class Transaction extends Component {
       visible: false
     })
   }
-  handleRechargeNumber = e => {
-    this.setState({
-      rechargeNumber: e.target.value
+  submit = form =>{
+    form.validateFields((err, values) => {
+      if (!err) {
+        let { number } = values
+        let _this = this
+        let obj = {
+          // asset: this.props.Store.currencyTrading.coinsTypeTitle,
+          asset: 'BTC',
+          change: number
+        }
+        BeforeSendPost('/api/v1/user/balance/update', obj, function(d) {
+          if (d.code === 0) {
+            message.success('充值成功')
+            let obj = {
+              assets: ''
+            }
+            BeforeSendGet('/api/v1/user/balance/query', obj, function(d) {
+              if (d.code === 0) {
+                _this.props.Store.setAvailableBalance(d.result.BTC.available)
+                _this.setState({
+                  visible: false
+                })
+              }
+            })
+          }
+        })
+      }
     })
   }
   render() {
@@ -113,6 +111,7 @@ class Transaction extends Component {
     const ifSellButtonDisabled2 = !(store.transactionData.sellPrice2 && store.transactionData.sellAmount2) || !store.ifSellEnough
     return (
       <div className="transaction">
+        <div className="notLogged" style={{ display: Cookies.get('loginState') ? 'none' : 'block' }}>请先 <span><Link to="/login">登录</Link></span> / <span><Link to="/regist">注册</Link></span></div>
         <Tabs activeKey={ store.transactionData.activeKey } onChange={ store.transactionChange }>
           <TabPane className="present-price" tab="限价交易" key="1">
             <div className="purchase fl">
@@ -249,18 +248,16 @@ class Transaction extends Component {
                 <Button type="primary" size="large" onClick={ this.sell } loading={ store.transactionData.sellButtonLoading2 } disabled={ ifSellButtonDisabled2 } block>卖出</Button>
               </main>
             </div>
-          </TabPane>
-          <div className="rate">
-            <p className="rate-taker fl">Taker费率: 0.01%</p>
-            <p className="rate-maker fr">Maker费率: 0.01%</p>
-          </div>
+          </TabPane> 
         </Tabs>
+        <div className="rate">
+          <p className="rate-taker fl">Taker费率: 0.01%</p>
+          <p className="rate-maker fr">Maker费率: 0.01%</p>
+        </div>
         <RModal
           visible={ this.state.visible }
           onCancel={ this.handleCancel }
-          onOk={ this.recharge }
-          rechargeNumber={ this.state.rechargeNumber }
-          handleRechargeNumber={ this.handleRechargeNumber }
+          submit={ this.submit }
         />
       </div>
     )
@@ -268,25 +265,31 @@ class Transaction extends Component {
 }
 
 class RechargeModal extends Component {
+  handleSubmit = e => {
+    e.preventDefault()
+    this.props.submit(this.props.form)
+  }
   render() {
-    const { visible, onCancel, onOk, form, rechargeNumber, handleRechargeNumber } = this.props
+    const { visible, form, onCancel } = this.props
     const { getFieldDecorator } = form
     return (
       <Modal
         visible={ visible }
         title="充值"
-        okText="确认"
+        footer={ null }
         onCancel={ onCancel }
-        onOk={ onOk }
       >
-        <Form >
+        <Form onSubmit={ this.handleSubmit }>
           <Form.Item>
             { getFieldDecorator('number', {
               rules: [{
                 required: true,
                 message: '请输入充值数量'
               }]
-            })(<Input value={ rechargeNumber } onChange={ handleRechargeNumber } placeholder="请输入充值数量" />) }
+            })(<Input placeholder="请输入充值数量" />) }
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>充值</Button>
           </Form.Item>
         </Form>
       </Modal>

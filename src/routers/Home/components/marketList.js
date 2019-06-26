@@ -133,38 +133,45 @@ export const columnsBTC = [
         <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
       )
     },
-    align: 'center'
+    align: 'right',
+    width: '5%'
   },
   {
     title: '交易对',
     dataIndex: 'exchangePairs',
-    align: 'center'
+    align: 'center',
+    width: '11%'
   },
   {
     title: '最新价',
     dataIndex: 'newPrice',
-    align: 'center'
+    align: 'center',
+    width: '11%'
   },
   {
     title: '日涨跌',
     dataIndex: 'highsAndLows',
     render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>,
-    align: 'center'
+    align: 'center',
+    width: '11%'
   },
   {
     title: '最高价',
     dataIndex: 'highestPrice',
-    align: 'center'
+    align: 'center',
+    width: '11%'
   },
   {
     title: '最低价',
     dataIndex: 'minimumPrice',
-    align: 'center'
+    align: 'center',
+    width: '11%'
   },
   {
     title: '日成交量',
     dataIndex: 'dailyVolume',
-    align: 'center'
+    align: 'center',
+    width: '20%'
   },
   {
     title: '日成交额',
@@ -172,7 +179,8 @@ export const columnsBTC = [
     sorter: (a, b) => {
       return parseFloat(a.dailyTurnover) - parseFloat(b.dailyTurnover)
     },
-    align: 'center'
+    align: 'center',
+    width: '20%'
   }
 ]
 

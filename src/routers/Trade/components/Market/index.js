@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Checkbox, Tabs, Table, Input, Icon } from 'antd'
 import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT } from '../coinsList'
-import { exchangeData } from '../currentExchangeList'
 import './index.less'
 import { inject, observer } from 'mobx-react'
 
@@ -19,7 +18,6 @@ class Market extends Component {
       dataBTC: dataBTC,
       dataETH: dataETH,
       dataBCT: dataBCT,
-      exchangeData: exchangeData, // 最近交易
       selfCheckValue: false,
       activeKeyBefore: '1'
     }

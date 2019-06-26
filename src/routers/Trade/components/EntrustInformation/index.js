@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
 import './index.less'
 import { Select, Table, Icon } from 'antd'
-import { entrustMessageColumns1, entrustMessageData1, entrustMessageColumns2, entrustMessageData2 } from '../entrustMessageList'
+import { entrustMessageData1, entrustMessageData2 } from '../entrustMessageList'
+import { inject, observer } from 'mobx-react'
 
 const { Option } = Select
 
+@inject('Store')
+@observer
 class EntrustInformation extends Component {
   constructor(props) {
     super(props)
@@ -15,6 +18,59 @@ class EntrustInformation extends Component {
     console.log(val)
   }
   render() {
+    const store = this.props.Store
+    const entrustMessageColumns1 = [
+      {
+        title: '',
+        dataIndex: 'sellOut',
+        align: 'center',
+        width: '19%'
+      },
+      {
+        title: `价格(${ store.currencyTrading.coinsTypeTitle })`,
+        dataIndex: 'price',
+        align: 'center',
+        width: '27%'
+      },
+      {
+        title: `数量(${ store.currencyTrading.coinsType })`,
+        dataIndex: 'number',
+        align: 'center',
+        width: '27%'
+      },
+      {
+        title: `累计(${ store.currencyTrading.coinsType })`,
+        dataIndex: 'accumulation',
+        align: 'center',
+        width: '27%'
+      }
+    ]
+    const entrustMessageColumns2 = [
+      {
+        title: '',
+        dataIndex: 'sellOut',
+        align: 'center',
+        width: '19%'
+      },
+      {
+        title: `价格(${ store.currencyTrading.coinsTypeTitle })`,
+        dataIndex: 'price',
+        align: 'center',
+        width: '27%'
+      },
+      {
+        title: `数量(${ store.currencyTrading.coinsType })`,
+        dataIndex: 'number',
+        align: 'center',
+        width: '27%'
+      },
+      {
+        title: `累计(${ store.currencyTrading.coinsType })`,
+        dataIndex: 'accumulation',
+        align: 'center',
+        width: '27%'
+      }
+    ]
     return (
       <div className="entrust-infomation">
         <header>

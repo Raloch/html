@@ -79,6 +79,9 @@ class Store {
           params: ['BTCUSDT']
         }
         _this.ws.send(JSON.stringify(data1))
+        // setInterval(() => {
+        //   _this.ws.send(JSON.stringify(data1))
+        // }, 3000)
         _this.ws.send(JSON.stringify(data2))
         _this.ws.send(JSON.stringify(data5))
       }

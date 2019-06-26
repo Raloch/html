@@ -91,7 +91,7 @@ class SideMenu extends Component {
         }
     }
     // 用户退出--设置Cookies存储
-    logout = () =>{
+    logout = () => {
         // Cookies.remove('account', { path: '/',domain: 'nbc.test' })
         Cookies.remove('account', { path: '/'})
         Cookies.remove('loginState', { path: '/'}) // 鲁锐 -- 2019-6-21

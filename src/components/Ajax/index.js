@@ -46,10 +46,10 @@ let Cgicallgets = function(url,obj,fun) {
             objstr += "&" + k + "=" + encodeURIComponent($.trim(obj[k]));
         }
     }
-    console.log(`version: ${ version }`)
-    console.log(`url: ${ url }`)
-    console.log(`token: ${ token }`)
-    console.log(`objstr: ${ objstr }`)
+    // console.log(`version: ${ version }`)
+    // console.log(`url: ${ url }`)
+    // console.log(`token: ${ token }`)
+    // console.log(`objstr: ${ objstr }`)
     token = '?token=Bearer' // 2019-06-25 鲁
     url = version + url + token + objstr;
         $.get(url, function(d, x, s) {

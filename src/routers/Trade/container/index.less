@@ -11,6 +11,10 @@ p {
 }
 @table-bgColor: rgba(247, 249, 255, 1);
 @table-entrust-bgColor: rgba(249,250,254,1);
+.trade-container {
+  width: 100%;
+  background: rgb(238, 241, 247);
+}
 .trade {
   padding-top: 12px;
   // width: 1760px;
@@ -19,18 +23,19 @@ p {
   margin: 0 auto;
   .trade-layout {
     width: 100%;
-    background: #fff;
-    // 左侧边栏--交易市场
+  // 左侧边栏--交易市场
     .trade-sider {
       // width: 20.4545% !important;
       // width: 360px;
       margin-right: 0.6818%;
     }
+    .ant-layout-sider-light {
+      background: transparent;
+    }
     // 右边主体内容--K线、委托信息
     .trade-right-layout {
       // width: 1388px;
       width: 78.8636%;
-      background: #fff;
       .ant-layout-header {
         line-height: 1em;
       }
@@ -39,7 +44,6 @@ p {
         flex: none;
         .trade-right-layout-content-layout {
           width: 100%;
-          background: #fff;
           .trade-right-layout-content-layout-content {
             // width: 986px;
             width: 71.0374%;
@@ -54,7 +58,6 @@ p {
       }
       // 委托
       .right-footer {
-        background: #fff;
         padding: 0;
       }
     }
