@@ -66,11 +66,11 @@ class Store {
           method: 'state.subscribe',
           params: []
         }
-        // 最近成交记录 -- 模板
-        let data4 = {
-          id: 4,
-          method: 'deals.query',
-          params: ['BTCUSDT', 34, 0]
+        // 深度
+        let data3 = {
+          id: 2,
+          method: 'depth.subscribe',
+          params: [`${ _this.currentCoinsType }`, 20, '0.00000001']
         }
         // 最新成交
         let data5 = {
@@ -82,8 +82,9 @@ class Store {
         // setInterval(() => {
         //   _this.ws.send(JSON.stringify(data1))
         // }, 3000)
-        _this.ws.send(JSON.stringify(data2))
-        _this.ws.send(JSON.stringify(data5))
+        // _this.ws.send(JSON.stringify(data2))
+        _this.ws.send(JSON.stringify(data3))
+        // _this.ws.send(JSON.stringify(data5))
       }
       this.ws.onmessage = function(res) {
         _this.updateMarket(res)
@@ -144,6 +145,142 @@ class Store {
         this.updateNewDeal([...arr, ...this.newDeal.newDealData])
       }
     }
+    // 深度
+    if (data.method === 'depth.update') {
+      // 封装处理20个数据的total
+      let handle = (arr, type) => {
+        let len = arr.length
+        let num = 0
+        for (let i = 0; i < len; i++) {
+          if (i === 0) {
+            arr[i][2] = arr[i][1]
+          } else {
+            arr[i][2] = (parseFloat(arr[i - 1][2]) + parseFloat(arr[i][1])).toFixed(8)
+          }
+          num += parseFloat(arr[i][1])
+        }
+        if (arr.length > 20) {
+          this.depth[type] = JSON.stringify(arr.slice(0, 20))
+        } else {
+          this.depth[type] = JSON.stringify(arr.slice(0))
+        }
+        if (type === 'askData') {
+          this.depth.askTotal = num
+        } else {
+          this.depth.depthTotal = num
+        }
+      }
+      // 开始数据的全部显示
+      if (data.params[0]) {
+        let asksArr = data.params[1].asks
+        let bidsArr = data.params[1].bids
+        handle(asksArr, 'askData')
+        handle(bidsArr, 'depthData')
+      } else { // 数据部分更新
+        // 处理asks列表展示
+        if ("asks" in data.params[1]) {
+          let arr = data.params[1].asks
+          let len = arr.length
+          let num = 0
+          let askData = JSON.parse(this.depth.askData)
+          for (let i = 0; i < len; i++) {
+            for (let j = 0; j < askData.length; j++) {
+              if (parseFloat(arr[i][0]) === parseFloat(askData[j][0])) {
+                if (parseFloat(arr[i][1]) > 0) {
+                  askData[j][1] = arr[i][1]
+                } else {
+                  // 对应价格数量为0则删除
+                  askData.splice(j, 1)
+                }
+                break
+              } else {
+                // 数量为0，没有对应价格需要过滤该数据
+                if (parseFloat(arr[i][1]) > 0) {
+                  if (j < askData.length - 1) {
+                    if (j === 0 && parseFloat(arr[i][0]) < parseFloat(askData[j][0])) {
+                      askData.unshift(arr[i])
+                      if (askData.length > 20) {
+                        askData = askData.slice(0, 20)
+                      }
+                    }
+                    if (parseFloat(arr[i][0]) > parseFloat(askData[j][0]) && parseFloat(arr[i][0]) < parseFloat(askData[j + 1][0])) {
+                      askData.splice(j + 1, 0, arr[i])
+                      if (askData.length > 20) {
+                        askData = askData.slice(0, 20)
+                      }
+                      break
+                    }
+                  } else {
+                    askData.push(arr[i])
+                    if (askData.length > 20) {
+                      askData = askData.slice(0, 20)
+                    }
+                    break
+                  }
+                }
+              }
+            }
+          }
+          if (askData.length > 20) {
+            askData = askData.slice(0, 20)
+          } else {
+            askData = askData.slice(0)
+          }
+          handle(askData, 'askData')
+        }
+        // 处理bids列表展示
+        if ('bids' in data.params[1]) {
+          let arr = data.params[1].bids
+          let len = arr.length
+          let num = 0
+          let depthData = JSON.parse(this.depth.depthData)
+          for (let i = 0; i < len; i++) {
+            for (let j = 0; j < depthData.length; j++) {
+              if (parseFloat(arr[i][0]) === parseFloat(depthData[j][0])) {
+                if (parseFloat(arr[i][1]) > 0) {
+                  depthData[j][1] = arr[i][1]
+                } else {
+                  // 对应价格数量为0则删除
+                  depthData.splice(j, 1)
+                }
+                break
+              } else {
+                // 数量为0，没有对应价格需要过滤该数据
+                if (parseFloat(arr[i][1]) > 0) {
+                  if (j < depthData.length - 1) {
+                    if (j === 0 && parseFloat(arr[i][0]) < parseFloat(depthData[j][0])) {
+                      depthData.unshift(arr[i])
+                      if (depthData.length > 20) {
+                        depthData = depthData.slice(0, 20)
+                      }
+                    }
+                    if (parseFloat(arr[i][0]) > parseFloat(depthData[j][0]) && parseFloat(arr[i][0]) < parseFloat(depthData[j + 1][0])) {
+                      depthData.splice(j + 1, 0, arr[i])
+                      if (depthData.length > 20) {
+                        depthData = depthData.slice(0, 20)
+                      }
+                      break
+                    }
+                  } else {
+                    depthData.push(arr[i])
+                    if (depthData.length > 20) {
+                      depthData = depthData.slice(0, 20)
+                    }
+                    break
+                  }
+                }
+              }
+            }
+          }
+          if (depthData.length > 20) {
+            depthData = depthData.slice(0, 20)
+          } else {
+            depthData = depthData.slice(0)
+          }
+          handle(depthData, 'depthData')
+        }
+      }
+    }
   }
   // 更新最近成交
   @action updateNewDeal = arr => {
@@ -164,6 +301,32 @@ class Store {
     isRender: 0
   }
   /* --- 最近成交 end --- */
+
+  /* --- 深度 start --- */
+  @observable depth = {
+    askData: '',
+    askTotal: 0, // 红色累计
+    depthData: '',
+    depthTotal: 0, // 绿色累计
+    mode: 3
+  }
+  // 处理askData数据内容展示
+  // @computed get askDataHandle() {
+  //   if (this.depth.askData.length > 0) {
+  //     let beforeArr = []
+  //     this.depth.askData.forEach((val, i) => {
+  //       beforeArr = val
+  //       if (i === 0) {
+  //         val[2] = val[1]
+  //       } else {
+  //         val[2] = parseFloat(val[1]) + parseFloat(beforeArr[2])
+  //       }
+  //     })
+  //     console.log(this.depth.askData)
+  //     return this.depth.askData.slice(0, 20)
+  //   }
+  // }
+  /* --- 深度 end --- */
 
   /* --- 限价交易 start --- */
   @observable transactionData = {

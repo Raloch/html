@@ -2,15 +2,14 @@
   background: #fff;
   header {
     height: 50px;
-    padding: 10px 0 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 0 20px;
     box-sizing: border-box;
-    h2 {
-      margin: 0;
-      font-size: 16px;
-      color: #333333FF;
-    }
     .accuracy {
       font-size: 12px;
+      background: #f9f9f9;
       .ant-select-selection-selected-value {
         font-size: 12px;
       }
@@ -19,51 +18,127 @@
       }
       // 设置下拉框样式(此option元素在root根元素外，需在全局设置)
     }
+    .mode-switch {
+      img {
+        width: 20px;
+        margin-left: 5px;
+        cursor: pointer;
+      }
+    }
   }
   main {
-    .ant-table-thead > tr > th {
-      font-weight: bold;
-      color: #333333FF;
+    height: 795px;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    .setListNum {
+
+    }
+    .title {
+      background-color: #f9f9f9;
+      height: 41px;
+      line-height: 41px;
       font-size: 12px;
-      padding: 3px 0px;
-      word-break: break-word;
-      background:rgba(243,246,255,1);
-    }
-    .ant-table-tbody > tr > td {
-      font-size: 12px;
-      padding: 1px 0px;
-      word-break: break-word;
-      color: #666666FF;
-      border-bottom: 0;
-    }
-    .entrustMessage-table1 {
-      .ant-table-tbody > tr > td:nth-child(1) {
-        color: #E95454FF;
+      color: #192330;
+      box-sizing: border-box;
+      border-bottom: 1px solid #eee;
+      li {
+        float: left;
+        width: 33.3333%;
+        text-align: center;
       }
     }
-    .entrustMessage-table2 {
-      .ant-table-thead {
-        display: none;
-      }
-      .ant-table-tbody > tr > td:nth-child(1) {
-        color: #1AB781FF;
-      }
-    }
-    .new-price {
-      height: 50px;
-      background:rgba(249,250,254,1);
-      line-height: 50px;
-      text-align: center;
-      p {
-        font-size: 12px;
-        color: #666666FF;
-        span {
-          font-size: 16px;
-          color: #E95454FF;
+    .mode {
+      height: 754px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex: 1;
+      .mode-ask {
+        // height: 350px;
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+        ul {
+          width: 100%;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          li {
+            height: 35px;
+            line-height: 35px;
+            border-bottom: 1px solid #eee;
+            box-sizing: border-box;
+            position: relative;
+            &:hover {
+              background: rgba(0, 0, 0, 0.05);
+            }
+            div {
+              position: absolute;
+              top: 0;
+              right: 0;
+              height: 35px;
+              background-color: rgba(227, 85, 85, 0.2);
+            }
+            p {
+              float: left;
+              width: 33.3333%;
+              color: #6f6f6f;
+              text-align: center;
+              font-size: 12px;
+            }
+          }
         }
-        .arrow-down {
-          font-size: 18px;
-          color: #E95454FF;
+      }
+      .price-float {
+        height: 54px;
+        // border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 10px 0 #ececec;
+        p:nth-child(1) {
+          font-size: 20px;
+          i {
+            margin-left: 5px;
+          }
+        }
+        p:nth-child(2) {
+          font-size: 13px;
+          color: #6f6f6f;
+          margin-left: 10px;
+        }
+      }
+      .mode-depth {
+        // height: 350px;
+        flex: 1;
+        overflow: hidden;
+        ul {
+          li {
+            height: 35px;
+            line-height: 35px;
+            border-bottom: 1px solid #eee;
+            box-sizing: border-box;
+            position: relative;
+            &:hover {
+              background: rgba(0, 0, 0, 0.05);
+            }
+            div {
+              position: absolute;
+              top: 0;
+              right: 0;
+              height: 35px;
+              background-color: rgba(0, 178, 117, 0.2);
+            }
+            p {
+              float: left;
+              width: 33.3333%;
+              color: #6f6f6f;
+              text-align: center;
+              font-size: 12px;
+            }
+          }
         }
       }
     }
