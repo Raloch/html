@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import './index.less'
-import { Spin } from 'antd'
+import { Spin, Icon } from 'antd'
 import moment from 'moment'
 import { inject, observer } from 'mobx-react'
 import Empty from '../../../../components/Empty'
@@ -39,7 +39,7 @@ class NewDeal extends Component {
             </div>
           ) : (
             <div className="loading">
-              <Spin />&nbsp;&nbsp;&nbsp;加载中...
+              <Spin spinning={ true } tip="Loading..." indicator={ <Icon type="loading" spin /> } style={{ height: '350px' }} />
             </div>
           ) }
             

@@ -223,6 +223,11 @@ class ExchangeMarket extends Component {
     }
   }
   render() {
+    const loadingStyle = {
+      spinning: this.state.BTCLoading,
+      tip: 'Loading...',
+      indicator: <Icon type="loading" spin />
+    }
     return (
       <div className="exchange_market">
         <Input
@@ -235,7 +240,7 @@ class ExchangeMarket extends Component {
         />
         <Tabs defaultActiveKey="1" className="market_header" onChange={ this.coinsTypeChange }>
           <TabPane tab="BTC市场" key="1">
-            <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ this.state.BTCLoading } onRow={ this.rowClick } locale={{
+            <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ loadingStyle } onRow={ this.rowClick } locale={{
               emptyText: (
                 <Empty height="120" text="无匹配数据" />
               )

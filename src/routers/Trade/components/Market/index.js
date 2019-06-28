@@ -230,6 +230,11 @@ class Market extends Component {
     const store = this.props.Store
     // isUpdate为mobx中用来强制更新该页面
     let isUpdate = store.market.isUpdate
+    const loadingStyle = {
+      spinning: store.market.BTCLoading,
+      tip: 'Loading...',
+      indicator: <Icon type="loading" spin />
+    }
     return (
       <div className="exchange-market">
         <header>
@@ -246,7 +251,7 @@ class Market extends Component {
         <main>
           <Tabs defaultActiveKey={ this.state.activeKey } onChange={ this.activeKeyChange } tabBarExtraContent={ <Checkbox checked={ this.state.selfCheckValue } onChange={ this.selfCheckedData } className="self-check">自选</Checkbox> }>
             <TabPane tab="BTC" key="1">
-              <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } loading={ store.market.BTCLoading } />
+              <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } loading={ loadingStyle } />
             </TabPane>
             <TabPane tab="USDT" key="2">
               <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } />

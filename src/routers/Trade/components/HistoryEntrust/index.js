@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './index.less'
 import Cookies from 'js-cookie'
-import { Table, Modal } from 'antd'
+import { Table, Modal, Icon } from 'antd'
 import moment from 'moment'
 import { inject, observer } from 'mobx-react'
 
@@ -171,6 +171,11 @@ class HistoryEntrust extends Component {
       current: current,
       onChange: this.pageChange
     } : false
+    const loadingStyle = {
+      spinning: historyLoading,
+      tip: 'Loading...',
+      indicator: <Icon type="loading" spin />
+    }
     return (
       <div className="history-entrust">
         <header>历史委托</header>
@@ -188,7 +193,7 @@ class HistoryEntrust extends Component {
             }}
             // 设置唯一行id，否则会出现实际行数超出pageSize的行数
             rowKey={ record => record.key + record.time }
-            loading={ historyLoading }
+            loading={ loadingStyle }
           />
         </main>
         {/* Modal属于全局样式，无法在组件中设置样式，在Layouts组件中设置 */}

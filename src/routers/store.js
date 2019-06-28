@@ -7,7 +7,7 @@
   注意：无论是全局 Store，还是局部 store，必须 @inject('xxx')注入到 props 上才能获取，保证结构的一致性。
 */
 
-import { observable, action, computed } from 'mobx'
+import { observable, action, computed, reaction } from 'mobx'
 import { BeforeSendGet, BeforeSendPost } from '../components/Ajax'
 import { message } from 'antd'
 import { dataBTC } from './Trade/components/coinsList'
@@ -34,8 +34,8 @@ class Store {
     coinsType: 'ADA'
   }
   @computed get currentCoinsType() {
-    return 'BTCUSDT'
-    // return this.currencyTrading.coinsType + this.currencyTrading.coinsTypeTitle
+    // return 'BTCUSDT'
+    return this.currencyTrading.coinsType + this.currencyTrading.coinsTypeTitle
   }
   @action coinsTypeTitleHandle = type => {
     this.currencyTrading.coinsTypeTitle = type
@@ -70,7 +70,7 @@ class Store {
         let data3 = {
           id: 2,
           method: 'depth.subscribe',
-          params: [`${ _this.currentCoinsType }`, 20, '0.00000001']
+          params: [`${ _this.currentCoinsType }`, parseFloat(_this.depth.count), '0.00000001']
         }
         // 最新成交
         let data5 = {
@@ -78,12 +78,12 @@ class Store {
           method: 'deals.subscribe',
           params: ['BTCUSDT']
         }
-        _this.ws.send(JSON.stringify(data1))
-        // setInterval(() => {
-        //   _this.ws.send(JSON.stringify(data1))
-        // }, 3000)
+        // _this.ws.send(JSON.stringify(data1))
+        setInterval(() => {
+          _this.ws.send(JSON.stringify(data1))
+        }, 3000)
         // _this.ws.send(JSON.stringify(data2))
-        _this.ws.send(JSON.stringify(data3))
+        // _this.ws.send(JSON.stringify(data3))
         // _this.ws.send(JSON.stringify(data5))
       }
       this.ws.onmessage = function(res) {
@@ -147,6 +147,8 @@ class Store {
     }
     // 深度
     if (data.method === 'depth.update') {
+      // count为20, 50
+      let count = parseFloat(this.depth.count)
       // 封装处理20个数据的total
       let handle = (arr, type) => {
         let len = arr.length
@@ -159,8 +161,8 @@ class Store {
           }
           num += parseFloat(arr[i][1])
         }
-        if (arr.length > 20) {
-          this.depth[type] = JSON.stringify(arr.slice(0, 20))
+        if (arr.length > count) {
+          this.depth[type] = JSON.stringify(arr.slice(0, count))
         } else {
           this.depth[type] = JSON.stringify(arr.slice(0))
         }
@@ -199,21 +201,21 @@ class Store {
                   if (j < askData.length - 1) {
                     if (j === 0 && parseFloat(arr[i][0]) < parseFloat(askData[j][0])) {
                       askData.unshift(arr[i])
-                      if (askData.length > 20) {
-                        askData = askData.slice(0, 20)
+                      if (askData.length > count) {
+                        askData = askData.slice(0, count)
                       }
                     }
                     if (parseFloat(arr[i][0]) > parseFloat(askData[j][0]) && parseFloat(arr[i][0]) < parseFloat(askData[j + 1][0])) {
                       askData.splice(j + 1, 0, arr[i])
-                      if (askData.length > 20) {
-                        askData = askData.slice(0, 20)
+                      if (askData.length > count) {
+                        askData = askData.slice(0, count)
                       }
                       break
                     }
                   } else {
                     askData.push(arr[i])
-                    if (askData.length > 20) {
-                      askData = askData.slice(0, 20)
+                    if (askData.length > count) {
+                      askData = askData.slice(0, count)
                     }
                     break
                   }
@@ -221,8 +223,8 @@ class Store {
               }
             }
           }
-          if (askData.length > 20) {
-            askData = askData.slice(0, 20)
+          if (askData.length > count) {
+            askData = askData.slice(0, count)
           } else {
             askData = askData.slice(0)
           }
@@ -250,21 +252,21 @@ class Store {
                   if (j < depthData.length - 1) {
                     if (j === 0 && parseFloat(arr[i][0]) < parseFloat(depthData[j][0])) {
                       depthData.unshift(arr[i])
-                      if (depthData.length > 20) {
-                        depthData = depthData.slice(0, 20)
+                      if (depthData.length > count) {
+                        depthData = depthData.slice(0, count)
                       }
                     }
                     if (parseFloat(arr[i][0]) > parseFloat(depthData[j][0]) && parseFloat(arr[i][0]) < parseFloat(depthData[j + 1][0])) {
                       depthData.splice(j + 1, 0, arr[i])
-                      if (depthData.length > 20) {
-                        depthData = depthData.slice(0, 20)
+                      if (depthData.length > count) {
+                        depthData = depthData.slice(0, count)
                       }
                       break
                     }
                   } else {
                     depthData.push(arr[i])
-                    if (depthData.length > 20) {
-                      depthData = depthData.slice(0, 20)
+                    if (depthData.length > count) {
+                      depthData = depthData.slice(0, count)
                     }
                     break
                   }
@@ -272,8 +274,8 @@ class Store {
               }
             }
           }
-          if (depthData.length > 20) {
-            depthData = depthData.slice(0, 20)
+          if (depthData.length > count) {
+            depthData = depthData.slice(0, count)
           } else {
             depthData = depthData.slice(0)
           }
@@ -304,28 +306,13 @@ class Store {
 
   /* --- 深度 start --- */
   @observable depth = {
-    askData: '',
+    askData: '', // JSON.stringify()字符串化处理，取的时候JSON.parse()转成对象
     askTotal: 0, // 红色累计
     depthData: '',
     depthTotal: 0, // 绿色累计
-    mode: 3
+    mode: 3,
+    count: '20'
   }
-  // 处理askData数据内容展示
-  // @computed get askDataHandle() {
-  //   if (this.depth.askData.length > 0) {
-  //     let beforeArr = []
-  //     this.depth.askData.forEach((val, i) => {
-  //       beforeArr = val
-  //       if (i === 0) {
-  //         val[2] = val[1]
-  //       } else {
-  //         val[2] = parseFloat(val[1]) + parseFloat(beforeArr[2])
-  //       }
-  //     })
-  //     console.log(this.depth.askData)
-  //     return this.depth.askData.slice(0, 20)
-  //   }
-  // }
   /* --- 深度 end --- */
 
   /* --- 限价交易 start --- */
@@ -623,5 +610,28 @@ class Store {
 }
 
 const store = new Store()
+
+// 侦听 -- store.depth.count，值改变则出发函数（页面初始渲染时不触发）（autorun初始渲染时会触发）
+const reaction1 = reaction(
+  () => store.depth.count,
+  count => {
+    store.ws.send(JSON.stringify({
+      id: 2,
+      method: 'depth.subscribe',
+      params: [`${ store.currentCoinsType }`, parseFloat(count), '0.00000001']
+    }))
+  }
+)
+
+const reaction2 = reaction(
+  () => store.currentCoinsType,
+  type => {
+    store.ws.send(JSON.stringify({
+      id: 2,
+      method: 'depth.subscribe',
+      params: [`${ type }`, parseFloat(store.depth.count), '0.00000001']
+    }))
+  }
+)
 
 export default store

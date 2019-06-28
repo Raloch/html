@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './index.less'
 import Cookies from 'js-cookie'
-import { Table, message } from 'antd'
+import { Table, message, Icon } from 'antd'
 import moment from 'moment'
 import { inject, observer } from 'mobx-react'
 import { BeforeSendPost } from '../../../../components/Ajax'
@@ -120,6 +120,11 @@ class CurrentEntrust extends Component {
       current: current,
       onChange: this.pageChange
     } : null
+    const loadingStyle = {
+      spinning: currentLoading,
+      tip: 'Loading...',
+      indicator: <Icon type="loading" spin />
+    }
     return (
       <div className="current-entrust">
         <header>当前委托</header>
@@ -136,7 +141,7 @@ class CurrentEntrust extends Component {
             }}
             // 设置唯一行id，否则会出现超出pageSize的行数
             rowKey={ record => record.key + record.time }
-            loading={ currentLoading }
+            loading={ loadingStyle }
           />
         </main>
       </div>
