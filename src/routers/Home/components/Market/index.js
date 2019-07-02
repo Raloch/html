@@ -32,6 +32,9 @@ class ExchangeMarket extends Component {
   componentDidMount() {
     this.WebSocketInit()
   }
+  componentWillUnmount() {
+    // ws.close()
+  }
   WebSocketInit = () => {
     let _this = this
     if ("WebSocket" in window) {

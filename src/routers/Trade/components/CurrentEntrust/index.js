@@ -117,9 +117,9 @@ class CurrentEntrust extends Component {
       total: total,
       pageSize: pageSize,
       size: 'small',
-      current: current,
+      current: parseFloat(current),
       onChange: this.pageChange
-    } : null
+    } : {} // 分页问题 -- 此处不能写null，antd内部会报错
     const loadingStyle = {
       spinning: currentLoading,
       tip: 'Loading...',

@@ -47,13 +47,13 @@ class Store {
   // websocket
   @observable ws = null
   @action tradeWsInit = () => {
-    let _this = this
     if ("WebSocket" in window) {
     // 您的浏览器支持websocket
       if (this.ws === null) {
         this.ws = new WebSocket('wss://socket.coinex.com/')
       }
-      this.ws.onopen = function() {
+      // 此处的onopen可能不执行，可能会被K线中的onopen覆盖
+      this.ws.onopen = () => {
         message.success('websocket已连接')
         let data1 = {
           id: 1,
@@ -70,7 +70,7 @@ class Store {
         let data3 = {
           id: 2,
           method: 'depth.subscribe',
-          params: [`${ _this.currentCoinsType }`, parseFloat(_this.depth.count), '0.00000001']
+          params: [`${ this.currentCoinsType }`, parseFloat(this.depth.count), '0.00000001']
         }
         // 最新成交
         let data5 = {
@@ -78,18 +78,17 @@ class Store {
           method: 'deals.subscribe',
           params: ['BTCUSDT']
         }
-        // _this.ws.send(JSON.stringify(data1))
         setInterval(() => {
-          _this.ws.send(JSON.stringify(data1))
+          this.ws.send(JSON.stringify(data1))
         }, 3000)
-        // _this.ws.send(JSON.stringify(data2))
-        // _this.ws.send(JSON.stringify(data3))
-        // _this.ws.send(JSON.stringify(data5))
+        this.ws.send(JSON.stringify(data2))
+        this.ws.send(JSON.stringify(data3))
+        this.ws.send(JSON.stringify(data5))
       }
-      this.ws.onmessage = function(res) {
-        _this.updateMarket(res)
+      this.ws.onmessage = res => {
+        this.updateMarket(res)
       }
-      this.ws.onclose = function(res) {
+      this.ws.onclose = res => {
         message.warn('websocket连接关闭')
       }
     } else {
@@ -283,6 +282,46 @@ class Store {
         }
       }
     }
+    // k线 -- 实时数据
+    if (data.ttl === 400) {
+      let historyData = data.result.map(val => {
+        return {
+          time: Number(val[0]) * 1000,
+          close: Number(val[2]),
+          open: Number(val[1]),
+          high: Number(val[3]),
+          low: Number(val[4]),
+          volume: Number(val[5])
+        }
+      })
+      this.kline.lastTime = historyData[historyData.length - 1].time
+      this.kline.historyData = historyData
+      if (historyData && historyData.length) {
+        setTimeout(() => {
+          this.kline.HCK(historyData, { noData: false })
+        }, 0)
+      } else {
+        this.kline.HCK(historyData, { noData: true })
+      }
+    }
+    if (data.method === 'kline.update') {
+      let bars = data.params.map(val => {
+        return {
+          time: Number(val[0]) * 1000,
+          close: Number(val[2]),
+          open: Number(val[1]),
+          high: Number(val[3]),
+          low: Number(val[4]),
+          volume: Number(val[5])
+        }
+      })[0]
+      // 对比存储的最新时间和最新数据的时间大小来更新数据
+      if (this.kline.lastTime - bars.time <= 0) {
+        setTimeout(() => {
+          this.kline.SUB(bars)
+        }, 0)
+      }
+    }
   }
   // 更新最近成交
   @action updateNewDeal = arr => {
@@ -314,6 +353,15 @@ class Store {
     count: '20'
   }
   /* --- 深度 end --- */
+
+  /* --- k线 start --- */
+  @observable kline = {
+    historyData: [],
+    lastTime: 0,
+    HCK: null,
+    SUB: null
+  }
+  /* --- k线 end --- */
 
   /* --- 限价交易 start --- */
   @observable transactionData = {

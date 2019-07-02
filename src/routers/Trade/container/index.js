@@ -28,6 +28,9 @@ class Trade extends Component {
   componentDidMount() {
     this.props.Store.tradeWsInit()
   }
+  componentWillUnmount() {
+    // this.props.Store.ws.close()
+  }
   render() {
     return (
       <div className="trade-container">
