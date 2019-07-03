@@ -40,18 +40,18 @@ class Kline extends Component {
       },
       resolveSymbol: (symbolName, onSymbolResolvedCallback, onResolveErrorCallback) => {
         var symbol_stub = {
-          name: symbolName,
-          ticker: symbolName,
-          description: "",
+          name: symbolName, // 商品名称
+          ticker: symbolName, // 唯一标识符
+          description: "", // 商品说明
           has_intraday: true,
           has_no_volume: false,
-          minmov: 1,
+          minmov: 1, // 最小波动
           minmov2: 2,
-          pricescale: 100000,
-          session: "24x7",
-          supported_resolutions: ["1", "5", "15", "30", "60", "240", "1D", "1W", "1M"],
-          timezone: "Asia/Shanghai",
-          type: "stock"
+          pricescale: 100000000, // 价格精度
+          session: "24x7", // 商品交易时间
+          supported_resolutions: ["1", "5", "15", "30", "60", "240", "1D", "1W", "1M"], // 商品周期选择器中启用一个周期数组
+          timezone: "Etc/UTC",
+          type: "stock", // 仪表的可选类型
         }
         setTimeout(() => {
           onSymbolResolvedCallback(symbol_stub)
@@ -86,12 +86,11 @@ class Kline extends Component {
   // 需要等待setDataFeed动作结束
   widgetInit = () => {
     let _this = this
-    window.tvWidget = new window.TradingView.widget({
-      // debug: true,
-      fullscreen: false,
-      width: '100%',
-      height: 400,
-      symbol: 'BTCUSDT',
+    let widget = this.widget = window.tvWidget = new window.TradingView.widget({
+      debug: false,
+      fullscreen: false, // 是否全屏
+      autosize: true, // 是否占用所有可用空间
+      symbol: _this.props.Store.currentCoinsType, // 'ADABTC'
       interval: '15',
       container_id: "kline",
       // datafeed: new window.Datafeeds.UDFCompatibleDatafeed("https://demo_feed.tradingview.com"),
@@ -99,14 +98,110 @@ class Kline extends Component {
       library_path: "charting_library/",
       // locale: getParameterByName('lang') || "en",
       locale: "zh",
-      disabled_features: ["use_localstorage_for_settings"],
-      enabled_features: ["study_templates"],
+      disabled_features: [
+        // 'border_around_the_chart', // 图标边框
+        "use_localstorage_for_settings",
+        "symbol_search_hot_key",
+        "header_symbol_search", // 隐藏搜索按钮(ADABTC)
+        "header_compare", // 对比按钮
+        "header_undo_redo", // 撤销重做
+        "header_screenshot", // 截图按钮
+        "header_saveload", // 保存按钮
+        "caption_buttons_text_if_possible",
+        "go_to_date",
+        "snapshot_trading_drawings",
+        "show_hide_button_in_legend",
+        "symbol_info",
+        "display_market_status",
+        "remove_library_container_border",
+        "volume_force_overlay",
+        "header_interval_dialog_button",
+        "show_interval_dialog_on_key_press",
+        // "header_fullscreen_button"
+      ],
+      studies_overrides: {
+        "volume.volume.color.0": "#8A3A3B",
+        "volume.volume.color.1": "#6A833A",
+        "volume.volume.transparency": 65,
+        "volume.show ma": true
+      },
+      enabled_features: ["dont_show_boolean_study_arguments", "keep_left_toolbar_visible_on_small_screens", "side_toolbar_in_fullscreen_mode", "adaptive_logo"],
+      drawings_access: {
+        type: "black",
+        tools: [{
+          name: "Regression Trend"
+        }]
+      },
+      // enabled_features: ["study_templates"],
       charts_storage_url: 'http://saveload.tradingview.com',
       charts_storage_api_version: "1.1",
       client_id: 'tradingview.com',
-      user_id: 'public_user_id'
+      user_id: 'public_user_id',
+      toolbar_bg: '#fff', // 工具栏背景色
+      custom_css_url: '../../../../../charting_library/static/index.css', // 必须为css文件，切要放到charting_library文件夹下static里
+      overrides: {
+        volumePaneSize: "medium",
+        "scalesProperties.lineColor": "#838c97", // 刻度线颜色
+        "scalesProperties.textColor": "#838c97", // 图表字体色
+        "paneProperties.background": "#ffffff", // 图表背景色
+        "paneProperties.vertGridProperties.color": "#f7f8fa", // 栅格竖线
+        "paneProperties.horzGridProperties.color": "#f7f8fa", // 栅格横线
+        "paneProperties.crossHairProperties.color": "#8aa1Be", // 鼠标移动时坐标线颜色
+        "paneProperties.legendProperties.showLegend": false, // 横向线下文字（Volume(20)...）
+        "paneProperties.legendProperties.showStudyArguments": true,
+        "paneProperties.legendProperties.showStudyTitles": true,
+        "paneProperties.legendProperties.showStudyValues": true,
+        "paneProperties.legendProperties.showSeriesTitle": true,
+        "paneProperties.legendProperties.showSeriesOHLC": true,
+        "mainSeriesProperties.candleStyle.upColor": "#12B886",
+        "mainSeriesProperties.candleStyle.downColor": "#FA5252",
+        "mainSeriesProperties.candleStyle.drawWick": true,
+        "mainSeriesProperties.candleStyle.drawBorder": true,
+        "mainSeriesProperties.candleStyle.borderColor": "#838c97",
+        "mainSeriesProperties.candleStyle.borderUpColor": "#12B886",
+        "mainSeriesProperties.candleStyle.borderDownColor": "#FA5252",
+        "mainSeriesProperties.candleStyle.wickUpColor": "#12B886",
+        "mainSeriesProperties.candleStyle.wickDownColor": "#FA5252",
+        "mainSeriesProperties.candleStyle.barColorsOnPrevClose": !1,
+        "mainSeriesProperties.hollowCandleStyle.upColor": "#12B886",
+        "mainSeriesProperties.hollowCandleStyle.downColor": "#FA5252",
+        "mainSeriesProperties.hollowCandleStyle.drawWick": !0,
+        "mainSeriesProperties.hollowCandleStyle.drawBorder": !0,
+        "mainSeriesProperties.hollowCandleStyle.borderColor": "#838c97",
+        "mainSeriesProperties.hollowCandleStyle.borderUpColor": "#12B886",
+        "mainSeriesProperties.hollowCandleStyle.borderDownColor": "#FA5252",
+        "mainSeriesProperties.haStyle.upColor": "#12B886",
+        "mainSeriesProperties.haStyle.downColor": "#FA5252",
+        "mainSeriesProperties.haStyle.drawWick": !0,
+        "mainSeriesProperties.haStyle.drawBorder": !0,
+        "mainSeriesProperties.haStyle.borderColor": "#838c97",
+        "mainSeriesProperties.haStyle.borderUpColor": "#12B886",
+        "mainSeriesProperties.haStyle.borderDownColor": "#FA5252",
+        "mainSeriesProperties.haStyle.wickColor": "#838c97",
+        "mainSeriesProperties.haStyle.barColorsOnPrevClose": !1,
+        "mainSeriesProperties.barStyle.upColor": "#12B886",
+        "mainSeriesProperties.barStyle.downColor": "#FA5252",
+        "mainSeriesProperties.barStyle.barColorsOnPrevClose": !1,
+        "mainSeriesProperties.barStyle.dontDrawOpen": !1,
+        "mainSeriesProperties.lineStyle.color": "#838c97",
+        "mainSeriesProperties.lineStyle.linewidth": 1,
+        "mainSeriesProperties.lineStyle.priceSource": "close",
+        "mainSeriesProperties.areaStyle.color1": "rgba(71, 78, 112, 0.1)",
+        "mainSeriesProperties.areaStyle.color2": "rgba(71, 78, 112, 0.02)",
+        "mainSeriesProperties.areaStyle.linecolor": "#838c97",
+        "mainSeriesProperties.areaStyle.linewidth": 1,
+        "mainSeriesProperties.areaStyle.priceSource": "close"
+      }
     })
-    // window.addEventListener('DOMContentLoaded', this.widgetInit, false)
+    // 切换交易对 -- 该函数只在实例生成时执行一次，所以需要添加click的监听函数来触发
+    widget.onChartReady(() => {
+      // 点击market才会更改交易对，若点击其他地方，交易对没有改变，K线数据不会刷新，所以可直接监听document
+      document.addEventListener('click', () => {
+        widget.chart().setSymbol(this.props.Store.currentCoinsType, data => {
+          // console.log('k线数据刷新')
+        })
+      }, false)
+    })
   }
   // 将周期转换成秒
   timeConversion = time => {

@@ -1,0 +1,26 @@
+/* 设置底边栏样式 */
+.chart-controls-bar {
+  border: 0;
+  color: red;
+}
+.item-3cgIlGYO-, .button-88UE6omC-, .isInteractive-20uLObIc-, .button-88UE6omC-, .button-2ioYhFEY-.isInteractive-20uLObIc- {
+  color: #98B0C0;
+}
+
+/* 左边工具栏 */
+.button-263WXsg--.isActive-2mI1-NUL- .bg-1kRv1Pf2- {
+  background-color: #f2f3f5;
+}
+.button-263WXsg-- .icon-1Y-3MM9F- {
+  color: #98B0C0;
+}
+
+/* 顶部工具栏 */
+.button-13wlLwhJ- {
+  color: #98B0C0;
+}
+
+/* 中间图表样式 */
+.pane-legend-item-value-container .pane-legend-item-value-wrap:nth-child(6) {
+  display: none;
+}
