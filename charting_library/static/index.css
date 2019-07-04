@@ -24,3 +24,11 @@
 .pane-legend-item-value-container .pane-legend-item-value-wrap:nth-child(6) {
   display: none;
 }
+
+.button-reset {
+  color: #98B0C0;
+  padding: 0 5px;
+}
+.button-reset:hover {
+  color: #4c525e;
+}

@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import './index.less'
 import { inject, observer } from 'mobx-react'
-import { message } from 'antd';
+import { message } from 'antd'
+import $ from 'jquery'
 
 const config = {
   supports_search: false,
@@ -50,7 +51,7 @@ class Kline extends Component {
           pricescale: 100000000, // 价格精度
           session: "24x7", // 商品交易时间
           supported_resolutions: ["1", "5", "15", "30", "60", "240", "1D", "1W", "1M"], // 商品周期选择器中启用一个周期数组
-          timezone: "Etc/UTC",
+          timezone: 'Asia/Shanghai',
           type: "stock", // 仪表的可选类型
         }
         setTimeout(() => {
@@ -89,7 +90,9 @@ class Kline extends Component {
     let widget = this.widget = window.tvWidget = new window.TradingView.widget({
       debug: false,
       fullscreen: false, // 是否全屏
-      autosize: true, // 是否占用所有可用空间
+      // autosize: true, // 是否占用所有可用空间
+      width: '99%',
+      height: '100%',
       symbol: _this.props.Store.currentCoinsType, // 'ADABTC'
       interval: '15',
       container_id: "kline",
@@ -98,6 +101,7 @@ class Kline extends Component {
       library_path: "charting_library/",
       // locale: getParameterByName('lang') || "en",
       locale: "zh",
+      timezone: 'Asia/Shanghai',
       disabled_features: [
         // 'border_around_the_chart', // 图标边框
         "use_localstorage_for_settings",
@@ -117,7 +121,14 @@ class Kline extends Component {
         "volume_force_overlay",
         "header_interval_dialog_button",
         "show_interval_dialog_on_key_press",
+        "legend_context_menu"
         // "header_fullscreen_button"
+      ],
+      enabled_features: [
+        "dont_show_boolean_study_arguments",
+        "keep_left_toolbar_visible_on_small_screens",
+        "side_toolbar_in_fullscreen_mode",
+        "adaptive_logo"
       ],
       studies_overrides: {
         "volume.volume.color.0": "#8A3A3B",
@@ -125,7 +136,6 @@ class Kline extends Component {
         "volume.volume.transparency": 65,
         "volume.show ma": true
       },
-      enabled_features: ["dont_show_boolean_study_arguments", "keep_left_toolbar_visible_on_small_screens", "side_toolbar_in_fullscreen_mode", "adaptive_logo"],
       drawings_access: {
         type: "black",
         tools: [{
@@ -196,12 +206,23 @@ class Kline extends Component {
     // 切换交易对 -- 该函数只在实例生成时执行一次，所以需要添加click的监听函数来触发
     widget.onChartReady(() => {
       // 点击market才会更改交易对，若点击其他地方，交易对没有改变，K线数据不会刷新，所以可直接监听document
+      widget.chart().createStudy("Moving Average", false, false, [7], null, {"Plot.linewidth": 2,"plot.color": "#ffba70"});
+      widget.chart().createStudy("Moving Average", false, false, [30], null, {"Plot.linewidth": 2,"plot.color": "#6bcaed"})
       document.addEventListener('click', () => {
         widget.chart().setSymbol(this.props.Store.currentCoinsType, data => {
           // console.log('k线数据刷新')
         })
       }, false)
     })
+    // 创建自定义按钮
+    // widget.headerReady().then(() => {
+    //   let button = widget.createButton({ align: 'right' })
+    //   button.setAttribute('title', '重置')
+    //   button.setAttribute('class', 'button-reset')
+    //   button.textContent = '重置'
+    //   button.addEventListener('click', function() {
+    //   })
+    // })
   }
   // 将周期转换成秒
   timeConversion = time => {
