@@ -359,7 +359,9 @@ class Store {
     historyData: [],
     lastTime: 0,
     HCK: null,
-    SUB: null
+    SUB: null,
+    isShowDepth: true,
+    isFullScreen: false
   }
   /* --- k线 end --- */
 

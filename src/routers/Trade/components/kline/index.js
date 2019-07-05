@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './index.less'
 import { inject, observer } from 'mobx-react'
 import { message } from 'antd'
-import $ from 'jquery'
+import KlineDepth from './klinedepth'
 
 const config = {
   supports_search: false,
@@ -95,7 +95,7 @@ class Kline extends Component {
       height: '100%',
       symbol: _this.props.Store.currentCoinsType, // 'ADABTC'
       interval: '15',
-      container_id: "kline",
+      container_id: "tv_container",
       // datafeed: new window.Datafeeds.UDFCompatibleDatafeed("https://demo_feed.tradingview.com"),
       datafeed: _this.state.datafeed,
       library_path: "charting_library/",
@@ -214,15 +214,16 @@ class Kline extends Component {
         })
       }, false)
     })
-    // 创建自定义按钮
-    // widget.headerReady().then(() => {
-    //   let button = widget.createButton({ align: 'right' })
-    //   button.setAttribute('title', '重置')
-    //   button.setAttribute('class', 'button-reset')
-    //   button.textContent = '重置'
-    //   button.addEventListener('click', function() {
-    //   })
-    // })
+    // 创建自定义按钮 -- 深度图
+    widget.headerReady().then(() => {
+      let button = widget.createButton({ align: 'right' })
+      button.setAttribute('title', '深度图')
+      button.setAttribute('class', 'button-depth')
+      button.textContent = '深度图'
+      button.addEventListener('click', function() {
+        _this.props.Store.kline.isShowDepth = true
+      })
+    })
   }
   // 将周期转换成秒
   timeConversion = time => {
@@ -308,7 +309,10 @@ class Kline extends Component {
   }
   render() {
     return (
-      <div id="kline"></div>
+      <div className="kline">
+        <div id="tv_container"></div>
+        <KlineDepth />
+      </div>
     )
   }
 }

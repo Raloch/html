@@ -25,10 +25,10 @@
   display: none;
 }
 
-.button-reset {
+.button-depth {
   color: #98B0C0;
   padding: 0 5px;
 }
-.button-reset:hover {
+.button-depth:hover {
   color: #4c525e;
 }

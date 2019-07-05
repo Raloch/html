@@ -1,0 +1,66 @@
+.depth {
+  width: 100%;
+  height: 400px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  background: #fff;
+  flex-direction: column;
+  overflow: hidden;
+  header {
+    height: 38px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: calc(1% + 4px);
+    box-sizing: border-box;
+    border-bottom: 1px solid #eee;
+    .enlarge {
+      height: 28px;
+      cursor: default;
+      svg {
+        color: #98B0C0;
+        &:hover {
+          color: #4c525e;
+        }
+      }
+    }
+    .toKlineChart {
+      width: 52px;
+      height: 19px;
+      margin-left: 6px;
+      text-align: center;
+      cursor: default;
+      color: #98B0C0;
+      &:hover {
+        color: #4c525e;
+      }
+    }
+  }
+  #kline-depth {
+    flex: 1;
+    // 隐藏右上角设置按钮
+    .highcharts-exporting-group {
+      display: none;
+    }
+    // 隐藏highcharts的logo
+    .highcharts-credits {
+      display: none;
+    }
+    // 取消hover时opacity变化
+    .highcharts-series {
+      opacity: 1 !important;
+    }
+  }
+}
+
+.fullscreen {
+  position: fixed;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+}
