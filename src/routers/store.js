@@ -442,6 +442,11 @@ class Store {
           fillOpacity: 0.2,
           lineWidth: 1,
           step: 'center'
+        },
+        series: {
+          marker: {
+            enabled: false // 去除线条上的实心点
+          }
         }
       },
       tooltip: {
