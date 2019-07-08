@@ -12,6 +12,9 @@ import { BeforeSendGet, BeforeSendPost } from '../components/Ajax'
 import { message } from 'antd'
 import { dataBTC } from './Trade/components/coinsList'
 
+const Highcharts = require('highcharts')
+require('highcharts/modules/exporting')(Highcharts)
+
 class Store {
   @observable userInfo = {
     name: ''
@@ -148,7 +151,7 @@ class Store {
     if (data.method === 'depth.update') {
       // count为20, 50
       let count = parseFloat(this.depth.count)
-      // 封装处理20个数据的total
+      // 封装处理20/50个数据的total
       let handle = (arr, type) => {
         let len = arr.length
         let num = 0
@@ -160,15 +163,29 @@ class Store {
           }
           num += parseFloat(arr[i][1])
         }
+        // 给数组重新排序（原数组里有个别可能乱序）
+        arr.sort((a, b) => {
+          return a[0] - b[0]
+        })
         if (arr.length > count) {
           this.depth[type] = JSON.stringify(arr.slice(0, count))
         } else {
           this.depth[type] = JSON.stringify(arr.slice(0))
         }
+        let chartArr = JSON.parse(this.depth[type]).slice(0)
+        chartArr.forEach(val => {
+          val[0] = parseFloat(val[0])
+          val[1] = parseFloat(val[2])
+          val.length = 2
+        })
         if (type === 'askData') {
           this.depth.askTotal = num
+          // 给深度图asks赋值,深度图数据会更新(highcharts数据更新方法：chart.series[i].setData())
+          this.kline.chart.series[1].setData(chartArr)
         } else {
           this.depth.depthTotal = num
+          // 给深度图bids赋值
+          this.kline.chart.series[0].setData(chartArr)
         }
       }
       // 开始数据的全部显示
@@ -203,6 +220,7 @@ class Store {
                       if (askData.length > count) {
                         askData = askData.slice(0, count)
                       }
+                      break
                     }
                     if (parseFloat(arr[i][0]) > parseFloat(askData[j][0]) && parseFloat(arr[i][0]) < parseFloat(askData[j + 1][0])) {
                       askData.splice(j + 1, 0, arr[i])
@@ -254,6 +272,7 @@ class Store {
                       if (depthData.length > count) {
                         depthData = depthData.slice(0, count)
                       }
+                      break
                     }
                     if (parseFloat(arr[i][0]) > parseFloat(depthData[j][0]) && parseFloat(arr[i][0]) < parseFloat(depthData[j + 1][0])) {
                       depthData.splice(j + 1, 0, arr[i])
@@ -278,6 +297,7 @@ class Store {
           } else {
             depthData = depthData.slice(0)
           }
+          depthData = depthData.reverse()
           handle(depthData, 'depthData')
         }
       }
@@ -361,7 +381,105 @@ class Store {
     HCK: null,
     SUB: null,
     isShowDepth: true,
-    isFullScreen: false
+    isFullScreen: false,
+    chart: null // highcharts对象存储
+  }
+  @action highchartsInit = flag => {
+    this.kline.chart = Highcharts.chart('kline-depth', {
+      chart: {
+        type: 'areaspline',
+        zoomType: void 0 // 'xy'
+      },
+      title: {
+        text: '' // ETH-BTC Market Depth
+      },
+      xAxis: {
+        minPadding: 0,
+        maxPadding: 0,
+        plotLines: [{
+          color: '#888',
+          value: 0.1523,
+          width: 0, // 去除表格竖线
+          label: {
+            text: '', // Actual price
+            rotation: 90
+          }
+        }],
+        title: {
+          text: '' // Price
+        }
+      },
+      yAxis: [{
+        lineWidth: 1,
+        gridLineWidth: 0, // 去除表格横线
+        title: null,
+        tickWidth: 1,
+        tickLength: 5,
+        tickPosition: 'inside',
+        labels: {
+          align: 'left',
+          x: 8
+        }
+      }, {
+        opposite: true,
+        linkedTo: 0,
+        lineWidth: 1,
+        gridLineWidth: 0,
+        title: null,
+        tickWidth: 1,
+        tickLength: 5,
+        tickPosition: 'inside',
+        labels: {
+          align: 'right',
+          x: -8
+        }
+      }],
+      legend: {
+        enabled: false
+      },
+      plotOptions: {
+        area: {
+          fillOpacity: 0.2,
+          lineWidth: 1,
+          step: 'center'
+        }
+      },
+      tooltip: {
+        headerFormat: '<span style="font-size=10px;">价格: {point.key}</span><br/>',
+        valueDecimals: 2
+      },
+      series: [{
+        name: '累计', // Bids
+        data: [],
+        color: '#00b66f',
+        fillColor: 'rgba(0, 182, 111, 0.2)'
+      }, {
+        name: '累计', // Asks
+        data: [],
+        color: '#fc5857',
+        fillColor: 'rgba(252, 88, 87, 0.2)'
+      }],
+      credits: {
+        enabled: false // 去除版权信息
+      }
+    })
+    // 用于深度图放大缩小时重新赋入数据
+    if (flag) {
+      let chartArr0 = JSON.parse(this.depth.askData).slice(0)
+      let chartArr1 = JSON.parse(this.depth.depthData).slice(0)
+      chartArr0.forEach(val => {
+        val[0] = parseFloat(val[0])
+        val[1] = parseFloat(val[2])
+        val.length = 2
+      })
+      chartArr1.forEach(val => {
+        val[0] = parseFloat(val[0])
+        val[1] = parseFloat(val[2])
+        val.length = 2
+      })
+      this.kline.chart.series[0].setData(chartArr1)
+      this.kline.chart.series[1].setData(chartArr0)
+    }
   }
   /* --- k线 end --- */
 

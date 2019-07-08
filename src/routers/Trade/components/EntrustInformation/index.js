@@ -106,7 +106,7 @@ class EntrustInformation extends Component {
             </div>
             <div className="mode-depth" style={{ flex: store.depth.mode !== 1 ? 1 : 0, overflow: store.depth.mode !== 3 && store.depth.count === '50' ? 'auto' : 'hidden' }}>
               <ul>
-              { store.depth.depthData ? JSON.parse(store.depth.depthData).map(val => {
+              { store.depth.depthData ? JSON.parse(store.depth.depthData).reverse().map(val => {
                   return (
                     <li>
                       <p>{ val[0] }</p>

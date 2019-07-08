@@ -46,273 +46,28 @@ export const dataUSDT = [
   {
     key: '2',
     isCollected: true,
-    exchangePairs: 'YC',
+    exchangePairs: 'BTC',
     newPrice: '1230.00000000',
     highsAndLows: '1.00%'
   },
   {
     key: '3',
     isCollected: false,
-    exchangePairs: 'SC',
+    exchangePairs: 'LTC',
     newPrice: '10.01234000',
     highsAndLows: '-0.10%'
   },
   {
     key: '4',
     isCollected: false,
-    exchangePairs: 'BKK',
+    exchangePairs: 'ETH',
     newPrice: '0.00000000',
     highsAndLows: '00.00%'
   },
   {
     key: '5',
     isCollected: true,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '6',
-    isCollected: false,
-    exchangePairs: 'BCH',
-    newPrice: '0.00000000',
-    highsAndLows: '-00.00%'
-  },
-  {
-    key: '7',
-    isCollected: false,
-    exchangePairs: 'YC',
-    newPrice: '1230.00000000',
-    highsAndLows: '1.00%'
-  },
-  {
-    key: '8',
-    isCollected: false,
-    exchangePairs: 'SC',
-    newPrice: '10.01234000',
-    highsAndLows: '-0.10%'
-  },
-  {
-    key: '9',
-    isCollected: true,
-    exchangePairs: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '10',
-    isCollected: false,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '11',
-    isCollected: false,
-    exchangePairs: 'BCH',
-    newPrice: '0.00000000',
-    highsAndLows: '-00.00%'
-  },
-  {
-    key: '12',
-    isCollected: false,
-    exchangePairs: 'YC',
-    newPrice: '1230.00000000',
-    highsAndLows: '1.00%'
-  },
-  {
-    key: '13',
-    isCollected: false,
-    exchangePairs: 'SC',
-    newPrice: '10.01234000',
-    highsAndLows: '-0.10%'
-  },
-  {
-    key: '14',
-    isCollected: false,
-    exchangePairs: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '15',
-    isCollected: false,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '16',
-    isCollected: false,
-    exchangePairs: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '17',
-    isCollected: false,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '18',
-    isCollected: false,
-    exchangePairs: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '19',
-    isCollected: false,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '20',
-    isCollected: false,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '21',
-    isCollected: false,
-    exchangePairs: 'BCH',
-    newPrice: '0.00000000',
-    highsAndLows: '-00.00%'
-  },
-  {
-    key: '22',
-    isCollected: false,
-    exchangePairs: 'YC',
-    newPrice: '1230.00000000',
-    highsAndLows: '1.00%'
-  },
-  {
-    key: '23',
-    isCollected: false,
-    exchangePairs: 'SC',
-    newPrice: '10.01234000',
-    highsAndLows: '-0.10%'
-  },
-  {
-    key: '24',
-    isCollected: false,
-    exchangePairs: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '25',
-    isCollected: false,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '26',
-    isCollected: false,
-    exchangePairs: 'BCH',
-    newPrice: '0.00000000',
-    highsAndLows: '-00.00%'
-  },
-  {
-    key: '27',
-    isCollected: false,
-    exchangePairs: 'YC',
-    newPrice: '1230.00000000',
-    highsAndLows: '1.00%'
-  },
-  {
-    key: '28',
-    isCollected: false,
-    exchangePairs: 'SC',
-    newPrice: '10.01234000',
-    highsAndLows: '-0.10%'
-  },
-  {
-    key: '29',
-    isCollected: false,
-    exchangePairs: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '30',
-    isCollected: false,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '31',
-    isCollected: false,
-    exchangePairs: 'BCH',
-    newPrice: '0.00000000',
-    highsAndLows: '-00.00%'
-  },
-  {
-    key: '32',
-    isCollected: false,
-    exchangePairs: 'YC',
-    newPrice: '1230.00000000',
-    highsAndLows: '1.00%'
-  },
-  {
-    key: '33',
-    isCollected: false,
-    exchangePairs: 'SC',
-    newPrice: '10.01234000',
-    highsAndLows: '-0.10%'
-  },
-  {
-    key: '34',
-    isCollected: false,
-    exchangePairs: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '35',
-    isCollected: false,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '36',
-    isCollected: false,
-    exchangePairs: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '37',
-    isCollected: false,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '38',
-    isCollected: false,
-    exchangePairs: 'BKK',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '39',
-    isCollected: false,
-    exchangePairs: 'USDT',
-    newPrice: '0.00000000',
-    highsAndLows: '00.00%'
-  },
-  {
-    key: '40',
-    isCollected: false,
-    exchangePairs: 'USDT',
+    exchangePairs: 'EOS',
     newPrice: '0.00000000',
     highsAndLows: '00.00%'
   }
