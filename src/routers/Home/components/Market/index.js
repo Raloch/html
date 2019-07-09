@@ -43,7 +43,7 @@ class ExchangeMarket extends Component {
         ws = new WebSocket('wss://socket.coinex.com/')
       }
       ws.onopen = function() {
-        message.success('websocket已连接')
+        // message.success('websocket已连接')
         let data1 = {
           id: 1,
           method: 'server.ping',
@@ -62,7 +62,7 @@ class ExchangeMarket extends Component {
         _this.updateMarket(res)
       }
       ws.onclose = function(res) {
-        message.warn('websocket连接关闭')
+        // message.warn('websocket连接关闭')
       }
     } else {
       message.error('您的浏览器不支持websocket')

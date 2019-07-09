@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Form, Input, Button, Icon } from 'antd'
 import { inject, observer } from 'mobx-react'
+import './FormBox.less'
 const FormItem = Form.Item
 
 @inject('store')

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './index.less'
 import { inject, observer } from 'mobx-react'
-import { message } from 'antd'
+// import { message } from 'antd'
 import KlineDepth from './klinedepth'
 
 const config = {
@@ -72,7 +72,6 @@ class Kline extends Component {
         this.sendKlineSubReq(params)
       },
       unsubscribeBars(subscriberUID){
-
       },
       getMarks(symbolInfo, startDate, endDate, onDataCallback, resolution){
 
@@ -278,7 +277,7 @@ class Kline extends Component {
       ws.send(JSON.stringify(data))
     } else {
       ws.onopen = () => {
-        message.success('ws连接成功')
+        // message.success('ws连接成功')
         setInterval(() => {
           ws.send(JSON.stringify(data1))
         }, 3000)

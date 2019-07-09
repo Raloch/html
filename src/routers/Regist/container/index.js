@@ -105,7 +105,7 @@ class Regist extends Component {
                         footer={[
                             <Button key="back" onClick={this.handleCancel}>关闭</Button>,
                         ]}
-                        >
+                    >
                         <Drotocol />
                     </Modal>
                 </div>

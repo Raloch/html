@@ -100,7 +100,7 @@ class SideMenu extends Component {
         // 退出登录请求
         BeforeSendPost("/api/v1/user/logout", '', function(d){
             if(d.code === 0) {
-                message.success('退出登录')
+                // message.success('退出登录')
             }else {
                 // message.error('退出登录失败！')
             }

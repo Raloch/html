@@ -51,7 +51,7 @@ class Transaction extends Component {
   }
   buy = () => {
     let obj = {
-      market: 'BTCUSDT',
+      market: `${ this.props.Store.currentCoinsType }`,
       side: 'buy',
       amount: this.props.Store.transactionData.buyAmount1,
       price: this.props.Store.transactionData.buyPrice1
@@ -60,7 +60,7 @@ class Transaction extends Component {
   }
   sell = () => {
     let obj = {
-      market: 'BTCUSDT',
+      market: `${ this.props.Store.currentCoinsType }`,
       side: 'sell',
       amount: this.props.Store.transactionData.sellAmount1,
       price: this.props.Store.transactionData.sellPrice1

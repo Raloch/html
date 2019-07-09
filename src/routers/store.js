@@ -33,8 +33,8 @@ class Store {
   
   // 币币交易当前页面币种
   @observable currencyTrading = {
-    coinsTypeTitle: 'BTC',
-    coinsType: 'ADA'
+    coinsTypeTitle: 'USDT',
+    coinsType: 'BTC'
   }
   @computed get currentCoinsType() {
     // return 'BTCUSDT'
@@ -57,7 +57,7 @@ class Store {
       }
       // 此处的onopen可能不执行，可能会被K线中的onopen覆盖
       this.ws.onopen = () => {
-        message.success('websocket已连接')
+        // message.success('websocket已连接')
         let data1 = {
           id: 1,
           method: 'server.ping',
@@ -79,7 +79,7 @@ class Store {
         let data5 = {
           id: 5,
           method: 'deals.subscribe',
-          params: ['BTCUSDT']
+          params: [`${ this.currentCoinsType }`]
         }
         setInterval(() => {
           this.ws.send(JSON.stringify(data1))
@@ -92,7 +92,7 @@ class Store {
         this.updateMarket(res)
       }
       this.ws.onclose = res => {
-        message.warn('websocket连接关闭')
+        // message.warn('websocket连接关闭')
       }
     } else {
       message.error('您的浏览器不支持websocket')
@@ -317,6 +317,7 @@ class Store {
       this.kline.lastTime = historyData[historyData.length - 1].time
       this.kline.historyData = historyData
       if (historyData && historyData.length) {
+        // HCK是Kline组件传过来的函数，当websocket启动后退出trade页面，websocket继续执行，而Kline组件已销毁，HCK方法不存在，会报错Cannot read property 'tradingViewApi' of null，所以要判断是否为trade页面，否则不执行HCK方法
         setTimeout(() => {
           this.kline.HCK(historyData, { noData: false })
         }, 0)
@@ -324,6 +325,7 @@ class Store {
         this.kline.HCK(historyData, { noData: true })
       }
     }
+    // k线 -- 历史数据
     if (data.method === 'kline.update') {
       let bars = data.params.map(val => {
         return {
@@ -380,7 +382,7 @@ class Store {
     lastTime: 0,
     HCK: null,
     SUB: null,
-    isShowDepth: true,
+    isShowDepth: false,
     isFullScreen: false,
     chart: null // highcharts对象存储
   }
@@ -614,7 +616,7 @@ class Store {
       let _this = this
       BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
         if (d.code === 0) {
-          message.success('买入成功')
+          // message.success('买入成功')
           // 更新当前委托
           _this.getCurrentData()
           // 更新历史委托 -- 挂单出去后当前委托立即更新，历史委托不是及时更新，需要定时器来等待历史委托的更新
@@ -631,7 +633,7 @@ class Store {
       let _this = this
       BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
         if (d.code === 0) {
-          message.success('买入成功')
+          // message.success('买入成功')
           // 更新当前委托
           _this.getCurrentData()
           // 更新历史委托 -- 挂单出去后当前委托立即更新，历史委托不是及时更新，需要定时器来等待历史委托的更新
@@ -652,7 +654,7 @@ class Store {
       let _this = this
       BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
         if (d.code === 0) {
-          message.success('卖出成功')
+          // message.success('卖出成功')
           // 更新当前委托
           _this.getCurrentData()
           // 更新历史委托
@@ -667,7 +669,7 @@ class Store {
       let _this = this
       BeforeSendPost('/api/v1/user/order/put-limit', obj, function(d) {
         if (d.code === 0) {
-          message.success('卖出成功')
+          // message.success('卖出成功')
           // 更新当前委托
           _this.getCurrentData()
           // 更新历史委托
@@ -696,7 +698,7 @@ class Store {
     this.getCurrentData()
     setInterval(() => {
       this.getCurrentData()
-    }, 5000000)
+    }, 1000000)
   }
   // 获取当前委托数据
   @action getCurrentData = () => {
@@ -709,19 +711,21 @@ class Store {
     BeforeSendGet('/api/v1/user/order/pending', obj, function(d) {
       if (d.code === 0) {
         let data = []
-        d.result.records.forEach((val, i) => {
-          data[i] = {
-            key: `${ val.id }`,
-            ctime: val.ctime,
-            side: val.side,
-            price: val.price,
-            amount: val.amount,
-            left: val.left,
-            deal_stock: val.deal_stock,
-            deal_money: val.deal_money,
-            operation: '撤销'
-          }
-        })
+        if (d.result.records.length > 0) {
+          d.result.records.forEach((val, i) => {
+            data[i] = {
+              key: `${ val.id }`,
+              ctime: val.ctime,
+              side: val.side,
+              price: val.price,
+              amount: val.amount,
+              left: val.left,
+              deal_stock: val.deal_stock,
+              deal_money: val.deal_money,
+              operation: '撤销'
+            }
+          })
+        }
         _this.currentData.currentEntrustData = data
         _this.currentData.currentLoading = false
       }
@@ -745,7 +749,7 @@ class Store {
     this.getHistoryData()
     setInterval(() => {
       this.getHistoryData()
-    }, 5000000);
+    }, 1000000);
   }
   // 获取历史委托数据
   @action getHistoryData = () => {

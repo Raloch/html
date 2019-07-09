@@ -35,7 +35,7 @@ class CurrentEntrust extends Component {
     }
     BeforeSendPost('/api/v1/user/order/cancel', obj, function(d) {
       if (d.code === 0) {
-        message.success('撤销成功')
+        // message.success('撤销成功')
         _this.props.Store.getCurrentData()
       }
     })
