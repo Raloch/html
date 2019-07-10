@@ -26,10 +26,23 @@ class Trade extends Component {
     }
   }
   componentDidMount() {
-    this.props.Store.tradeWsInit()
+    const store = this.props.Store
+    store.urlpath = '/trade'
+    if (store.ws === null) {
+      store.tradeWsInit('trade')
+    } else {
+      store.sendReq(2, 'state.subscribe', [])
+      store.sendReq(2, 'depth.subscribe', [`${ store.currentCoinsType }`, parseFloat(store.depth.count), '0.00000001'])
+      store.sendReq(5, 'deals.subscribe', [`${ store.currentCoinsType }`])
+    }
   }
   componentWillUnmount() {
-    // this.props.Store.ws.close()
+    const store = this.props.Store
+    store.urlpath = ''
+    store.market.BTCLoading = true
+    store.sendReq(2, 'state.unsubscribe', [])
+    store.sendReq(2, 'depth.unsubscribe', [])
+    store.sendReq(5, 'deals.unsubscribe', [])
   }
   render() {
     return (

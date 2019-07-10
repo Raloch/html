@@ -22,8 +22,6 @@ class Market extends Component {
       activeKeyBefore: '1'
     }
   }
-  componentDidMount() {
-  }
   // 币种改变 -- 根据自选框有无选中展示数据
   activeKeyChange = (key) => {
     this.setState({
@@ -192,17 +190,14 @@ class Market extends Component {
   // 点击收藏按钮收藏
   rowClick = (record, rowkey) => {
     return {
-      onClick: (e) => {
+      onClick: e => {
+        const store = this.props.Store
         if (e.target.className === 'collectStar') {
           record.isCollected = !record.isCollected
         } else {
-          this.props.Store.currencyTrading.coinsType = record.exchangePairs
-          this.props.Store.newDeal.newDealLoading = true
-          this.props.Store.wsSend({
-            id: 5,
-            method: 'deals.subscribe',
-            params: [record.exchangePairs + 'BTC']
-          })
+          store.currencyTrading.coinsType = record.exchangePairs
+          store.newDeal.newDealLoading = true
+          store.sendReq(5, 'deals.subscribe', [record.exchangePairs + 'BTC'])
         }
       }
     }

@@ -11,6 +11,7 @@ import { observable, action, computed, reaction } from 'mobx'
 import { BeforeSendGet, BeforeSendPost } from '../components/Ajax'
 import { message } from 'antd'
 import { dataBTC } from './Trade/components/coinsList'
+import { dataBTC as homedataBTC } from './Home/components/marketList'
 
 const Highcharts = require('highcharts')
 require('highcharts/modules/exporting')(Highcharts)
@@ -30,11 +31,19 @@ class Store {
   // 鲁锐 -- start
   /* ---------------------------------------------- 币币交易 start ----------------------------------------------- */
 
+  @observable urlpath = ''
+  // 主页
+  @observable USDTLoading = false
+  @observable BTCLoading = true
+  @observable ETHLoading = false
+  @observable BCTLoading = false
+  @observable collectLoading = false
+  @observable isUpdate = true
   
   // 币币交易当前页面币种
   @observable currencyTrading = {
-    coinsTypeTitle: 'USDT',
-    coinsType: 'BTC'
+    coinsTypeTitle: 'BTC',
+    coinsType: 'ADA'
   }
   @computed get currentCoinsType() {
     // return 'BTCUSDT'
@@ -49,7 +58,7 @@ class Store {
 
   // websocket
   @observable ws = null
-  @action tradeWsInit = () => {
+  @action tradeWsInit = from => {
     if ("WebSocket" in window) {
     // 您的浏览器支持websocket
       if (this.ws === null) {
@@ -58,35 +67,18 @@ class Store {
       // 此处的onopen可能不执行，可能会被K线中的onopen覆盖
       this.ws.onopen = () => {
         // message.success('websocket已连接')
-        let data1 = {
-          id: 1,
-          method: 'server.ping',
-          params: []
-        }
-        // 交易市场
-        let data2 = {
-          id: 2,
-          method: 'state.subscribe',
-          params: []
-        }
-        // 深度
-        let data3 = {
-          id: 2,
-          method: 'depth.subscribe',
-          params: [`${ this.currentCoinsType }`, parseFloat(this.depth.count), '0.00000001']
-        }
-        // 最新成交
-        let data5 = {
-          id: 5,
-          method: 'deals.subscribe',
-          params: [`${ this.currentCoinsType }`]
-        }
+        // 每个一段时间ping一次，防止断开
+        this.sendReq(1, 'server.ping', [])
         setInterval(() => {
-          this.ws.send(JSON.stringify(data1))
+          this.sendReq(1, 'server.ping', [])
         }, 3000)
-        this.ws.send(JSON.stringify(data2))
-        this.ws.send(JSON.stringify(data3))
-        this.ws.send(JSON.stringify(data5))
+        this.sendReq(2, 'state.subscribe', []) // 交易市场
+        if (from === 'trade') {
+          // 深度
+          store.sendReq(2, 'depth.subscribe', [`${ store.currentCoinsType }`, parseFloat(store.depth.count), '0.00000001'])
+          // 最近成交
+          store.sendReq(5, 'deals.subscribe', [`${ store.currentCoinsType }`])
+        }
       }
       this.ws.onmessage = res => {
         this.updateMarket(res)
@@ -98,13 +90,21 @@ class Store {
       message.error('您的浏览器不支持websocket')
     }
   }
+  @action sendReq = (id, method, params) => {
+    let obj = {
+      id: id,
+      method: method,
+      params: params
+    }
+    this.ws.send(JSON.stringify(obj))
+  }
   @action wsSend = obj => {
     this.ws.send(JSON.stringify(obj))
   }
   @action updateMarket = res => {
     const data = JSON.parse(res.data)
-    // 交易市场 -- data2
-    if (data.method === 'state.update') {
+    // 币币交易 -- market
+    if (this.urlpath === '/trade' && data.method === 'state.update') {
       let params = data.params[0]
       // 循环获取的数据更新本地数据
       dataBTC.forEach((val, i) => {
@@ -118,8 +118,26 @@ class Store {
       this.market.isUpdate = !this.market.isUpdate
       this.market.BTCLoading = false
     }
-    // 最近成交 -- data5
-    if (data.method === 'deals.update') {
+    // 主页 -- market
+    if (this.urlpath === '/home' && data.method === 'state.update') {
+      let params = data.params[0]
+      homedataBTC.forEach((val, i) => {
+        let keyArr = Object.keys(params)
+        let name = val.exchangePairs.replace('/', '')
+        if (keyArr.includes(name)) {
+          let obj = params[name]
+          val.newPrice = obj.last
+          val.highestPrice = obj.high
+          val.minimumPrice = obj.low
+          val.dailyVolume = obj.volume
+          val.dailyTurnover = obj.deal + ' BTC'
+        }
+      })
+      this.BTCLoading = false
+      this.isUpdate = !this.isUpdate
+    }
+    // 最近成交
+    if (this.urlpath === '/trade' && data.method === 'deals.update') {
       if (data.params[1].length > 100) {
         let arr = []
         data.params[1].forEach((val, i) => {
@@ -148,7 +166,7 @@ class Store {
       }
     }
     // 深度
-    if (data.method === 'depth.update') {
+    if (this.urlpath === '/trade' && data.method === 'depth.update') {
       // count为20, 50
       let count = parseFloat(this.depth.count)
       // 封装处理20/50个数据的total
@@ -303,7 +321,7 @@ class Store {
       }
     }
     // k线 -- 实时数据
-    if (data.ttl === 400) {
+    if (this.urlpath === '/trade' && typeof data.ttl === 'number') {
       let historyData = data.result.map(val => {
         return {
           time: Number(val[0]) * 1000,
@@ -326,7 +344,7 @@ class Store {
       }
     }
     // k线 -- 历史数据
-    if (data.method === 'kline.update') {
+    if (this.urlpath === '/trade' && data.method === 'kline.update') {
       let bars = data.params.map(val => {
         return {
           time: Number(val[0]) * 1000,
@@ -792,22 +810,14 @@ const store = new Store()
 const reaction1 = reaction(
   () => store.depth.count,
   count => {
-    store.ws.send(JSON.stringify({
-      id: 2,
-      method: 'depth.subscribe',
-      params: [`${ store.currentCoinsType }`, parseFloat(count), '0.00000001']
-    }))
+    store.sendReq(2, 'depth.subscribe', [`${ store.currentCoinsType }`, parseFloat(store.depth.count), '0.00000001'])
   }
 )
 
 const reaction2 = reaction(
   () => store.currentCoinsType,
   type => {
-    store.ws.send(JSON.stringify({
-      id: 2,
-      method: 'depth.subscribe',
-      params: [`${ type }`, parseFloat(store.depth.count), '0.00000001']
-    }))
+    store.sendReq(2, 'depth.subscribe', [`${ type }`, parseFloat(store.depth.count), '0.00000001'])
   }
 )
 

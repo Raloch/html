@@ -4,20 +4,7 @@ import { inject, observer } from 'mobx-react'
 // import { message } from 'antd'
 import KlineDepth from './klinedepth'
 
-const config = {
-  supports_search: false,
-  supports_group_request: false,
-  supported_resolutions : ["1", "5", "15", "30", "60", "1D", "1W"],
-  supports_marks: true,
-  supports_time: true,
-  exchanges: [
-    {
-      value: 'BCH',
-      name: 'All Exchanges',
-      desc: ''
-    }
-  ]
-}
+let widget
 
 @inject('Store')
 @observer
@@ -31,11 +18,28 @@ class Kline extends Component {
   componentDidMount() {
     this.setDataFeed()
   }
+  componentWillUnmount() {
+    document.removeEventListener('click', this.refreshKline, false)
+  }
   // 设置datafeed配置数据
   setDataFeed = () => {
     let datafeed = {
       onReady: cb => {
         setTimeout(() => {
+          const config = {
+            supports_search: false,
+            supports_group_request: false,
+            supported_resolutions : ["1", "5", "15", "30", "60", "1D", "1W"],
+            supports_marks: true,
+            supports_time: true,
+            exchanges: [
+              {
+                value: 'BCH',
+                name: 'All Exchanges',
+                desc: ''
+              }
+            ]
+          }
           cb(config)
         }, 0);
       },
@@ -86,7 +90,7 @@ class Kline extends Component {
   // 需要等待setDataFeed动作结束
   widgetInit = () => {
     let _this = this
-    let widget = this.widget = window.tvWidget = new window.TradingView.widget({
+    widget = this.widget = window.tvWidget = new window.TradingView.widget({
       debug: false,
       fullscreen: false, // 是否全屏
       // autosize: true, // 是否占用所有可用空间
@@ -207,11 +211,8 @@ class Kline extends Component {
       // 点击market才会更改交易对，若点击其他地方，交易对没有改变，K线数据不会刷新，所以可直接监听document
       widget.chart().createStudy("Moving Average", false, false, [7], null, {"Plot.linewidth": 2,"plot.color": "#ffba70"});
       widget.chart().createStudy("Moving Average", false, false, [30], null, {"Plot.linewidth": 2,"plot.color": "#6bcaed"})
-      document.addEventListener('click', () => {
-        widget.chart().setSymbol(this.props.Store.currentCoinsType, data => {
-          // console.log('k线数据刷新')
-        })
-      }, false)
+      // 离开页面时需要移除监听，否则会报错
+      document.addEventListener('click', this.refreshKline, false)
     })
     // 创建自定义按钮 -- 深度图
     widget.headerReady().then(() => {
@@ -222,6 +223,11 @@ class Kline extends Component {
       button.addEventListener('click', function() {
         _this.props.Store.kline.isShowDepth = true
       })
+    })
+  }
+  refreshKline = () => {
+    widget.chart().setSymbol(this.props.Store.currentCoinsType, data => {
+      // console.log('k线数据刷新')
     })
   }
   // 将周期转换成秒
@@ -249,42 +255,21 @@ class Kline extends Component {
   }
   // websocket发送请求
   sendRequest = data => {
-    let ws = this.props.Store.ws
-    let data1 = {
-      id: 1,
-      method: 'server.ping',
-      params: []
-    }
-    // 交易市场
-    let data2 = {
-      id: 2,
-      method: 'state.subscribe',
-      params: []
-    }
-    // 深度
-    let data3 = {
-      id: 2,
-      method: 'depth.subscribe',
-      params: [`${ this.props.Store.currentCoinsType }`, parseFloat(this.props.Store.depth.count), '0.00000001']
-    }
-    // 最新成交
-    let data5 = {
-      id: 5,
-      method: 'deals.subscribe',
-      params: ['BTCUSDT']
-    }
+    const store = this.props.Store
+    let ws = store.ws
     if (ws.readyState === 1) {
       ws.send(JSON.stringify(data))
     } else {
       ws.onopen = () => {
         // message.success('ws连接成功')
+        store.sendReq(1, 'server.ping', [])
         setInterval(() => {
-          ws.send(JSON.stringify(data1))
+          store.sendReq(1, 'server.ping', [])
         }, 3000)
-        ws.send(JSON.stringify(data2))
-        ws.send(JSON.stringify(data3))
-        ws.send(JSON.stringify(data5))
         ws.send(JSON.stringify(data))
+        store.sendReq(2, 'state.subscribe', [])
+        store.sendReq(2, 'depth.subscribe', [`${ store.currentCoinsType }`, parseFloat(store.depth.count), '0.00000001'])
+        store.sendReq(5, 'deals.subscribe', [`${ store.currentCoinsType }`])
       }
     }
   }
