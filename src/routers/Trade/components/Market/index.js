@@ -23,7 +23,7 @@ class Market extends Component {
     }
   }
   // 币种改变 -- 根据自选框有无选中展示数据
-  activeKeyChange = (key) => {
+  activeKeyChange = key => {
     this.setState({
       activeKey: key
     })
