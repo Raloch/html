@@ -5,6 +5,7 @@ import { message } from 'antd'
 import { dataBTC } from '../../Trade/components/coinsList'
 import { dataBTC as homedataBTC } from '../../Home/components/marketList'
 import home from './home'
+import kline from './kline'
 
 const Highcharts = require('highcharts')
 require('highcharts/modules/exporting')(Highcharts)
@@ -28,34 +29,39 @@ class Trade {
 
   // websocket
   @observable ws = null
-  @action tradeWsInit = from => {
+  @observable timer = null
+  @action tradeWsInit = (from, ifRenderKline) => {
     if ("WebSocket" in window) {
     // 您的浏览器支持websocket
-      if (this.ws === null) {
+      if (this.ws === null || this.ws.readyState === 3) {
         this.ws = new WebSocket('wss://socket.coinex.com/')
       }
       // 此处的onopen可能不执行，可能会被K线中的onopen覆盖
       this.ws.onopen = () => {
-        // message.success('websocket已连接')
         // 每个一段时间ping一次，防止断开
         this.sendReq(1, 'server.ping', [])
-        setInterval(() => {
+        this.timer = setInterval(() => {
           this.sendReq(1, 'server.ping', [])
         }, 3000)
         this.sendReq(2, 'state.subscribe', []) // 交易市场
         // 直接输入url进入，不通过home页进入需要该代码
-        if (from === 'trade') {
+        if (from === '/trade') {
           // 深度
           this.sendReq(2, 'depth.subscribe', [`${ this.currentCoinsType }`, parseFloat(this.depth.count), '0.00000001'])
           // 最近成交
           this.sendReq(5, 'deals.subscribe', [`${ this.currentCoinsType }`])
+          if (ifRenderKline) {
+            kline.setDataFeed()
+          }
         }
       }
       this.ws.onmessage = res => {
         this.updateMarket(res)
       }
       this.ws.onclose = res => {
-        console.log('websocket连接关闭')
+        console.log('websocket连接断开')
+        clearTimeout(this.timer)
+        this.tradeWsInit(home.urlpath, true)
       }
     } else {
       message.error('您的浏览器不支持websocket')
@@ -334,6 +340,7 @@ class Trade {
       }
     }
   }
+  
   // 更新最近成交
   @action updateNewDeal = arr => {
     this.newDeal.newDealData = arr

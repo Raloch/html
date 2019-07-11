@@ -30,7 +30,7 @@ class Trade extends Component {
     const home = this.props.home
     home.urlpath = '/trade'
     if (trade.ws === null) {
-      trade.tradeWsInit('trade')
+      trade.tradeWsInit('/trade')
     } else {
       trade.sendReq(2, 'state.subscribe', [])
       trade.sendReq(2, 'depth.subscribe', [`${ trade.currentCoinsType }`, parseFloat(trade.depth.count), '0.00000001'])

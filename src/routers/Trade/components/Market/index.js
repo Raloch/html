@@ -174,8 +174,22 @@ class Market extends Component {
           record.isCollected = !record.isCollected
         } else {
           trade.currencyTrading.coinsType = record.exchangePairs
+          switch(this.state.activeKey) {
+            case '1':
+              trade.currencyTrading.coinsTypeTitle = 'BTC'
+              break
+            case '2':
+              trade.currencyTrading.coinsTypeTitle = 'USDT'
+              break
+            case '3':
+              trade.currencyTrading.coinsTypeTitle = 'ETH'
+              break
+            case '4':
+              trade.currencyTrading.coinsTypeTitle = 'BCT'
+              break
+          }
           trade.newDeal.newDealLoading = true
-          trade.sendReq(5, 'deals.subscribe', [record.exchangePairs + 'BTC'])
+          trade.sendReq(5, 'deals.subscribe', [trade.currentCoinsType])
         }
       }
     }
