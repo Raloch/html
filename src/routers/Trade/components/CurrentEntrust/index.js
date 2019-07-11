@@ -8,7 +8,7 @@ import { BeforeSendPost } from '../../../../components/Ajax'
 
 import Empty from '../../../../components/Empty'
 
-@inject('Store')
+@inject('trade')
 @observer
 class CurrentEntrust extends Component {
   constructor(props) {
@@ -21,22 +21,22 @@ class CurrentEntrust extends Component {
   }
   componentDidMount() {
     if (Cookies.get('account')) {
-      this.props.Store.currentDataInit()
+      this.props.trade.currentDataInit()
     } else {
-      this.props.Store.currentData.currentLoading = false
+      this.props.trade.currentData.currentLoading = false
     }
   }
   // 撤销
   revoke = id => {
     let _this = this
     let obj = {
-      market: this.props.Store.currentCoinsType,
+      market: this.props.trade.currentCoinsType,
       orderid: id
     }
     BeforeSendPost('/api/v1/user/order/cancel', obj, function(d) {
       if (d.code === 0) {
         // message.success('撤销成功')
-        _this.props.Store.getCurrentData()
+        _this.props.trade.getCurrentData()
       }
     })
   }
@@ -45,8 +45,8 @@ class CurrentEntrust extends Component {
     this.setState({
       current: page
     }, () => {
-      this.props.Store.currentPageChange(page - 1)
-      this.props.Store.getCurrentData()
+      this.props.trade.currentPageChange(page - 1)
+      this.props.trade.getCurrentData()
     })
   }
   render() {
@@ -110,7 +110,7 @@ class CurrentEntrust extends Component {
         }
       }
     ]
-    const { currentEntrustData, currentLoading } = this.props.Store.currentData
+    const { currentEntrustData, currentLoading } = this.props.trade.currentData
     const data = Cookies.get('loginState') ? currentEntrustData : []
     const paginationProps = Cookies.get('loginState') ? {
       showQuickJumper: true,

@@ -7,7 +7,7 @@ import { inject, observer } from 'mobx-react'
 
 import Empty from '../../../../components/Empty'
 
-@inject('Store')
+@inject('trade')
 @observer
 class HistoryEntrust extends Component {
   constructor(props) {
@@ -25,9 +25,9 @@ class HistoryEntrust extends Component {
   }
   componentDidMount() {
     if (Cookies.get('account')) {
-      this.props.Store.historyDataInit()
+      this.props.trade.historyDataInit()
     } else {
-      this.props.Store.historyData.historyLoading = false
+      this.props.trade.historyData.historyLoading = false
     }
   }
   // 页数改变数据更新
@@ -35,8 +35,8 @@ class HistoryEntrust extends Component {
     this.setState({
       current: page
     }, () => {
-      this.props.Store.historyPageChange(page - 1)
-      this.props.Store.getHistoryData()
+      this.props.trade.historyPageChange(page - 1)
+      this.props.trade.getHistoryData()
     })
   }
   showExchangeDetailModal = (record, rowKey) => {
@@ -161,7 +161,7 @@ class HistoryEntrust extends Component {
         text6: 'Taker'
       }
     ]
-    const { historyEntrustData, historyLoading } = this.props.Store.historyData
+    const { historyEntrustData, historyLoading } = this.props.trade.historyData
     const data = Cookies.get('account') ? historyEntrustData : []
     const paginationProps = Cookies.get('account') ? {
       showQuickJumper: true,

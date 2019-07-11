@@ -3,12 +3,8 @@ import React, { Component } from 'react'
 import { Provider, inject, observer } from 'mobx-react'
 import { message, Modal, Button, Input, Form, Tabs, Icon, Table, Divider, Tag } from 'antd'
 // import Highlighter from 'react-highlight-words'
-import $ from  'jquery'
 import CryptoJS from 'crypto-js'
-import FormBox from '../components/FormBox'
-import Cookies from 'js-cookie'
 import store from '../store'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
 // import axios from 'axios'
 import ReactSwiper from 'reactjs-swiper';
 import './index.less'
@@ -34,24 +30,18 @@ import wechatCode from '../images/wechat-cade.png'
 import Notices from '@/routers/Notice/NoticeMenu/noticeMenu'
 import sliders3 from '../images/banner3.jpg'
 import ExchangeMarket from '../components/Market'
-// import { withRouter } from 'react-router-dom'
-const Search = Input.Search;
-const FormItem = Form.Item
-const { TabPane } = Tabs
 
 @inject('Store')
 @observer
-// @withRouter
 class Home extends Component {
     constructor() {
         super()
         this.store = new store() // 在这里实例化，保证每次加载组件数据的初始化。
-        // console.log(this.store);
     }
     state = {
         loading: false,
     }
-    getNotice = ( key, event) => {
+    getNotice = (key, event) => {
         sessionStorage.dtkey = key;
 	    this.props.history.push('/notice');
     }

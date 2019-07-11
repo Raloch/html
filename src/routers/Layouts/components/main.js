@@ -15,7 +15,7 @@ class Main extends Component {
         super(props)
         message.config({
             maxCount: 1, // 最大消息显示数量
-          });
+        })
     }
     componentWillMount(){
         let { userInfo,updateName } = this.props.Store

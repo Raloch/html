@@ -2,33 +2,30 @@ import React, { Component } from 'react'
 import './index.less'
 import { inject, observer } from 'mobx-react'
 
-// const Highcharts = require('highcharts')
-// require('highcharts/modules/exporting')(Highcharts)
-
-@inject('Store')
+@inject('trade')
 @observer
 class KlineDepth extends Component {
   componentDidMount() {
-    this.props.Store.highchartsInit(false)
+    this.props.trade.highchartsInit(false)
   }
   close = () => {
-    this.props.Store.kline.isShowDepth = false
-    this.props.Store.kline.isFullScreen = false
+    this.props.trade.kline.isShowDepth = false
+    this.props.trade.kline.isFullScreen = false
     setTimeout(() => {
-      this.props.Store.highchartsInit(true)
+      this.props.trade.highchartsInit(true)
     }, 0)
   }
   setfullscreen = () => {
-    this.props.Store.kline.isFullScreen = !this.props.Store.kline.isFullScreen
+    this.props.trade.kline.isFullScreen = !this.props.trade.kline.isFullScreen
     // 异步等待上面执行完毕
     setTimeout(() => {
-      this.props.Store.highchartsInit(true)
+      this.props.trade.highchartsInit(true)
     }, 0)
   }
   render() {
-    const store = this.props.Store
+    const trade = this.props.trade
     return (
-      <div className={ `depth ${ store.kline.isFullScreen ? 'fullscreen' : '' }` } style={{ display: store.kline.isShowDepth ? 'flex' : 'none' }}>
+      <div className={ `depth ${ trade.kline.isFullScreen ? 'fullscreen' : '' }` } style={{ display: trade.kline.isShowDepth ? 'flex' : 'none' }}>
         <header>
           <div className="enlarge">
             {/* 全屏按钮 */}

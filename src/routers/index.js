@@ -3,8 +3,9 @@ import { Route, Switch, withRouter } from 'react-router-dom'
 import { Provider } from 'mobx-react'
 import Layouts from './Layouts'
 import Login from './Login'
-import store from './store'
+import store from './store.js'
 import Cookies from 'js-cookie'
+import stores from './store/index.js'
 
 @withRouter
 class Routers extends Component {
@@ -35,7 +36,7 @@ class Routers extends Component {
     }
     render(){
         return (
-            <Provider Store={store}>
+            <Provider Store={store} {...stores}>
                 <Switch>
                     {/* <Route path="/login" component={Login}/> */}
                     <Route path='/' component={Layouts}/>

@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 import './index.less'
 import { inject, observer } from 'mobx-react'
-// import { message } from 'antd'
 import KlineDepth from './klinedepth'
 
 let widget
 
-@inject('Store')
+@inject('trade')
 @observer
 class Kline extends Component {
   constructor(props) {
@@ -65,13 +64,13 @@ class Kline extends Component {
       getBars: (symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) => {
         // 周期设置 -- 转换成秒
         resolution = this.timeConversion(resolution)
-        this.props.Store.kline.HCK = onHistoryCallback
+        this.props.trade.kline.HCK = onHistoryCallback
         let params = [symbolInfo.name, from, to, resolution]
         this.sendKlineQueryReq(params)
       },
       subscribeBars: (symbolInfo, resolution, onRealtimeCallback, subscriberUID, onResetCacheNeededCallback) => {
         resolution = this.timeConversion(resolution)
-        this.props.Store.kline.SUB = onRealtimeCallback
+        this.props.trade.kline.SUB = onRealtimeCallback
         let params = [symbolInfo.name, resolution]
         this.sendKlineSubReq(params)
       },
@@ -96,7 +95,7 @@ class Kline extends Component {
       // autosize: true, // 是否占用所有可用空间
       width: '99%',
       height: '100%',
-      symbol: _this.props.Store.currentCoinsType, // 'ADABTC'
+      symbol: _this.props.trade.currentCoinsType, // 'ADABTC'
       interval: '15',
       container_id: "tv_container",
       // datafeed: new window.Datafeeds.UDFCompatibleDatafeed("https://demo_feed.tradingview.com"),
@@ -221,12 +220,12 @@ class Kline extends Component {
       button.setAttribute('class', 'button-depth')
       button.textContent = '深度图'
       button.addEventListener('click', function() {
-        _this.props.Store.kline.isShowDepth = true
+        _this.props.trade.kline.isShowDepth = true
       })
     })
   }
   refreshKline = () => {
-    widget.chart().setSymbol(this.props.Store.currentCoinsType, data => {
+    widget.chart().setSymbol(this.props.trade.currentCoinsType, data => {
       // console.log('k线数据刷新')
     })
   }
@@ -255,21 +254,21 @@ class Kline extends Component {
   }
   // websocket发送请求
   sendRequest = data => {
-    const store = this.props.Store
-    let ws = store.ws
+    const trade = this.props.trade
+    let ws = trade.ws
     if (ws.readyState === 1) {
       ws.send(JSON.stringify(data))
     } else {
       ws.onopen = () => {
         // message.success('ws连接成功')
-        store.sendReq(1, 'server.ping', [])
+        trade.sendReq(1, 'server.ping', [])
         setInterval(() => {
-          store.sendReq(1, 'server.ping', [])
+          trade.sendReq(1, 'server.ping', [])
         }, 3000)
         ws.send(JSON.stringify(data))
-        store.sendReq(2, 'state.subscribe', [])
-        store.sendReq(2, 'depth.subscribe', [`${ store.currentCoinsType }`, parseFloat(store.depth.count), '0.00000001'])
-        store.sendReq(5, 'deals.subscribe', [`${ store.currentCoinsType }`])
+        trade.sendReq(2, 'state.subscribe', [])
+        trade.sendReq(2, 'depth.subscribe', [`${ trade.currentCoinsType }`, parseFloat(trade.depth.count), '0.00000001'])
+        trade.sendReq(5, 'deals.subscribe', [`${ trade.currentCoinsType }`])
       }
     }
   }

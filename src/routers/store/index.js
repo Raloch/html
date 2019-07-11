@@ -1,10 +1,7 @@
-import { Home } from './modules/home'
-import { Trade } from './modules/trade'
+import home from './modules/home'
+import trade from './modules/trade'
 
-let home = new Home()
-let trade = new Trade()
-
-export {
+export default {
   home,
   trade
 }

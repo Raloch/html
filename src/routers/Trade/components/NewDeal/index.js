@@ -5,7 +5,7 @@ import moment from 'moment'
 import { inject, observer } from 'mobx-react'
 import Empty from '../../../../components/Empty'
 
-@inject('Store')
+@inject('trade')
 @observer
 class NewDeal extends Component {
   constructor(props) {
@@ -21,15 +21,15 @@ class NewDeal extends Component {
         </header>
         <main>
           {/* 使用Table，数据更新时滚动条会向下滑动一行的距离 -- 暂时无法解决，用ul>li来写 */}
-          {/* <Table loading={ this.props.Store.newDeal.newDealLoading } columns={ exchangeColumns } dataSource={ this.props.Store.newDeal.newDealData.slice(0, 38) } pagination={ false } /> */}
+          {/* <Table loading={ this.props.trade.newDeal.newDealLoading } columns={ exchangeColumns } dataSource={ this.props.trade.newDeal.newDealData.slice(0, 38) } pagination={ false } /> */}
           <div className="title">
             <p>时间</p>
-            <p>价格 ({ this.props.Store.currencyTrading.coinsTypeTitle })</p>
-            <p>成交量 ({ this.props.Store.currencyTrading.coinsType })</p>
+            <p>价格 ({ this.props.trade.currencyTrading.coinsTypeTitle })</p>
+            <p>成交量 ({ this.props.trade.currencyTrading.coinsType })</p>
           </div>
-          { !this.props.Store.newDeal.newDealLoading ? this.props.Store.newDeal.newDealData.length === 0 ? <Empty height="200" /> : (
+          { !this.props.trade.newDeal.newDealLoading ? this.props.trade.newDeal.newDealData.length === 0 ? <Empty height="200" /> : (
             <div className="content">
-              { this.props.Store.newDeal.newDealData.slice(0, 38).map(val => (
+              { this.props.trade.newDeal.newDealData.slice(0, 38).map(val => (
                 <ul>
                   <li>{ moment(parseFloat(val.time * 1000)).format('HH:mm:ss') }</li>
                   <li style={{ color: val.type === 'buy' ? '#00b275' : '#ef5057' }}>{ val.price }</li>

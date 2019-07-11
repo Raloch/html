@@ -6,7 +6,7 @@ import { inject, observer } from 'mobx-react'
 
 const { Header } = Layout
 
-@inject('Store')
+@inject('trade')
 @observer
 class TypeHeader extends Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class TypeHeader extends Component {
     return (
       <Header className="trade-right-layout-header">
         <div className="coinType fl">
-          <img src={star2} alt=""/> { this.props.Store.currencyTrading.coinsType }/{ this.props.Store.currencyTrading.coinsTypeTitle }
+          <img src={star2} alt=""/> { this.props.trade.currencyTrading.coinsType }/{ this.props.trade.currencyTrading.coinsTypeTitle }
         </div>
         <div className="newPrice fl">
           <div className="newPrice-left fl">

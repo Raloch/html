@@ -33,7 +33,7 @@ const UserRealName= Loadable({loader: () => import('../routers/Users/UserCenter/
 const RecomRebate     = Loadable({loader: () => import('../routers/Users/RecomRebate'), loading : DelayLoading,delay:1000})
 const MessageCenter    = Loadable({loader: () => import('../routers/Users/MessageCenter'), loading : DelayLoading,delay:1000})
 const TicketSystem  = Loadable({loader: () => import('../routers/Users/TicketSystem'), loading : DelayLoading,delay:1000})
-const Login    = Loadable({loader: () => import('../routers/Login'), loading : DelayLoading,delay:1000})
+const Login  = Loadable({loader: () => import('../routers/Login'), loading : DelayLoading,delay:1000})
 const Regist  = Loadable({loader: () => import('../routers/Regist'), loading : DelayLoading,delay:1000})
 const Loading  = Loadable({loader: () => import('../routers/Loading'), loading : DelayLoading,delay:100})
 

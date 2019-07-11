@@ -7,10 +7,9 @@ import Empty from '../../../../components/Empty'
 import star2 from '../../images/star2.png'
 
 const { TabPane } = Tabs
-let ws = null
 let collectData = []
 
-@inject('Store')
+@inject('home', 'trade')
 @observer
 class ExchangeMarket extends Component {
   constructor(props) {
@@ -28,19 +27,21 @@ class ExchangeMarket extends Component {
     }
   }
   componentDidMount() {
-    const store = this.props.Store
-    store.urlpath = '/home'
-    if (store.ws === null) {
-      store.tradeWsInit()
+    const trade = this.props.trade
+    const home = this.props.home
+    home.urlpath = '/home'
+    if (trade.ws === null) {
+      trade.tradeWsInit()
     } else {
-      store.sendReq(2, 'state.subscribe', [])
+      trade.sendReq(2, 'state.subscribe', [])
     }
   }
   componentWillUnmount() {
-    const store = this.props.Store
-    store.path = ''
-    store.BTCLoading = true
-    store.sendReq(2, 'state.unsubscribe', [])
+    const trade = this.props.trade
+    const home = this.props.home
+    home.urlpath = ''
+    home.BTCLoading = true
+    trade.sendReq(2, 'state.unsubscribe', [])
   }
   // 标题栏切换回调
   coinsTypeChange = (key) => {
@@ -101,53 +102,41 @@ class ExchangeMarket extends Component {
   }
   // 搜索币种
   search = () => {
-    const store = this.props.Store
-    let arr, name, loadName
+    const home = this.props.home
+    let arr, name
     switch(this.state.activeKey) {
       case '1':
         arr = dataBTC
         name = 'dataBTC'
-        loadName = 'BTCLoading'
-        store.BTCLoading = true
+        home.BTCLoading = true
         break
       case '2':
         arr = dataUSDT
-        name = 'dataUSDT',
-        loadName = 'USDTLoading'
-        store.USDTLoading = true
+        name = 'dataUSDT'
         break
       case '3':
         arr = dataETH
         name = 'dataETH'
-        loadName = 'ETHLoading'
-        store.ETHLoading = true
         break
       case '4':
         arr = dataBCT
         name = 'dataBCT'
-        loadName = 'BCTLoading'
-        store.BCTLoading = true
         break
       case '5':
         arr = collectData
         name = 'collectData'
-        loadName = 'collectLoading'
-        store.collectLoading = true
     }
     if (this.state.searchText !== '') {
       // 过滤不匹配的元素
       let data = arr.filter(val => {
         return val.exchangePairs.toLowerCase().includes(this.state.searchText.toLowerCase())
       })
-      let loadName = store[loadName]
       this.setState({
-        [name]: data,
-        [loadName]: false
+        [name]: data
       })
     } else {
       this.setState({
-        [name]: arr,
-        [loadName]: false
+        [name]: arr
       })
     }  
   }
@@ -170,10 +159,10 @@ class ExchangeMarket extends Component {
     }
   }
   render() {
-    const store = this.props.Store
-    let isUpdate = store.isUpdate 
+    const home = this.props.home
+    let isUpdate = home.isUpdate 
     const loadingStyle = {
-      spinning: store.BTCLoading,
+      spinning: home.BTCLoading,
       tip: 'Loading...',
       indicator: <Icon type="loading" spin />
     }
@@ -217,7 +206,7 @@ class ExchangeMarket extends Component {
             }} />
           </TabPane>
           <TabPane tab={ <span><img style={{ marginBottom: 5, marginRight: 5 }} src={ star2 } />自选市场</span> } key="5">
-            <Table columns={ columnsCollect } dataSource={ this.state.collectData } pagination={ false } loading={ store.CollectLoading } onRow={ this.rowClick } locale={{
+            <Table columns={ columnsCollect } dataSource={ this.state.collectData } pagination={ false } onRow={ this.rowClick } locale={{
               emptyText: (
                 <Empty height="120" text="暂无收藏" />
               )

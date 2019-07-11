@@ -15,7 +15,7 @@ import { inject, observer } from 'mobx-react'
 
 const { Footer, Sider, Content } = Layout
 
-@inject('Store')
+@inject('trade', 'home')
 @observer
 class Trade extends Component {
   constructor(props) {
@@ -26,23 +26,25 @@ class Trade extends Component {
     }
   }
   componentDidMount() {
-    const store = this.props.Store
-    store.urlpath = '/trade'
-    if (store.ws === null) {
-      store.tradeWsInit('trade')
+    const trade = this.props.trade
+    const home = this.props.home
+    home.urlpath = '/trade'
+    if (trade.ws === null) {
+      trade.tradeWsInit('trade')
     } else {
-      store.sendReq(2, 'state.subscribe', [])
-      store.sendReq(2, 'depth.subscribe', [`${ store.currentCoinsType }`, parseFloat(store.depth.count), '0.00000001'])
-      store.sendReq(5, 'deals.subscribe', [`${ store.currentCoinsType }`])
+      trade.sendReq(2, 'state.subscribe', [])
+      trade.sendReq(2, 'depth.subscribe', [`${ trade.currentCoinsType }`, parseFloat(trade.depth.count), '0.00000001'])
+      trade.sendReq(5, 'deals.subscribe', [`${ trade.currentCoinsType }`])
     }
   }
   componentWillUnmount() {
-    const store = this.props.Store
-    store.urlpath = ''
-    store.market.BTCLoading = true
-    store.sendReq(2, 'state.unsubscribe', [])
-    store.sendReq(2, 'depth.unsubscribe', [])
-    store.sendReq(5, 'deals.unsubscribe', [])
+    const trade = this.props.trade
+    const home = this.props.home
+    home.urlpath = ''
+    trade.market.BTCLoading = true
+    trade.sendReq(2, 'state.unsubscribe', [])
+    trade.sendReq(2, 'depth.unsubscribe', [])
+    trade.sendReq(5, 'deals.unsubscribe', [])
   }
   render() {
     return (

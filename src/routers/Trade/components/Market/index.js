@@ -6,7 +6,7 @@ import { inject, observer } from 'mobx-react'
 
 const { TabPane } = Tabs
 
-@inject('Store')
+@inject('trade')
 @observer
 class Market extends Component {
   constructor(props) {
@@ -27,28 +27,6 @@ class Market extends Component {
     this.setState({
       activeKey: key
     })
-    let typeTitle = ''
-    let type = ''
-    switch(key) {
-      case '1':
-        typeTitle = 'BTC'
-        type = this.state.dataBTC[0].exchangePairs
-        break
-      case '2':
-        typeTitle = 'USDT'
-        type = this.state.dataUSDT[0].exchangePairs
-        break
-      case '3':
-        typeTitle = 'ETH'
-        type = this.state.dataETH[0].exchangePairs
-        break
-      case '4':
-        typeTitle = 'BCT'
-        type = this.state.dataBCT[0].exchangePairs
-        break
-    }
-    this.props.Store.coinsTypeTitleHandle(typeTitle)
-    this.props.Store.coinsTypeHandle(type)
     if (this.state.searchText) {
       this.setState({
         searchText: ''
@@ -191,13 +169,13 @@ class Market extends Component {
   rowClick = (record, rowkey) => {
     return {
       onClick: e => {
-        const store = this.props.Store
+        const trade = this.props.trade
         if (e.target.className === 'collectStar') {
           record.isCollected = !record.isCollected
         } else {
-          store.currencyTrading.coinsType = record.exchangePairs
-          store.newDeal.newDealLoading = true
-          store.sendReq(5, 'deals.subscribe', [record.exchangePairs + 'BTC'])
+          trade.currencyTrading.coinsType = record.exchangePairs
+          trade.newDeal.newDealLoading = true
+          trade.sendReq(5, 'deals.subscribe', [record.exchangePairs + 'BTC'])
         }
       }
     }
@@ -222,11 +200,11 @@ class Market extends Component {
     }
   }
   render() {
-    const store = this.props.Store
+    const trade = this.props.trade
     // isUpdate为mobx中用来强制更新该页面
-    let isUpdate = store.market.isUpdate
+    let isUpdate = trade.market.isUpdate
     const loadingStyle = {
-      spinning: store.market.BTCLoading,
+      spinning: trade.market.BTCLoading,
       tip: 'Loading...',
       indicator: <Icon type="loading" spin />
     }
