@@ -7,7 +7,7 @@ import './index.less'
 import Cookies from 'js-cookie'
 import menuConfig from '@/config/menu'
 import menuLoginBefore from '@/config/menuLoginBefore'
-import { Cgicallget, BeforeSendPost, GetErrorMsg} from '@/components/Ajax'
+import { BeforeSendPost, Cgicallget, CgicallPost, GetErrorMsg } from '@/components/Ajax'
 import logo from '@/routers/Layouts/assets/logo-vv.png'
 import Fire from '@/routers/Layouts/assets/fire.png'
 
@@ -15,20 +15,20 @@ import Fire from '@/routers/Layouts/assets/fire.png'
 const { Option, OptGroup } = Select;
 @withRouter
 class SideMenu extends Component {
-    state={
-        keys:[],
+    state = {
+        keys: [],
         // loginState:Cookies.get('userName')?true:false
-        loginState:Cookies.get('account')?true:false,
-        menuReviver:menuConfig,
+        loginState: Cookies.get('account') ? true : false,
+        menuReviver: menuConfig,
         loginStyle: 'whiteBorder', // 点击登录按钮边框切换时的颜色显示
         registStyle: 'whiteBorder', // 点击注册按钮边框切换时的颜色显示
     }
-    selectKey = () =>{
+    selectKey = () => {
         let keys = []
         keys.push(this.props.history.location.pathname)
-        this.setState({keys:keys})
-        if(keys && keys[0] != '/users/userCenter/googleTrans') sessionStorage.googleT = '';
-        if(keys && (keys[0] != '/users/userCenter/googleTrans') && (keys[0] != '/users/userCenter/setAccount')){
+        this.setState({ keys: keys })
+        if (keys && keys[0] != '/users/userCenter/googleTrans') sessionStorage.googleT = '';
+        if (keys && (keys[0] != '/users/userCenter/googleTrans') && (keys[0] != '/users/userCenter/setAccount')) {
             sessionStorage.gooBoundCode = '';
             sessionStorage.inputEmailCode = '';
             sessionStorage.phoneCode = '';
@@ -37,10 +37,9 @@ class SideMenu extends Component {
             sessionStorage.phoneChangeCode = '';
             sessionStorage.googleChangeCode = '';
             sessionStorage.boundGoogleSuc = '';
-        } 
-
+        }
     }
-    componentWillMount(){
+    componentWillMount() {
         // let { userInfo,updateName } = this.props.Store
         // if (userInfo.name == '') {
         //     updateName(Cookies.get('userName'))
@@ -60,7 +59,8 @@ class SideMenu extends Component {
         this.selectKey();
     }
     // 点击导航栏切换至对应界面
-    onSelect = ({key}) =>{
+    onSelect = ({ key }) => {
+        // 登录与注册
         if (key === '/login') {
             this.setState({
                 loginStyle: 'blueBorder',
@@ -78,31 +78,30 @@ class SideMenu extends Component {
             })
         }
         // 用户退出操作
-        if(key) {
-            if(key == "/users/login") {
+        if (key) {
+            if (key == "/users/login") {
                 key = "/login";
                 this.logout();
             }
         }
         // 当key存在切不是语言时进行操作
-        if(key && key !="zh_CN" && key !="zh_CN" && key !="zh_HK" && key !="en_US") {
-            if(key != '/volunteer') sessionStorage.dtkey = "";
+        if (key && key != "zh_CN" && key != "zh_CN" && key != "zh_HK" && key != "en_US") {
+            if (key != '/volunteer') sessionStorage.dtkey = "";
             this.props.history.push(key)
         }
     }
     // 用户退出--设置Cookies存储
     logout = () => {
         // Cookies.remove('account', { path: '/',domain: 'nbc.test' })
-        Cookies.remove('account', { path: '/'})
-        Cookies.remove('loginState', { path: '/'}) // 鲁锐 -- 2019-6-21
+        Cookies.remove('account', { path: '/' })
         Cookies.remove('transactionverification', { path: '/' })
-        this.setState({'loginState': (Cookies.get('account')?true:false)})
+        this.setState({ 'loginState': (Cookies.get('account') ? true : false) })
         // 退出登录请求
-        BeforeSendPost("/api/v1/user/logout", '', function(d){
-            if(d.code === 0) {
-                // message.success('退出登录')
-            }else {
-                // message.error('退出登录失败！')
+        BeforeSendPost("/api/v1/user/logout", '', function (d) {
+            if (d.code === 0) {
+                console.log('退出登录成功:------')
+            } else {
+                message.error('退出登录失败！')
             }
         });
     }
@@ -111,75 +110,76 @@ class SideMenu extends Component {
         console.log(value);
     }
     // 点击白皮书
-    getNotice = (key,event) => {
+    getNotice = (key, event) => {
         let _this = this;
-        if(key == "/notice" ) {
-	        if(sessionStorage.dtkey || sessionStorage.WalletMenu) {
+        if (key == "/notice") {
+            if (sessionStorage.dtkey || sessionStorage.WalletMenu) {
                 sessionStorage.dtkey = "";
                 sessionStorage.WalletMenu = "";
                 window.location.reload()
             }
         }
-        if(key == "/whitepaper"){
-        
+        if (key == "/whitepaper") {
+
         }
     }
-    componentWillReceiveProps (nextProps){
-        this.setState({'loginState': (Cookies.get('account')?true:false)})
-        if (this.props.location.pathname != nextProps.location.pathname && nextProps.location.pathnam !="/") {
+    componentWillReceiveProps(nextProps) {
+        this.setState({ 'loginState': (Cookies.get('account') ? true : false) })
+        if (this.props.location.pathname != nextProps.location.pathname && nextProps.location.pathnam != "/") {
             this.selectKey()
         }
     }
     render() {
         // 通过读取cookies中的账号信息来设置用户头像出的名称
         let userInfoEmail = '';
-        if(Cookies.get('account')) {
+        if (Cookies.get('account')) {
+            // 将登录账号字符串通过split("@")拆分成字符串数组
             let arrInfo = Cookies.get('account').split("@");
-            let arrInfoN = arrInfo?arrInfo[arrInfo.length - 2]:'';
-            if(arrInfo && arrInfoN) {
-                // 设置用户名显示
-                userInfoEmail = Cookies.get('account').substring(0,3) + '***' + arrInfoN[arrInfoN.length - 1]  + '@' +  arrInfo[arrInfo.length - 1];
-            }  
+            let arrInfoN = arrInfo ? arrInfo[arrInfo.length - 2] : '';
+            if (arrInfo && arrInfoN) {
+                userInfoEmail = Cookies.get('account').substring(0, 3) + '***' + arrInfoN[arrInfoN.length - 1] + '@' + arrInfo[arrInfo.length - 1];
+            }
         }
         // 根据登录状态来显示不同的头部导航栏内容
-        if(this.state.loginState) {
+        if (this.state.loginState) { // this.state.loginState
             this.menuReviver = menuConfig
-        }else {
+        } else {
             this.menuReviver = menuLoginBefore
         }
         return (
             <div className='SideMenu_wrap'>
                 <Menu theme="light" onSelect={this.onSelect} selectedKeys={this.state.keys} mode="horizontal">
-                    {this.menuReviver.map((item,i)=>
+                    {this.menuReviver.map((item, i) =>
                         item.list && item.list.length > 0 ?
-                            item.key?
-                            (<SubMenu key={item.key} className={item.type} trigger="hover" title={<span><span className={'font icon-' +item.icon}></span>&nbsp;<span>{(item.key == "/users")?userInfoEmail:item.title}</span></span>}>
-                                {/*点击用户账号下拉菜单*/}
-                                {item.list.map((listItem,ii)=>
-                                    <Menu.Item
-	                                    disabled = { listItem.state}
-                                        key={item.key+listItem.key}>
-                                        <span >{listItem.title}</span>
-                                    </Menu.Item>
-                                )}
-                            </SubMenu>)
-                            :
-                            (<Select className={"langSwitcher " + item.type} labelInValue defaultValue={{ key: 'zh_CN' }} onChange={this.langSwitcher}>
-                                {item.list.map((listItem,ii)=>
-                                    <Option value={listItem.key}>{listItem.title}</Option>
-                                )}
-                              </Select>)
-                            :((item.key == '/whiteBook')?
-                            ((<Menu.Item key='' disabled={item.state} className={item.type} onClick={this.getNotice.bind(this,item.key)}>
-                                    <a href = './whitepaper.pdf' target = '_blank'>{item.title}</a>
+                            item.key ?
+                                (<SubMenu key={item.key} className={item.type} trigger="hover" title={<span><span className={'font icon-' + item.icon}></span><span>&nbsp;&nbsp;{(item.key == "/users") ? userInfoEmail : item.title}</span></span>}>
+                                    {/*点击用户账号下拉菜单*/}
+                                    {item.list.map((listItem, i) =>
+                                        <Menu.Item
+                                            // disabled={listItem.state}
+                                            key={item.key + listItem.key}>
+                                            <span >{listItem.title}</span>
+                                            {/* 个人中心、工单系统、信息中心、推荐返佣、退出登录 */}
+                                        </Menu.Item>
+                                    )}
+                                </SubMenu>)
+                                :
+                                (<Select className={"langSwitcher " + item.type} labelInValue defaultValue={{ key: 'zh_CN' }} onChange={this.langSwitcher}>
+                                    {item.list.map((listItem, ii) =>
+                                        <Option value={listItem.key}>{listItem.title}</Option>
+                                    )}
+                                </Select>)
+                            : ((item.key == '/whiteBook') ?
+                                ((<Menu.Item key='' disabled={item.state} className={item.type} onClick={this.getNotice.bind(this, item.key)}>
+                                    <a href='./whitepaper.pdf' target='_blank'>{item.title}</a>
                                 </Menu.Item>))
-                            :
-                            (<Menu.Item key={item.key} disabled={item.state} className={item.type} onClick={this.getNotice.bind(this,item.key)}>
-                                <span className={ item.key === '/login' ? this.state.loginStyle : (item.key === '/regist' ? this.state.registStyle : '') }>{(item.key == '/home')?(<img className='menu_logo' src={logo} />):((item.key == '/gosub')?(<span>{item.title} <img src={Fire} /></span>):(item.title))}</span>
-                            </Menu.Item>))
+                                :
+                                (<Menu.Item key={item.key} disabled={item.state} className={item.type} onClick={this.getNotice.bind(this, item.key)}>
+                                    <span className={item.key === '/login' ? this.state.loginStyle : (item.key === '/regist' ? this.state.registStyle : '')}>{(item.key == '/home') ? (<img className='menu_logo' src={logo} />) : ((item.key == '/gosub') ? (<span>{item.title} <img src={Fire} /></span>) : (item.title))}</span>
+                                </Menu.Item>))
                     )}
                 </Menu>
-	            {/* <a
+                {/* <a
 		            href = './whitepaper.pdf'
 		            target = '_blank'
                     style={{color:'#ffffff'}}
@@ -210,7 +210,7 @@ class SideMenu extends Component {
         //         </div>
         //     )
         // }
-        
+
     }
     // render() {
     //     return (

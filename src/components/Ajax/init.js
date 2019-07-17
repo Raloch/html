@@ -3,6 +3,7 @@ import qs from 'qs'
 axios.defaults.headers.credential = true
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 // axios.defaults.baseURL = '/api'
+axios.defaults.headers.common['Authorization'] = localStorage.getItem(TDC_itoken);
 export const fetch = async (url, method, data) => {
   var res
   const dt=qs.stringify(data)

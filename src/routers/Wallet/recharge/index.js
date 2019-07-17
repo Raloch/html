@@ -5,7 +5,7 @@ import{ Icon, Table, Tooltip, Input, Button, message, Layout, Breadcrumb } from 
 import $ from 'jquery'
 import store from '../store'
 import TableNoData from '@/routers/Layouts/assets/table_no_data.png'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { Cgicallget, CgicallPost, GetErrorMsg, BeforeSendGet, BeforeSendPost} from '@/components/Ajax'
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import WalletMenu from '../menu'
 import moment from "moment";
@@ -32,15 +32,18 @@ class Recharge extends Component {
         let _this = this;
         const searchParams = new URLSearchParams(this.props.location.search)
         const currency = searchParams.get('code')
-        if(!currency) this.props.history.push('/wallet/asset');
-        Cgicallget('/apiv1/user/wallet/deposit/address/' + currency, '',function(d){
-            if(d.result) {
-                _this.setState({qrcode: d.result.address,currency: currency})
-                // let realname = d.result.isCertification;
-                // _this.setState({realname: (realname == "yes")?realname:(realname == "pending")?realname:'no'});
-            }else {
-                message.error(GetErrorMsg(d))
-                _this.setState({currency: currency})
+        // if(!currency) this.props.history.push('/wallet/asset');
+        BeforeSendGet('/api/v1/user/address/' + currency, '',function(d){
+            if(d.code === 0){
+                console.log(d)
+                if(d.result) {
+                    _this.setState({qrcode: d.result.Address,currency: currency})
+                    // let realname = d.result.isCertification;
+                    // _this.setState({realname: (realname == "yes")?realname:(realname == "pending")?realname:'no'});
+                }else {
+                    message.error(GetErrorMsg(d))
+                    _this.setState({currency: currency})
+                }
             }
         })
     }
@@ -98,10 +101,15 @@ class Recharge extends Component {
                                             </div>
                                             <div className='plate-wrapper-QRcode'>
                                                 <div className='plate-QRcode'>
-                                                    {/* <svg width="138" height="138" ref={(ref)=>this._qrcodeSVG = ref} transform="scale(1)">
-                                                        <path d={svgpath(qr.svgObject('qpdzswevc9eat5y5227zcy8ydxjfzql5cgtlann58a').path).scale(1, 1).toString()}/>
-                                                    </svg> */}
+                                                    {/* <svg width="138" height="138" ref={(ref)=>this._qrcodeSVG = ref} transform="scale(1)"> */}
+                                                        {/* <path d={svgpath(qr.svgObject('qpdzswevc9eat5y5227zcy8ydxjfzql5cgtlann58a').path).scale(1, 1).toString()}/> */}
+                                                    {/* </svg> */}
                                                     <QRCode size='138'  value={qrcode} />,
+                                                    {/* <QRCode 
+                                                        size='138'  
+                                                        value={} 
+                                                        fgColor="purple"
+                                                    />, */}
                                                 </div>
                                                 <div className='plate-QRcode-msg'>
                                                     使用USDT钱包扫码支付

@@ -93,12 +93,12 @@ class MessageCenter extends Component {
                         <Menu.Item key="messageCenter">
                             <span className="nav-text">信息中心</span>
                         </Menu.Item>
-                        <Menu.Item key="registrationAward">
+                        {/* <Menu.Item key="registrationAward">
                             <span className="nav-text">注册奖励</span>
                         </Menu.Item>
                         <Menu.Item key="recommendedAward">
                             <span className="nav-text">推荐奖励</span>
-                        </Menu.Item>
+                        </Menu.Item> */}
                         <Menu.Item key="secretKey">
                             <span className="nav-text">API密钥</span>
                         </Menu.Item>

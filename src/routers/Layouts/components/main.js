@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Route, withRouter } from 'react-router-dom'
+import { Route, withRouter, Redirect } from 'react-router-dom'
 import { observer, inject } from 'mobx-react'
 import { Tooltip, message } from 'antd'
 import routerConfig from '@/config/routes'
@@ -15,7 +15,8 @@ class Main extends Component {
         super(props)
         message.config({
             maxCount: 1, // 最大消息显示数量
-        })
+          });
+          
     }
     componentWillMount(){
         let { userInfo,updateName } = this.props.Store
@@ -34,8 +35,12 @@ class Main extends Component {
             <div className={'main ' + this.cls}>
                 <div className='routeWrap'>
                     <Loading>
-                        {routerConfig.map((item,i)=>
-                            <Route key={i} path={item.path} component={item.component} exact/>
+                        {/* 路由重定向 张士礼 20197-11 */}
+                        {routerConfig.map((item,i)=> 
+                            Cookies.get('account' ) ? <Route key={i} path={ item.path } component={item.component} exact/>:
+                            item.path.search("users") > -1 || item.path.search("wallet") > -1  ? <Route key={i} path={item.path } render={()=> <Redirect to='/login' />} exact/> :
+                            <Route key={i} path={ item.path } component={item.component} exact/> 
+                            ) }
                         )}
                         {bottomRouter.map((item,i)=>
                             <Route key={i} path={item.path} component={item.component} exact/>

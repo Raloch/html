@@ -1,17 +1,20 @@
 import React, { Component } from 'react'
 import { Provider, inject, observer } from 'mobx-react'
 import { message, Modal, Button, Input, Form, Icon, Tabs, Tooltip } from 'antd'
-import $ from  'jquery'
+import { withRouter } from 'react-router-dom'
+import $ from 'jquery'
+import Cookies from 'js-cookie'
 import md5 from 'js-md5'
 import CryptoJS from 'crypto-js'
 import store from '../store'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { Cgicallget, CgicallPost, GetErrorMsg, BeforeSendPost } from '@/components/Ajax'
 import '../container/index.less'
 import { sha256, sha224 } from 'js-sha256'
 // const Search = Input.Search;
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
 // @inject('Store')
+@withRouter
 // @observer
 class PassModal extends Component {
     state = {
@@ -31,11 +34,14 @@ class PassModal extends Component {
         codeLoading: false,
         pwKey: 'fdec3af2f062f9d5893d22ffb46164d7ffcbee648cffb96af79121e7b274d979',
         changePhone: '', // 更换绑定的手机号码
+        gradeStr: '',
     }
     defaultModal = () => {
-        this.setState({loading: false,emailHtml:'获取邮箱验证码',
-            phoneHtml:'获取手机验证码',
-            codeDisType:false,
+        this.setState({
+            loading: false,
+            emailHtml: '获取邮箱验证码',
+            phoneHtml: '获取手机验证码',
+            codeDisType: false,
             timeAll: 60,
             btnNext: true,
             btnSub: false,
@@ -70,12 +76,12 @@ class PassModal extends Component {
     // 忘记密码：获取邮箱或手机验证码
     drawingImg = (type,event) => {
         let _this = this;
-        let { form } = (type == 'email')?this.childEmail.props:this.childPhone.props;
-        form.validateFields([type],{first:true},(err, values) => {
-            if(!err) {
-                this.setState({codeLoading:true})
-                let captcha1 = new TencentCaptcha('2038116476', function(res) {
-                    if(res.ret === 0){
+        let { form } = (type == 'email') ? this.childEmail.props : this.childPhone.props;
+        form.validateFields([type], { first: true }, (err, values) => {
+            if (!err) {
+                this.setState({ codeLoading: true })
+                let captcha1 = new TencentCaptcha('2027665311', function (res) {
+                    if (res.ret === 0) {
                         // var obj = {
                         //     "Aid" : res.appid,
                         //     "Ticket" : res.ticket,
@@ -137,22 +143,17 @@ class PassModal extends Component {
         })
     }
     // 获取邮箱/手机验证码
-    getAuthCode = (account,codeType,receiver, obj) => {
-        // var obj = {
-        //     type: codeType,
-        //     account: account,
-        //     receiver : receiver
-        // }
+    getAuthCode = (account, codeType, receiver, obj) => {
         obj.username = account
-        console.log(obj)
         var _this = this;
         CgicallPost("/api/v1/visitor/email-code",obj,function(d){
             if(d.code === 0) {
                 message.success('验证码已发送，请注意查收');
                 _this.countDown(receiver);
-                _this.setState({codeLoading:false})
-            }else {
-                message.error(GetErrorMsg(d));
+                _this.setState({ codeLoading: false })
+            } else {
+                // message.error(GetErrorMsg(d));
+                message.error('获取失败!');
             }
             
         });
@@ -169,8 +170,9 @@ class PassModal extends Component {
             if(d.result) {
                 message.success('验证码已发送到您的手机上，请注意查收');
                 _this.countDown();
-            }else {
-                message.error(GetErrorMsg(d));
+            } else {
+                // message.error(GetErrorMsg(d));
+                message.error('获取失败!');
             }
             
         });
@@ -208,7 +210,7 @@ class PassModal extends Component {
             // });
         }  
     }
-    // 提交
+    // 点击提交
     updatePass = (event) => {
         // 邮箱及验证码处理
         let arr1;
@@ -229,30 +231,51 @@ class PassModal extends Component {
             _this.state.code = arr1[1];
         } 
 
-        // 密码处理
+        // 重置密码
         let arr;
         if(this.state.type == 'email') arr = this.passChildEmail.handleSubmit();
         else arr = this.passChildPhone.handleSubmit();
-        if(arr && arr.length) {
+        if (arr && arr.length) {
+            // 修改绑定手机号码功能取消 无需验证手机号码
+            // const reg = /^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\d{8}$/
+            // if(!reg.test(arr[1])){
+            //     message.error("请输入正确的手机号码")
+            //     return
+            // }
             var obj = {
                 username: this.state.account,
                 // password: sha256(sha256(arr[0]) + sha256(arr[0]) + this.state.pwKey),
                 password: md5(arr[0]),
                 code : this.state.code,
                 // passwordStrength: arr[1]
-                phone: arr[1] // 可选
+                // phone: arr[1], // 可选
+                level: arr[2],
             }
             var _this = this;
             // let url = '/apiv1/visitor/forgotPassword';
             // if(this.props.portPass != 'forgotPassword') url = '/apiv1/user/modifyPassword';
             let url = '/api/v1/visitor/email-reset';
-            if(this.props.portPass != 'forgotPassword') url = '/api/v1/visitor/email-reset';
-            CgicallPost(url ,obj,function(d){
-                if(d.code === 0) {
-                    message.success('密码重置成功！');
+            if (this.props.portPass != 'forgotPassword') url = '/api/v1/visitor/email-reset';
+            CgicallPost(url, obj, function (d) {
+                if (d.code === 0) {
                     _this.props.cancelPass();
-                }else {
-                    message.error(GetErrorMsg(d));
+                    // message.success('密码重置成功！');
+                    // Cookies.remove('account', { path: '/',domain: 'nbc.test' })
+                    Cookies.remove('account', { path: '/' })
+                    Cookies.remove('transactionverification', { path: '/' })
+                    // 退出登录请求
+                    BeforeSendPost("/api/v1/user/logout", '', function (d) {
+                        if (d.code === 0) {
+                            message.success("密码修改成功")
+                            _this.props.history.push("/login")
+                        } else {
+                            message.error('退出登录失败！')
+                        }
+                    });
+                    // location.reload(true)
+                } else {
+                    // message.error(GetErrorMsg(d));
+                    message.error(d.message);
                 }
                 
             });
@@ -511,6 +534,8 @@ class PassWordInputs extends Component {
                 // arr.push(password,this.state.gradeStr);
                 arr.push(password)
                 arr.push(changePhone)
+                arr.push(this.state.gradeStr)
+
             }
         })
         return arr;
@@ -588,7 +613,6 @@ class PassWordInputs extends Component {
     phoneFormat = (rule, value, callback) => {
         const reg = /^1[3|4|5|8][0-9]\d{4,8}$/
         const form = this.props.form
-        console.log(value)
         if (value !== '') {
             if (!reg.test(value)) {
                 callback('请输入有效的手机号码')
@@ -638,7 +662,7 @@ class PassWordInputs extends Component {
                                 // { validator: this.validateToNextPassword }
                             ],
                         })(
-                            <Input autocomplete="new-password off" className="code_input" onChange={this.getPassGrade} prefix={<Icon type="lock" />} type="password" placeholder="密码" />
+                            <Input.Password autocomplete="new-password off" className="code_input" onChange={this.getPassGrade} prefix={<Icon type="lock" />} type="password" placeholder="密码" />
                         )}
                     </Tooltip>
                 </FormItem>
@@ -649,11 +673,11 @@ class PassWordInputs extends Component {
                             { validator: this.compareToFirstPassword }
                     ],
                     })(
-                        <Input autocomplete="new-password off" className="code_input" onBlur={this.handleConfirmBlur}  prefix={<Icon type="lock" />} type="password" placeholder="确认密码" />    
+                        <Input.Password autocomplete="new-password off" className="code_input" onBlur={this.handleConfirmBlur} prefix={<Icon type="lock" />} type="password" placeholder="确认密码" />
                     )}
                 </FormItem>
                 {/* 更换绑定的手机号码 */}
-                <FormItem>
+                {/* <FormItem>
                     {getFieldDecorator('changePhone', {
                         rules: [
                             { required: false, message: '请输入需要更换绑定的手机号码' },
@@ -663,7 +687,7 @@ class PassWordInputs extends Component {
                     })(
                         <Input autocomplete="new-password off" className="code_input" prefix={<Icon type="phone" />} type="number" placeholder="更换绑定的手机号码（可选）" />    
                     )}
-                </FormItem>
+                </FormItem> */}
             </Form>
         )
     }

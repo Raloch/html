@@ -21,7 +21,7 @@ class FromBox extends Component {
         grade: '',
         gradeStr: '',
         btnDisType: true,
-        codeLoading:false
+        codeLoading:false,
     }
     countDown = () => {
         var num = this.state.timeAll;
@@ -42,7 +42,7 @@ class FromBox extends Component {
         this.props.form.validateFields(['email'],{first:true},(err, values) => {
             if(!err) {
                 this.setState({codeLoading:true})
-                let captcha1 = new TencentCaptcha('2038116476', function(res) {
+                let captcha1 = new TencentCaptcha('2027665311', function(res) {
                     if(res.ret === 0){
                         // var obj = {
                         //     "Aid" : res.appid,
@@ -90,7 +90,8 @@ class FromBox extends Component {
                 message.success('验证码已发送到您的邮箱上，请注意查收');
                 _this.countDown();
             }else {
-                message.error(GetErrorMsg(d));
+                // message.error(GetErrorMsg(d));
+                message.error("验证失败");
             }
             
         });
@@ -221,7 +222,7 @@ class FromBox extends Component {
                             // </Button>} type="text" placeholder="邮箱验证码" />
                             <Button disabled={this.state.codeDisType} className="searchInBtn" 
                                 onClick={this.drawingImg} loading={this.state.codeLoading}>{this.state.codeHtml}
-                            </Button>} type="text" placeholder="输入6位短信验证码" />
+                            </Button>} type="text" placeholder="输入6位邮箱验证码" />
                     )}
                 </FormItem>
                 <FormItem>
@@ -246,7 +247,7 @@ class FromBox extends Component {
                                 // { validator: this.validateToNextPassword }
                             ],
                         })( 
-                            <Input autocomplete="new-password off" onChange={this.getPassGrade} prefix={<Icon type="lock" />} type="password" placeholder="设置登录密码" />
+                            <Input.Password autocomplete="new-password off" onChange={this.getPassGrade} prefix={<Icon type="lock" />} type="password" placeholder="设置登录密码" />
                         )}
                     </Tooltip>
                 </FormItem>
@@ -257,7 +258,7 @@ class FromBox extends Component {
                             { validator: this.compareToFirstPassword }
                     ],
                     })(
-                        <Input autocomplete="new-password off" onBlur={this.handleConfirmBlur}  prefix={<Icon type="lock" />} type="password" placeholder="确认密码" />    
+                        <Input.Password autocomplete="new-password off" onBlur={this.handleConfirmBlur}  prefix={<Icon type="lock" />} type="password" placeholder="确认密码" />    
                     )}
                 </FormItem>
                 <FormItem>

@@ -7,7 +7,7 @@ import md5 from 'js-md5'
 import FormBox from '../components/FormBox'
 import Cookies from 'js-cookie'
 import store from '../store'
-import { Cgicallget, Cgicallgets, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { BeforeSendPost, Cgicallget, Cgicallgets, CgicallPost, GetErrorMsg } from '@/components/Ajax'
 import { sha256, sha224 } from 'js-sha256'
 import CodeModal from '../codeModal'
 import PassModal from '../pwModal'
@@ -83,14 +83,31 @@ class Login extends Component {
         }, 3000);
         
     }
-    // 登录验证
+    // 登录验证获取token、获取登录历史信息
     PhoneVerify = (obj) => {
-        if (obj.code.length === 0) {
-            obj.code = '100000'
-        }
         let _this = this;
-        CgicallPost("/api/v1/visitor/login",obj,function(d){
+        var account = _this.state.userName
+        if (obj.code.length == 0) {
+            obj.code = "100000"
+        }
+        CgicallPost("/api/v1/visitor/login", obj, function (d) {
+            let System = _this.getOperationSys();
+            let Browser = _this.getBrowser();
+            let LoginMethod = System + ' ' + Browser;
+            let obj1 = {
+                username: account,
+                loginip: _this.state.ip,
+                loginaddr: _this.state.address,
+                loginmethod: LoginMethod
+            }
             if (d.code === 0) {
+                CgicallPost("/api/v1/visitor/logs/set-log", obj1, function (e) {
+                    if (e.code === 0) {
+                        // message.success('获取登录历史信息!')
+                    } else {
+                        message.error(e.message)
+                    }
+                })
                 message.success('登录成功!');
                 Cookies.set('account', obj.username)
                 Cookies.set('loginState', Cookies.get('account') ? true : false)
@@ -194,8 +211,8 @@ class Login extends Component {
     }
     GoogleVerify = (obj) => {
         let _this = this;
-        CgicallPost("/apiv1/visitor/loginWithAuth", obj, function(d) {
-            if(d.result) {
+        BeforeSendPost("/apiv1/visitor/loginWithAuth", obj, function (d) {
+            if (d.result) {
                 message.success('登录成功!');
                 _this.props.history.push('/home')
             } else {
@@ -206,22 +223,26 @@ class Login extends Component {
     }
     drawingImg = (email) => {
         let _this = this;
-        var captcha1 = new TencentCaptcha('2038116476', function(res) {
-            if(res.ret === 0){
+        //--------------------2019-7-5 出现两次滑动验证,体验不好 暂时隐藏一个
+
+        // var captcha1 = new TencentCaptcha('2027665311', function (res) {
+        //     if (res.ret === 0) {
                 var obj = {
-                    username: email,
                     type: 'login',
-                    userip : res.appid,
-                    ticket : res.ticket,
-                    randstr : res.randstr
+                    username: email,
+                    // userip: res.appid,
+                    // ticket: res.ticket,
+                    // randstr: res.randstr
                 }
-                CgicallPost("/api/v1/visitor/phone-code", obj, function(d) {
+                CgicallPost("/api/v1/visitor/phone-code", obj, function (d) {
                     if (d.code === 0) {
                         _this.setState({
                             visiblePhone: true
                         })
                         // Cookies.set('account', d.result.account)
                         // _this.props.history.push('/home')
+                    }else{
+                        message.error("请求失败 ")
                     }
                 })
                 // CgicallPost("/apiv1/captchaReg",obj,function(d){
@@ -236,31 +257,30 @@ class Login extends Component {
                 //     }
                     
                 // });
-            }
-        });
-        captcha1.show();
+            // }
+        // captcha1.show();
     }
-    onlyEmailLogin = () => {
-        var obj = {
-            account: this.state.userName,
-            // password : sha256(sha256(this.state.password) + sha256(this.state.password) + this.state.pwKey),
-            password: md5(this.state.password)
-        }
-        var _this = this;
-        this.setState({ LoginLoading: true });
-        CgicallPost("/apiv1/visitor/login",obj,function(d){
-            if(d.result) {
-                message.success('登录成功!');
-                _this.props.history.push('/home');
-            }else {
-                message.error(GetErrorMsg(d))
-            }
-            this.setState({ LoginLoading: false });
-        });
-        setTimeout(() => {
-            _this.setState({ LoginLoading: false});
-        }, 10000);
-    }
+    // onlyEmailLogin = () => {
+    //     var obj = {
+    //         account: this.state.userName,
+    //         // password : sha256(sha256(this.state.password) + sha256(this.state.password) + this.state.pwKey),
+    //         password: md5(this.state.password)
+    //     }
+    //     var _this = this;
+    //     this.setState({ LoginLoading: true });
+    //     CgicallPost("/apiv1/visitor/login", obj, function (d) {
+    //         if (d.result) {
+    //             message.success('登录成功!');
+    //             _this.props.history.push('/home');
+    //         } else {
+    //             message.error(GetErrorMsg(d))
+    //         }
+    //         this.setState({ LoginLoading: false });
+    //     });
+    //     setTimeout(() => {
+    //         _this.setState({ LoginLoading: false });
+    //     }, 10000);
+    // }
 
     handleCancelPhone = () => {
         this.setState({ visiblePhone: false });
@@ -291,20 +311,20 @@ class Login extends Component {
                     username: userName,
                     password: md5(password)
                 }
-                // 判断用户输入邮箱密码是否正确
-                CgicallPost('/api/v1/visitor/check-user', objs, function(d) {
-                    if (d.code === 0) {
-                        // 判断邮箱是否绑定了手机号码
-                        Cgicallgets("/api/v1/visitor/bind-info", obj, function(d) {
+                let captcha1 = new TencentCaptcha('2027665311', function(res) {
+                    if (res.ret === 0) {
+                        // 判断用户输入邮箱密码是否正确
+                        CgicallPost('/api/v1/visitor/check-user', objs, function (d) {
                             if (d.code === 0) {
-                                if (d.result.Phone) {
-                                    _this.setState({
-                                        hidePhone: d.result.Phone
-                                    })
-                                    _this.drawingImg(_this.state.userName);
-                                } else {
-                                    let captcha1 = new TencentCaptcha('2038116476', function(res) {
-                                        if (res.ret === 0) {
+                                // 判断邮箱是否绑定了手机号码
+                                Cgicallgets("/api/v1/visitor/bind-info", obj, function (d) {
+                                    if (d.code === 0) {
+                                        if (d.result.Phone) {
+                                            _this.setState({
+                                                hidePhone: d.result.Phone
+                                            })
+                                            _this.drawingImg(_this.state.userName);
+                                        } else {
                                             let obj = {
                                                 username: _this.state.userName,
                                                 password: md5(_this.state.password),
@@ -312,17 +332,17 @@ class Login extends Component {
                                             }
                                             _this.PhoneVerify(obj)
                                         }
-                                    })
-                                    captcha1.show()
-                                }
+                                    }
+                                })
                             } else {
-                                message.error(GetErrorMsg(d))
+                                // message.error(GetErrorMsg(d))
                             }
                         })
                     } else {
                         message.error(d.message)
                     }
                 })
+                captcha1.show()
                     
                 // CgicallPost("/api/v1/visitor/login",obj,function(d){
                 //     console.log(d)

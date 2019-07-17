@@ -5,11 +5,13 @@ import{ Icon, Table, Tooltip, Input,Button, Layout, message } from 'antd'
 import $ from 'jquery'
 import store from '../store'
 import TableNoData from '../images/table_no_data.png'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { Cgicallget, CgicallPost, GetErrorMsg, BeforeSendGet} from '@/components/Ajax'
 import WalletMenu from '../menu'
 import ExportJsonExcel from 'js-export-excel';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+import Cookies from 'js-cookie'
+
 const { Header, Footer, Sider, Content } = Layout;
 
 @withRouter
@@ -28,65 +30,95 @@ class Daybook extends Component {
         this.childTable.onsearch(event.target.value);
         this.setState({currency: event.target.value})
     }
+    //修改导出文件  zsl 2019-7-10 ---------------------------------------
     export = () => {
         let _this = this;
         let obj = {
             asset: this.state.currency
         }
-        this.setState({exportLoding: true})
-        setTimeout(function() {
-            _this.setState({exportLoding: false});
-        },10000)
-        message.loading('正在刷写数据...', 30)
-        Cgicallget('/apiv1/user/wallet/export/withdraw', obj ,function(d){
-            if(d.result) {
-                let data = d.result.records;
-                if(data && data.length) {
-                    _this.goExport(d.result.records);
-                }else {
-                    message.destroy();
-                    message.warning('该条件下的无数据');
-                    _this.setState({exportLoding: false})
-                }
-            }else {
-                message.error(GetErrorMsg(d))
-                _this.setState({exportLoding: false})
-            }
-        })
-    }
-    goExport = (data) => { 
-        var option={};
-        let dataTable = [];
-        if (data) {
-            for (let i in data) {
-                if(data){
-                let obj = {
-                    '提现时间': data[i].timestamp,
-                    '币种': data[i].asset,
-                    '数量': data[i].change,
-                    '提现地址': data[i].address,
-                    '状态': data[i].state,
-                    '交易ID': (data[i].withdraw_type != 'common')?'站内转账':data[i].tx_id || '--',
-                }
-                dataTable.push(obj);
-                }
+        let asset= this.state.currency?this.state.currency : "all"
+
+        // this.setState({exportLoding: true})
+        // setTimeout(function() {
+        //     _this.setState({exportLoding: false});
+        // },10000)
+        // message.loading('正在刷写数据...', 30)
+        // Cgicallget('/apiv1/user/wallet/export/withdraw', obj ,function(d){
+        //     if(d.result) {
+        //         let data = d.result.records;
+        //         if(data && data.length) {
+        //             _this.goExport(d.result.records);
+        //         }else {
+        //             message.destroy();
+        //             message.warning('该条件下的无数据');
+        //             _this.setState({exportLoding: false})
+        //         }
+        //     }else {
+        //         message.error(GetErrorMsg(d))
+        //         _this.setState({exportLoding: false})
+        //     }
+        // })
+        let token = Cookies.get("token")
+        var url = "http://192.168.100.204:8000/api/v1/user/export/withdraw/"+ asset
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.responseType = "blob";
+        xhr.setRequestHeader("Authorization", token);
+        xhr.setRequestHeader("client_type", "DESKTOP_WEB");
+        xhr.onload = function() {
+            if (this.status == 200) {
+                var blob = this.response;
+                //这里导出src
+                var src = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                //设置下载的文件名
+                link.download = "提现记录.xlsx";
+                link.style.display = 'none';
+                //设置下载路径
+                link.href = src;
+                //触发点击
+                document.body.appendChild(link);
+                link.click();
+                //移除节点
+                document.body.removeChild(link);
             }
         }
-        option.fileName = '提现记录'+ moment().format('YYYYMMDDHHmmss');
-        option.datas=[
-        {
-            sheetData:dataTable,
-            sheetName:'sheet',
-            sheetFilter:['提现时间','币种','数量','提现地址','状态','交易ID'],
-            sheetHeader:['提现时间','币种','数量','提现地址','状态','交易ID'],
-        }
-        ];
-        message.destroy();
-        message.success('提现记录已导出');
-        this.setState({exportLoding: false});
-        var toExcel = new ExportJsonExcel(option); //new
-        toExcel.saveExcel();    
+        xhr.send();
     }
+    // goExport = (data) => { 
+    //     var option={};
+    //     let dataTable = [];
+    //     if (data) {
+    //         for (let i in data) {
+    //             if(data){
+    //             let obj = {
+    //                 '提现时间': data[i].timestamp,
+    //                 '币种': data[i].asset,
+    //                 '数量': data[i].change,
+    //                 '提现地址': data[i].address,
+    //                 '状态': data[i].state,
+    //                 '交易ID': (data[i].withdraw_type != 'common')?'站内转账':data[i].tx_id || '--',
+    //             }
+    //             dataTable.push(obj);
+    //             }
+    //         }
+    //     }
+    //     option.fileName = '提现记录'+ moment().format('YYYYMMDDHHmmss');
+    //     option.datas=[
+    //     {
+    //         sheetData:dataTable,
+    //         sheetName:'sheet',
+    //         sheetFilter:['提现时间','币种','数量','提现地址','状态','交易ID'],
+    //         sheetHeader:['提现时间','币种','数量','提现地址','状态','交易ID'],
+    //     }
+    //     ];
+    //     message.destroy();
+    //     message.success('提现记录已导出');
+    //     this.setState({exportLoding: false});
+    //     var toExcel = new ExportJsonExcel(option); //new
+    //     toExcel.saveExcel();    
+    // }
+    //修改导出文件  zsl 2019-7-10 ---------------------------------------
     setChild = (childTable) => {
         this.childTable = childTable
     }
@@ -142,20 +174,33 @@ class DaybookTable extends Component {
         page: 1,
         limit: 10,
         count: 0,
-        asset: ''
+        asset: '',
+        offset:"0,10",
     }
     handleChange = (val) => {
     }
     getTableData = (page,asset) => {
         let _this = this;
         let obj = {
-            page: page,
-            limit: this.state.limit,
-            asset: asset
+            // page: page,
+            // limit: this.state.limit,
+            asset: asset,
+            business:"withdraw",
+            starttime:"0",
+            endtime:"0",
+            offset:this.state.offset,
         }
-        Cgicallget('/apiv1/user/wallet/history/withdraw', obj ,function(d){
+        // Cgicallget('/apiv1/user/wallet/history/withdraw', obj ,function(d){
+        //     if(d.result) {
+        //         _this.setState({data: d.result.records,page: d.result.page,count: d.result.count});
+        //     }else {
+        //         message.error(GetErrorMsg(d))
+        //     }
+        // })
+        BeforeSendGet('/api/v1/user/query/with/draw', obj, function(d){
+            console.log(d.result.Data)
             if(d.result) {
-                _this.setState({data: d.result.records,page: d.result.page,count: d.result.count});
+                _this.setState({data: d.result.Data,page: d.result.offset,count: d.result.limit});
             }else {
                 message.error(GetErrorMsg(d))
             }
@@ -214,37 +259,40 @@ class DaybookTable extends Component {
     render() {
         const columns = [{
             title: '提现时间',
-            dataIndex: 'timestamp',
+            dataIndex: 'Modified',
+            render: function(text,record) {
+                return moment(parseInt(text)*1000).format("YYYY-MM-DD HH:mm:ss")
+            }
           }, {
             title: '币种',
-            dataIndex: 'asset',
+            dataIndex: 'Asset',
           }, {
             title: '数量',
-            dataIndex: 'change',
+            dataIndex: 'Amount',
           },{
             title: '提现地址',
-            dataIndex: 'address',
+            dataIndex: 'ToAddr',
             render: function(text,record) {
                 return(
-                    <Tooltip placement="top" title={text} overlayClassName='word-spill-tip'>
-                        <span className='word-spill'>{text}</span>
+                    <Tooltip placement="top" title={text.from} overlayClassName='word-spill-tip'>
+                        <span className='word-spill'>{text.from}</span>
                     </Tooltip>
                 )
             } 
           },{
             title: '状态',
-            dataIndex: 'state',
+            dataIndex: 'State',
             render: text => this.getState(text)
           },{
             title: '交易ID',
-            dataIndex: 'tx_id',
+            dataIndex: 'BusinessID',
             render: function(text,record) {
                 return(
-                    <Tooltip placement="top" title={text} overlayClassName='word-spill-tip'>
-                        {(record.withdraw_type == 'common')?
-                            <a className='word-spill' href="javascript:;">{text || '--'}</a>:
-                            <span className='word-spill'>站内转账</span>
-                        }
+                    <Tooltip placement="top"  overlayClassName='word-spill-tip'>
+                        {/* {(record.withdraw_type == 'common')? */}
+                            {/* <a className='word-spill' href="javascript:;">{text || '--'}</a>: */}
+                            <span className='word-spill'>{text.id}</span>
+                        {/* } */}
                     </Tooltip>
                 )
             }

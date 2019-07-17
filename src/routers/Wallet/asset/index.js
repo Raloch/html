@@ -1,14 +1,14 @@
 import React, {Component} from 'react'
 import { Provider, inject, observer } from 'mobx-react'
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom'
 import{ Dropdown, Menu, Icon, Checkbox, Table, Divider, Tooltip, Input, Layout, message } from 'antd'
 import store from '../store'
 import $ from 'jquery'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { Cgicallget, CgicallPost, GetErrorMsg, BeforeSendPost, BeforeSendGet} from '@/components/Ajax'
 // 引入 ECharts 主模块
 import echarts from 'echarts/lib/echarts';
 // 引入柱状图
-import  'echarts/lib/chart/pie';
+import 'echarts/lib/chart/pie';
 // 引入提示框和标题组件
 import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/title';
@@ -39,7 +39,7 @@ class WalletAsset extends Component {
         rateVal: 1
     }
     buildPie = () => {
-        // console.log("...................................................")
+        console.log("Echarts...................................................")
         // console.log(this.state.balance);
         let pieData = [];
         let labelName = [];
@@ -65,8 +65,11 @@ class WalletAsset extends Component {
             legend: {
                 orient: 'vertical',
                 right: '3%',
-                bottom: '3%',
-                data:labelName
+                bottom: '35%',
+                data:
+                // labelName //真数据
+                ['BTC','USDT','BTH','BTHG','BTHGWE'], //假的
+                icon: 'circle'
             },
             series: [
                 {
@@ -93,14 +96,15 @@ class WalletAsset extends Component {
                             show: false
                         }
                     },
-                    data: pieData
-                    // [
-                    //     {value:335, name:'BTC'},
-                    //     {value:310, name:'USDT'},
-                    //     {value:234, name:'BTH'},
-                    //     {value:244, name:'BTHG'},
-                    //     {value:214, name:'BTHGWE'}
-                    // ]
+                    data: 
+                    // pieData //真数据
+                    [
+                        {value:335, name:'BTC'},
+                        {value:310, name:'USDT'},
+                        {value:234, name:'BTH'},
+                        {value:244, name:'BTHG'},
+                        {value:214, name:'BTHGWE'}
+                    ]
                 }
             ]
         });
@@ -110,7 +114,10 @@ class WalletAsset extends Component {
         else message.error('页面跳转失败');
     }
     onsearch = (event) => {
-        this.childTable.onsearch(event.target.value);
+        this.refs.childTable.onsearch(event.target.value);
+        // console.log(event.target.value)
+        // console.log(this.refs.childTable.onsearch(event.target.value))
+        // this.refs.StruTable.onsearch(event);
     }
     struCheckSmall = (event) => {
         this.childTable.struCheck(event.target.checked);
@@ -138,24 +145,24 @@ class WalletAsset extends Component {
     }
     getRate = () => {
         let _this = this;
-        Cgicallget('/apiv1/user/wallet/currency/mywallet', '',function(d){
-            if(d.result) {
-                let arr = [];
-                let arrRate = [];
-                let market_value = d.result.market_value;
-                for(var key in d.result.market_value) {
-                    arr.push({key:key,data: market_value[key]})
-                }
-                for(var key in d.result.rate) {
-                    arrRate.push({key:key,data: d.result.rate[key]});
-                }
-                _this.setState({balance: d.result.balance,legal_value: d.result.legal_value,allData: d.result.market_value,market_value: arr,assetVal:arr[0].data,rate: arrRate,rateVal:arrRate[0].data.CNY});
+        // Cgicallget('/api/v1/user/wallet/currency/mywallet', '',function(d){
+        //     if(d.result) {
+        //         let arr = [];
+        //         let arrRate = [];
+        //         let market_value = d.result.market_value;
+        //         for(var key in d.result.market_value) {
+        //             arr.push({key:key,data: market_value[key]})
+        //         }
+        //         for(var key in d.result.rate) {
+        //             arrRate.push({key:key,data: d.result.rate[key]});
+        //         }
+        //         _this.setState({balance: d.result.balance,legal_value: d.result.legal_value,allData: d.result.market_value,market_value: arr,assetVal:arr[0].data,rate: arrRate,rateVal:arrRate[0].data.CNY});
                 _this.buildPie();
-                _this.childTable.getRate(d.result.balance);
-            }else {
-                message.error(GetErrorMsg(d))
-            }
-        })
+        //         _this.childTable.getRate(d.result.balance);
+        //     }else {
+        //         message.error(GetErrorMsg(d))
+        //     }
+        // })
     }
     componentDidMount() {
         // 基于准备好的dom，初始化echarts实例
@@ -232,14 +239,14 @@ class WalletAsset extends Component {
                                             </div>
                                             
                                         </div>
-                                        <StruTable setNextPage={this.setNextPage} setChild={this.setChild} />
+                                        <StruTable setNextPage={this.setNextPage} ref= "childTable" setChild={this.setChild} />
                                     </div>
-                                    {/* <div className='plate-wrapper-table'>
+                                    <div className='plate-wrapper-table'>
                                         <div className='plate-wrapper-header'>
                                             <h3>待入账充值资产</h3>
                                         </div>
                                         <EntryTable setNextPage={this.setNextPage}/>
-                                    </div> */}
+                                    </div>
                                 </div>
                             </Content>
                         </Layout>
@@ -253,12 +260,44 @@ class StruTable extends Component {
     constructor(){
         super()
     }
+
     state = {
         loading: false,
         data: [],
         balance: [],
         searchV: '',
         smallH: false
+    }
+    //初始化数据
+    initData = () => {
+        let _this = this
+        BeforeSendGet('/api/v1/user/asset/list', '', function(d) {
+            let data = [];
+            if(d.code === 0){
+                let balance = d.result.balance
+                let k = 0
+                d.result.asset.map(i => {
+                    k ++
+                        let obj = {};
+                        let name = i.name
+                        obj.key = k
+                        obj.asset = name;
+                        obj.available = balance[name].available;
+                        obj.freeze = balance[name].freeze;
+                        obj.amount = Number(balance[name].available) + Number(balance[name].freeze);
+                        //写死的假数据 市值
+                        obj.legal_value = {
+                            'CNY':0.00000000
+                        }
+                        data.push(obj)
+
+                })
+                _this.setState({
+                    data:data,
+                    balance:data
+                })
+            }   
+        })
     }
     handleChange = (val) => {
         console.log(val);
@@ -276,13 +315,15 @@ class StruTable extends Component {
                 }
             }
         }else {
-            arr = balance;
+            // arr = balance;
         }  
-        this.setState({data: arr});
+        // this.setState({data: arr});
     }
     onsearch = (val) => {
         let arr = [];
         let balance = this.state.balance;
+        console.log(val)
+        console.log(balance)
         if(val) {
             for(var k in balance) {
                 if(val && balance[k].asset.indexOf(val.toUpperCase()) >=0 ) {
@@ -295,7 +336,7 @@ class StruTable extends Component {
         this.setState({data: arr});
     }
     getRate = (balance) => {
-        this.setState({data: balance,balance: balance});
+        // this.setState({data: balance,balance: balance});
     }
     componentDidMount() {
         this.props.setChild(this);
@@ -309,6 +350,9 @@ class StruTable extends Component {
         }
         return originalElement;
       }
+    componentDidMount() {
+        this.initData()
+    }
     render() {
         const { searchV, smallH } = this.state;
         const columns = [{
@@ -321,9 +365,6 @@ class StruTable extends Component {
             title: '冻结',
             dataIndex: 'freeze',
           },{
-            title: '锁仓',
-            dataIndex: 'm_freeze',
-          },{
             title: '总额',
             dataIndex: 'amount',
           },{
@@ -335,20 +376,24 @@ class StruTable extends Component {
             key: 'action',
             render: (text, record) => (
               <span>
-                {/* <a href="javascript:;" onClick={this.setNextPage.bind(this,'recharge',record.asset)}>充值</a> */}
-                <a href="javascript:;" className='table-btn-disabled'>充值</a>
+                <a href="javascript:;" onClick={this.setNextPage.bind(this,'recharge',record.asset)}>充值</a>
+                {/* <a href="javascript:;">充值</a> */}
+                {/* <Link to="recharge">充值</Link> */}
                 <Divider type="vertical" />
-                {/* <a href="javascript:;" onClick={this.setNextPage.bind(this,'withDrawCash',record.asset)}>提现</a> */}
-                <a href="javascript:;" className='table-btn-disabled'>提现</a>
+                <a href="javascript:;" onClick={this.setNextPage.bind(this,'withDrawCash',record.asset)}>提现</a>
+                {/* <a href="javascript:;" className='table-btn-disabled'>提现</a> */}
+                {/* <Link to="withDrawCash">提现</Link> */}
+
                 <Divider type="vertical" />
-                <a href="javascript:;" className='table-btn-disabled'>交易</a>
+                {/* <a href="javascript:;" className='table-btn-disabled'>交易</a> */}
+                <a href="javascript:;" >交易</a>
               </span>
             ),
           }];
         return (
             <div className='plate-table'>
                 <Table 
-                    rowKey={record => record.id}  
+                    rowKey={record => record.key}
                     columns={columns} 
                     dataSource={this.state.data} 
                     onChange={this.handleChange} 
@@ -367,7 +412,16 @@ class EntryTable extends Component {
     }
     state = {
         loading: false,
-        data: []
+        data: [
+            {
+                'id':"1",
+                "time":2019-1-1,
+                "currency":"BTC",
+                "num":100,
+                'state':0,
+                'tradeID':123456789123456789,
+            }
+        ]
     }
     handleChange = (val) => {
         console.log(val);
@@ -377,34 +431,39 @@ class EntryTable extends Component {
     }
     componentDidMount() {
         let _this = this;
-        $.get('./asset.json',function(d){
-            console.log(d);
-            _this.setState({data: d.data});
-        })
+        // $.get('./asset.json',function(d){
+        //     console.log(d);
+        //     _this.setState({data: d.data});
+        // })
     }
     render() {
         const columns = [{
             title: '时间',
             dataIndex: 'time',
+            // key:"time"
           }, {
             title: '币种',
             dataIndex: 'currency',
+            // key:"currency"
           }, {
             title: '数量',
             dataIndex: 'num',
+            // key:"num"
           },{
             title: '状态',
             dataIndex: 'state',
+            // key:"state",
             render: text => text?(<span style={{color:"red"}}>待入账</span>):(<span>已入账</span>)
           },{
             title: '交易ID',
             dataIndex: 'tradeID',
-            render: text => <a href="javascript:;">{text}</a>,
+            // key:"tradeID",
+            render: text => <a href="javascript:;">{text}</a>
           }];
         return (
             <div className='plate-table'>
                 <Table
-                    rowKey={record => record._id}   
+                    rowKey={record => record.id}
                     columns={columns} 
                     dataSource={this.state.data} 
                     onChange={this.handleChange} 

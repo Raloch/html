@@ -45,7 +45,8 @@ class CodeModal extends Component {
                 message.success('验证码已发送到您的手机上，请注意查收');
                 _this.countDown();
             }else {
-                message.error(GetErrorMsg(d));
+                message.error("验证码获取失败")
+                // message.error(GetErrorMsg(d));
             }
             
         });

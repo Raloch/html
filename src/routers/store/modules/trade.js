@@ -64,7 +64,7 @@ class Trade {
         this.tradeWsInit(home.urlpath, true)
       }
     } else {
-      message.error('您的浏览器不支持websocket')
+      // console.log('您的浏览器不支持websocket')
     }
   }
   @action sendReq = (id, method, params) => {

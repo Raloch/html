@@ -14,7 +14,7 @@ class GeneralMentions extends Component {
     constructor(props) {
         super(props);
         this.lastFetchId = 0;
-        this.inputaaa = React.createRef();
+        // this.inputaaa = React.createRef();
     }
     state = {
         data: [],
@@ -85,7 +85,7 @@ class GeneralMentions extends Component {
         let _this = this;
         const searchParams = new URLSearchParams(this.props.location.search)
         const currency = searchParams.get('code')
-        if(!currency) this.props.history.push('/wallet/asset');
+        // if(!currency) this.props.history.push('/wallet/asset');
         let obj = {
             person_type: 'common'
         }
@@ -372,7 +372,7 @@ class InstationMentions extends Component {
         let _this = this;
         const searchParams = new URLSearchParams(this.props.location.search)
         const currency = searchParams.get('code');
-        if(!currency) this.props.history.push('/wallet/asset');
+        // if(!currency) this.props.history.push('/wallet/asset');
         let obj = {
             person_type: 'inner'
         }

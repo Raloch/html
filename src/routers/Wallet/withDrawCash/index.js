@@ -175,7 +175,7 @@ class Recharge extends Component {
         this.getCertification();
         const searchParams = new URLSearchParams(this.props.location.search)
         const amount = searchParams.get('code')
-        if(!amount) this.props.history.push('/wallet/asset');
+        // if(!amount) this.props.history.push('/wallet/asset');
         this.setState({amount: amount});
     }
     goWithDrawaled = (num) => {
@@ -208,8 +208,7 @@ class Recharge extends Component {
                                 <div className='plate-crumbs'>
                                     <Breadcrumb>
                                         <Breadcrumb.Item>
-                                            <Link to='/wallet/asset'>我的资产
-                                            </Link>
+                                            {/* <Link to='/wallet/asset'>我的资产</Link> */}
                                         </Breadcrumb.Item>
                                         <Breadcrumb.Item>
                                             Bitcoin Cash提现

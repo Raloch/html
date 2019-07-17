@@ -4,7 +4,7 @@ class SetAccount extends Component {
     render() {
         return (
             <div className='Home_'>
-                SetAccount
+                SetAccount %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             </div>
         )
     }

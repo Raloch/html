@@ -4,11 +4,12 @@ import { Router,Route, withRouter ,Link} from 'react-router-dom'
 import{ Icon, Table, Tooltip, Input, Button, Layout, message } from 'antd'
 import $ from 'jquery'
 import store from '../store'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { Cgicallget, CgicallPost, GetErrorMsg, BeforeSendGet} from '@/components/Ajax'
 import TableNoData from '../images/table_no_data.png'
 import WalletMenu from '../menu'
 import moment from "moment";
 import ExportJsonExcel from 'js-export-excel'; 
+import Cookies from 'js-cookie'
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -31,64 +32,79 @@ class RecRecord extends Component {
     setChild = (childTable) => {
         this.childTable = childTable
     }
+    //修改导出文件  zsl 2019-7-10 ---------------------------------------
     export = () => {
         let _this = this;
+        let asset= this.state.currency?this.state.currency:'all' ;
         let obj = {
-            asset: this.state.currency
+            type:'deposit'
         }
-        this.setState({exportLoding: true})
-        setTimeout(function() {
-            _this.setState({exportLoding: false});
-        },10000)
-        message.loading('正在刷写数据...', 30)
-        Cgicallget('/apiv1/user/wallet/export/deposit', obj ,function(d){
-            if(d.result) {
-                let data = d.result.records;
-                if(data && data.length) {
-                    _this.goExport(d.result.records);
-                }else {
-                    message.destroy();
-                    message.warning('该条件下的无数据');
-                    _this.setState({exportLoding: false})
-                }
-            }else {
-                message.error(GetErrorMsg(d))
-                _this.setState({exportLoding: false})
-            }
-        })
-    }
-    goExport = (data) => { 
-        var option={};
-        let dataTable = [];
-        if (data) {
-            for (let i in data) {
-                if(data){
-                let obj = {
-                    '汇入时间': moment(parseInt(data[i].time)*1000).format("YYYY-MM-DD HH:mm:ss"),
-                    '币种': data[i].asset,
-                    '金额': data[i].change,
-                    '汇入地址': data[i].detail.from,
-                    '交易ID': data[i].detail.tx_id,
-                }
-                dataTable.push(obj);
+        // this.setState({exportLoding: true})
+        // setTimeout(function() {
+        //     _this.setState({exportLoding: false});
+        // },10000)
+        // message.loading('正在刷写数据...', 30)
+
+        let token = Cookies.get("token")
+            var url = "http://192.168.100.204:8000/api/v1/user/export/deposit/"+ asset
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = "blob";
+            xhr.setRequestHeader("Authorization", token);
+            xhr.setRequestHeader("client_type", "DESKTOP_WEB");
+            xhr.onload = function() {
+                if (this.status == 200) {
+                    var blob = this.response;
+                    //这里导出src，然后把这里的src赋给上面的src即可
+                    var src = URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    //设置下载的文件名
+                    link.download = "充值记录.xlsx";
+                    link.style.display = 'none';
+                    //设置下载路径
+                    link.href = src;
+                    //触发点击
+                    document.body.appendChild(link);
+                    link.click();
+                    //移除节点
+                    document.body.removeChild(link);
                 }
             }
-        }
-        option.fileName = '充值记录'+ moment().format('YYYYMMDDHHmmss');
-        option.datas=[
-        {
-            sheetData:dataTable,
-            sheetName:'sheet',
-            sheetFilter:['汇入时间','币种','金额','汇入地址','交易ID'],
-            sheetHeader:['汇入时间','币种','金额','汇入地址','交易ID'],
-        }
-        ];
-        message.destroy();
-        message.success('充值记录已导出');
-        this.setState({exportLoding: false});
-        var toExcel = new ExportJsonExcel(option); //new
-        toExcel.saveExcel();    
+            xhr.send();
     }
+    // goExport = (data) => { 
+    //     var option={};
+    //     let dataTable = [];
+    //     if (data) {
+    //         for (let i in data) {
+    //             if(data){
+    //             let obj = {
+    //                 '汇入时间': moment(parseInt(data[i].time)*1000).format("YYYY-MM-DD HH:mm:ss"),
+    //                 '币种': data[i].asset,
+    //                 '金额': data[i].change,
+    //                 '汇入地址': data[i].detail.from,
+    //                 '交易ID': data[i].detail.tx_id,
+    //             }
+    //             dataTable.push(obj);
+    //             }
+    //         }
+    //     }
+    //     option.fileName = '充值记录'+ moment().format('YYYYMMDDHHmmss');
+    //     option.datas=[
+    //     {
+    //         sheetData:dataTable,
+    //         sheetName:'sheet',
+    //         sheetFilter:['汇入时间','币种','金额','汇入地址','交易ID'],
+    //         sheetHeader:['汇入时间','币种','金额','汇入地址','交易ID'],
+    //     }
+    //     ];
+    //     message.destroy();
+    //     message.success('充值记录已导出');
+    //     this.setState({exportLoding: false});
+    //     var toExcel = new ExportJsonExcel(option); //new
+    //     toExcel.saveExcel();    
+    // }
+    //修改导出文件  zsl 2019-7-10 ---------------------------------------
     componentDidMount() {
     }
     render() {
@@ -141,7 +157,8 @@ class RecRecordTable extends Component {
         page: 1,
         limit: 10,
         count: 0,
-        asset: ''
+        asset: "",
+        offset:"0,10",
     }
     handleChange = (val) => {
     }
@@ -151,13 +168,24 @@ class RecRecordTable extends Component {
     getTableData = (page,asset) => {
         let _this = this;
         let obj = {
-            page: page,
-            limit: this.state.limit,
-            asset: asset
+            // page: page,
+            // limit: this.state.limit,
+            asset: asset,
+            business:"deposit",
+            starttime:"0",
+            endtime:"0",
+            offset:this.state.offset,
         }
-        Cgicallget('/apiv1/user/wallet/history/deposit', obj ,function(d){
+        // Cgicallget('/api/v1/user/wallet/history/deposit', obj ,function(d){
+        //     if(d.result) {
+        //         _this.setState({data: d.result.records,page: d.result.page,count: d.result.count});
+        //     }else {
+        //         message.error(GetErrorMsg(d))
+        //     }
+        // })
+        BeforeSendGet('/api/v1/user/balance/history', obj, function(d){
             if(d.result) {
-                _this.setState({data: d.result.records,page: d.result.page,count: d.result.count});
+                _this.setState({data: d.result.records,page: d.result.offset,count: d.result.limit});
             }else {
                 message.error(GetErrorMsg(d))
             }
@@ -204,10 +232,10 @@ class RecRecordTable extends Component {
             render: function(text,record) {
               return(
                 <Tooltip placement="top" title={text.from} overlayClassName='word-spill-tip'>
-                    {(text.type == 'outer')?
-                        <a className='word-spill' href="javascript:;">{text.from}</a>:
+                    {/* {(text.type == 'outer')? */}
+                        {/* <a className='word-spill' href="javascript:;">{text.from}</a>: */}
                         <span className='word-spill'>{text.from}</span>
-                    }
+                    {/* } */}
                 </Tooltip>
               )  
             } 
@@ -219,9 +247,8 @@ class RecRecordTable extends Component {
             render: function(text,record) {
                 return(
                     <Tooltip placement="top" title={text.tx_id} overlayClassName='word-spill-tip'>
-                        {(text.type == 'outer')?
-                            <a className='word-spill' href="javascript:;">{text.tx_id}</a>:
-                            <span className='word-spill'>{text.tx_id}</span>
+                        {
+                            <span className='word-spill'>{text.id}</span>
                         }
                     </Tooltip>
                 )

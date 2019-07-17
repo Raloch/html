@@ -7,7 +7,7 @@ import md5 from 'js-md5'
 import FormBox from '../components/FormBox'
 import Cookies from 'js-cookie'
 import store from '../store'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { BeforeSendPost, Cgicallget, CgicallPost, GetErrorMsg } from '@/components/Ajax'
 // import axios from 'axios'
 import './index.less'
 import Drotocol from "./deal.js"
@@ -22,13 +22,12 @@ class Regist extends Component {
     constructor() {
         super()
         this.store = new store() // 在这里实例化，保证每次加载组件数据的初始化。
-        console.log(this.store);
-        
+        // console.log(this.store)
     }
     state = {
         loading: false,
         visibleContract: false,
-        pwKey: 'fdec3af2f062f9d5893d22ffb46164d7ffcbee648cffb96af79121e7b274d979'
+        pwKey: 'fdec3af2f062f9d5893d22ffb46164d7ffcbee648cffb96af79121e7b274d979',
         // visibleEmail: false,
     }
     codeChange = (e) => {
@@ -60,15 +59,17 @@ class Regist extends Component {
                     code: emailCode,
                     level: gradeStr // 添加验证码强度
                 }
-                var _this = this
-                CgicallPost("/api/v1/visitor/email-register", obj, function(d){
-                    if(d.code === 0) {
+                var _this = this;
+                var account = email;
+                CgicallPost("/api/v1/visitor/email-register", obj, function (d) {
+                    if (d.code === 0) {
                         message.success("注册成功！")
-                        Cookies.set('account', d.result.account)
+                        // Cookies.set('account', account)
                         _this.state.account = d.result.account
-                        _this.props.history.push('/home')
-                    }else {
-                        message.error(GetErrorMsg(d))
+                        _this.props.history.push('/login');
+                    } else {
+                        // message.error(GetErrorMsg(d))
+                        message.error(d.result.message)
                     }
                 });
             }
@@ -79,10 +80,10 @@ class Regist extends Component {
         // clearTimeout(this.timer)
     }
     componentWillMount() {
-        if(Cookies.get('account')) {
-            if(this.props.history.length < 3) this.props.history.push('/home')
-            else this.props.history.goBack()
-        } 
+        if (Cookies.get('account')) {
+            if (this.props.history.length < 3) this.props.history.push('/home')
+            else this.props.history.goBack();
+        }
     }
     render() {
         const { visibleContract, loading } = this.state;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Form, Input, Button, Icon ,message} from 'antd'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { BeforeSendPost, Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
 import { inject, observer } from 'mobx-react'
 import boundSuc from '../img/boundSuccess.png'
 import emailPng from '../img/emailPng.png'
@@ -17,7 +17,7 @@ class PhoChangeOne extends Component {
     }
     state={
         codeHtml:'获取邮箱验证码',
-        codePhoHtml:'获取短信验证码',
+        // codePhoHtml:'获取短信验证码',
         timeAll: 60,
         timePhoAll:60,
         codeDisType:false,
@@ -26,8 +26,9 @@ class PhoChangeOne extends Component {
         type: '',
         changePho:'phone',
         changeGoogle:'google',
+        codeLoading:false,
     }
-    //邮箱验证码
+    // 邮箱验证码倒计时
     countDown = () => {
         let num = this.state.timeAll;
         let _this = this;
@@ -42,31 +43,42 @@ class PhoChangeOne extends Component {
             } 
         },1000)
     }
+    // 获取邮箱验证码
     getEmailMessage=()=>{
         let _this=this
-        let obj = {
-            type: 'emailmodifybindphone',
-            account: this.props.email,
-            receiver : 'email'
-        }
-        CgicallPost("/apiv1/visitor/getValidateCode",obj,function(d){
-            if(d.result) {
-                message.success('已向您的邮箱发送了验证邮件，请注意查收');
-                _this.countDown()
-
-            }else {
-                message.error(GetErrorMsg(d));
+        this.setState({codeLoading:true})
+        let captcha = new TencentCaptcha('2027665311', function(res) {
+            if(res.ret == 0){
+                let obj = {
+                    type: 'email-check',
+                    email: _this.props.email,
+                    userip: res.appid,
+                    ticket: res.ticket,
+                    randstr: res.randstr
+                }
+                BeforeSendPost("/api/v1/user/email_code", obj, function(d){
+                    if(d.code == 0) {
+                        message.success('已向您的邮箱发送了验证邮件，请注意查收');
+                        _this.countDown()
+        
+                    }else {
+                        // message.error(GetErrorMsg(d));
+                        message.error('获取失败!');
+                    }
+                });
             }
         });
-
+        captcha.show();
+        setTimeout(() => {  
+            this.setState({ codeLoading: false});
+        }, 3000);
     }
-    //手机验证码
+    // 手机验证码倒计时
     countPhoDown = () => {
         let numChange = this.state.timePhoAll;
         let _this = this;
         setTimeout(function(){
             if(numChange){
-                console.log("numChange",numChange)
                 _this.setState({codePhoHtml:numChange + '秒后重新获取',codePhoType:true})
                 _this.state.timePhoAll = numChange - 1;
                 _this.countPhoDown();
@@ -76,21 +88,35 @@ class PhoChangeOne extends Component {
             } 
         },1000)
     }
-    getPhoMessage=()=>{
+    // 获取手机验证码
+    getPhoMessage = () => {
         let _this=this
-        let obj = {
-            type: 'oldphonemodifybindphone',
-            account: this.props.phone,
-            receiver : 'phone'
-        }
-        CgicallPost("/apiv1/visitor/getValidateCode",obj,function(d){
-            if(d.result) {
-                message.success('已向您的手机号发送了验证短信，请注意查收');
-                _this.countPhoDown()
-            }else {
-                message.error(GetErrorMsg(d));
-            }
-        });
+        this.setState({codeLoading:true})
+        // let captcha = new TencentCaptcha('2027665311', function(res) {
+        //     if(res.ret == 0){
+                let obj = {
+                    type: 'phone-check',
+                    phone: _this.props.phone,
+                    email: _this.props.email,
+                    // userip: res.appid,
+                    // ticket: res.ticket,
+                    // randstr: res.randstr
+                }
+                BeforeSendPost("/api/v1/user/phone_code", obj, function(d){
+                    if(d.result) {
+                        message.success('已向您的手机号发送了验证短信，请注意查收');
+                        _this.countPhoDown()
+                    }else {
+                        // message.error(GetErrorMsg(d));
+                        message.error('获取失败!');
+                    }
+                });
+        //     }
+        // });
+        // captcha.show();
+        setTimeout(() => {  
+            this.setState({ codeLoading: false});
+        }, 3000);
     }
     changeType = (e) => {
         this.setState({
@@ -101,68 +127,74 @@ class PhoChangeOne extends Component {
         if(this.props.isAuthentication) this.state.arr.push("google")
         if(this.props.phone) this.state.arr.push("phone");
     }
-    /* **************** */
+
+    // 点击下一步
     changePhoNext = (e) => {
         let _this=this
         let changeGoogleCode = this.props.form.getFieldValue('changeGoogleInputCode')
         let changePhoCode = this.props.form.getFieldValue('changePhoInputCode')
         let changeEmailCode = this.props.form.getFieldValue('changeEmailInputCode')
+        // if(this.state.type=='phone'){
+        //     if(this.props.phone){
+        //         if(changePhoCode == '' || changePhoCode == undefined){
+        //             message.error('手机验证码不能为空')
+        //             return
+        //         }else if(changePhoCode.length !== 6){
+        //             message.error('手机验证码输入有误!')
+        //         }
+        //     }
+        // }else if(this.state.type == 'google'){
+        //     if(this.props.isAuthentication){
+        //         if(changeGoogleCode == '' || changeGoogleCode == undefined){
+        //             message.error('google验证码不能为空')
+        //             return
+        //         }
+        //     }
+        // }
+        if(changeEmailCode == '' || changeEmailCode == undefined){
+            message.error('邮箱验证码不能为空')
+            return
+        }else if(changeEmailCode.length !== 6){
+            message.error('邮箱验证码输入有误!')
+        }
         let obj = {
-            type: 'emailmodifybindphone',
-            account: this.props.email,
+            email: this.props.email,
             code : changeEmailCode
         }
         let obj1 = {
-            type: 'oldphonemodifybindphone',
-            account: this.props.phone,
+            phone: this.props.phone,
+            email: this.props.email,
             code : changePhoCode
         }
-        if(this.state.type=='phone'){
-            if(this.props.phone){
-                if(changePhoCode==''||changePhoCode==undefined){
-                    message.error('手机验证码不能为空')
-                    return
-                }
-            }
-        }else if(this.state.type=='google'){
-            if(this.props.isAuthentication){
-                if(changeGoogleCode==''||changeGoogleCode==undefined){
-                    message.error('google验证码不能为空')
-                    return
-                }
-            }
-        }
-        if(changeEmailCode==''||changeEmailCode==undefined){
-            message.error('邮箱验证码不能为空')
-            return
-        }
-       
-        CgicallPost("/apiv1/visitor/validateCodeExist",obj,function(d){
-            if(d.result) {
-                CgicallPost("/apiv1/visitor/validateCodeExist",obj1,function(e){
-                    if(e.result) {
-                        
-                        _this.props.changePassValueTwo({changeGoogleCode,changeEmailCode,changePhoCode})
-                    }else {
-                        message.error('手机验证码错误');
-                        return
-                    } 
-                });
-                
-                // _this.props.changeNextTwo()
-            }else {
-                message.error(GetErrorMsg(d));
+        BeforeSendPost("/api/v1/user/email_check", obj, function(d){
+            if(d.code === -50004){
+                message.error('邮箱验证码错误');
+                return
             } 
-        });
-    }
+            if(d.code === 0) {
+                _this.props.changePassValueTwo({changeGoogleCode, changeEmailCode, changePhoCode})
+            }
+            // if(d.result) {
+            //     BeforeSendPost("/api/v1/user/bind-phone", obj1, function(e){
+            //         if(e.result) {
+            //         } else {
+            //             message.error('手机验证码有误!');
+            //             return
+            //         } 
+            //     })
+            // } else {
+            //     message.error(GetErrorMsg(d));
+            //     message.error('验证码有误!')
+            // } 
 
+        })
+    }
    /* **************** */
     render(){
         const { getFieldDecorator } = this.props.form
         const { loading,loadingLogin } = this.props.store
 
         if(!this.state.type) {
-            console.log('this.state.arr',this.state.arr)
             this.state.type = this.state.arr[0];//如果是存在两种认证的时候arr=['google','phone'];
         }
         return (
@@ -205,7 +237,7 @@ class PhoChangeOne extends Component {
                     </FormItem>
                     <p style={{display:(this.state.arr.length > 1)?"block":"none"}} className='changeGooglePho'>使用<a href="javascript:void(0);" onClick={this.changeType.bind(this,'phone')}>手机验证码</a></p>
                 </div> 
-                <div style={{display:(this.state.type == 'phone')?'block':'none'}}>
+                {/* <div style={{display:(this.state.type == 'phone')?'block':'none'}}>
                     <FormItem className={(this.state.arr.length > 1)?'changeCode':null}>
                         {getFieldDecorator('changePhoInputCode', {
                             rules: [{ required: true, message: '请输入手机验证码' }],
@@ -229,7 +261,7 @@ class PhoChangeOne extends Component {
                         )}
                     </FormItem>
                     <p style={{display:(this.state.arr.length > 1)?"block":"none"}} className='changeGooglePho'>使用<a href="javascript:void(0);" onClick={this.changeType.bind(this,'google')}>Google验证码</a></p>
-                </div>  
+                </div>   */}
                 {/* ********************* */}
                 <FormItem>
                     {getFieldDecorator('emailName', {

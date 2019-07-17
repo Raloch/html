@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { Form, Input, Button, Icon,message ,Select} from 'antd'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { BeforeSendPost, Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
 import { inject, observer } from 'mobx-react'
+import Cookies from 'js-cookie'
 import boundSuc from '../img/boundSuccess.png'
 import emailPng from '../img/emailPng.png'
 import transNum from '../img/transNum.png'
@@ -20,7 +21,8 @@ class PhoChangeTwo extends Component {
     state={
         codeHtml:'获取短信验证码',
         timeAll: 60,
-        codeDisType:false
+        codeDisType:false,
+        email: Cookies.get('account')
     }
     countDown = () => {
         var num = this.state.timeAll;
@@ -36,72 +38,106 @@ class PhoChangeTwo extends Component {
             } 
         },1000)
     }
+    // 获取短信验证码
     getPhoMessage = ()=>{
         let _this=this
         let inputPhoNumber = this.props.form.getFieldValue('changePhoNumber')
-        let obj = {
-            type: 'newphonemodifybindphone',
-            account: inputPhoNumber,
-            receiver : 'phone'
-        }
-        CgicallPost("/apiv1/visitor/getValidateCode",obj,function(d){
-            if(d.result) {
-                message.success('已向您的手机号发送了验证短信，请注意查收');
-                _this.countDown()
+        if (inputPhoNumber == "" || inputPhoNumber == undefined || inputPhoNumber.length !== 11) {
+            message.error('请填写正确的手机号码')
+            return
+        } 
 
-            }else {
-                message.error(GetErrorMsg(d));
-            }
-        });
-
+        this.setState({codeLoading:true})
+        // let captcha = new TencentCaptcha('2027665311', function(res) {
+        //     if(res.ret == 0){
+                let obj = {
+                    type: 'phone-check',
+                    email: _this.state.email,
+                    phone: inputPhoNumber,
+                    // userip: res.appid,
+                    // ticket: res.ticket,
+                    // randstr: res.randstr
+                }
+                BeforeSendPost("/api/v1/user/phone_code", obj, function(d){
+                    if(d.result) {
+                        message.success('已向您的手机号发送了验证短信，请注意查收');
+                        _this.countDown()
+                    }else {
+                        // message.error(GetErrorMsg(d));
+                        message.error('获取失败!');
+                    }
+                });
+        //     }
+        // });
+        // captcha.show();
+        setTimeout(() => {  
+            this.setState({ codeLoading: false});
+        }, 3000);
     }
+
+    // 点击下一步
     phoChangeNextSuc= (e) => {
-        let _this=this
-        let inputPhoNumber = this.props.form.getFieldValue('changePhoNumber')
-        let newInputPhoCode = this.props.form.getFieldValue('newInputPhoCode')
-        let objAut = {
-            authtoken: this.props.oldGoogleCode,
-            emailcode : this.props.emailCode,
-            newphonecode: newInputPhoCode,
-            phone:inputPhoNumber
-        }
-        let objPho = {
-            oldphonecode: this.props.oldPhoCode,
-            emailcode : this.props.emailCode,
-            newphonecode: newInputPhoCode,
-            phone:inputPhoNumber
-        }
-        if(newInputPhoCode==''||newInputPhoCode==undefined){
+        let _this = this;
+        let inputPhoNumber = this.props.form.getFieldValue('changePhoNumber');
+        let newInputPhoCode = this.props.form.getFieldValue('newInputPhoCode');
+        if(newInputPhoCode == '' || newInputPhoCode == undefined){
             message.error('手机验证码不能为空')
             return
+        }else if(newInputPhoCode.length !== 6){
+            message.error('验证码有误')
         }
-        if(this.props.oldGoogleCode){
-            CgicallPost("/apiv1/user/modifyBindPhoneWithAuth",objAut,function(d){
-                if(d.result) {
-                    _this.props.changeNextThree()
-                }else {
-                    message.error(GetErrorMsg(d));
-                    if(d.error.code==5006){
-                        _this.props.codeExpires
-                    }
-                } 
-            });
+        if (inputPhoNumber == "" || inputPhoNumber == undefined || inputPhoNumber.length !== 11) {
+            message.error('请填写正确的手机号码')
+            return
+        } 
+        let objPho = {
+            phone: inputPhoNumber,
+            email: this.state.email,
+            code: newInputPhoCode
         }
-        if(this.props.oldPhoCode){
-            CgicallPost("/apiv1/user/modifyBindPhone",objPho,function(d){
-                if(d.result) {
+        console.log(this.props)
+        // if (this.props.oldPhoCode) {
+            BeforeSendPost("/api/v1/user/bind-phone", objPho, function (d) {
+                if (d.result) {
                     _this.props.changeNextThree()
-                }else {
-                    if(d.error.code==5006){
-                        _this.props.codeExpires
-                    }else if(d.error.code==7001){
+                    setTimeout(()=>{
+                        location.reload(true)
+                    },1000)
+                } else {
+                    if (d.code == 5006) {
+                        _this.props.codeExpires()
+                        message.error('验证码过期');
+                        return
+                    } else if (d.code == 7001) {
                         message.error('该手机号已经被注册');
                         return
-                    }
-                    message.error(GetErrorMsg(d));
-                } 
-            });
-        }
+                    } else if (d.code == -50004){
+                        message.error('验证码错误');
+                        return
+                    } 
+                    // message.error(GetErrorMsg(d));
+                    message.error('获取失败!');
+                }
+            })
+        // }
+        // let objAut = {
+        //     authtoken: this.props.oldGoogleCode,
+        //     emailcode : this.props.emailCode,
+        //     newphonecode: newInputPhoCode,
+        //     phone:inputPhoNumber
+        // }
+        // if(this.props.oldGoogleCode){
+        //     CgicallPost("/apiv1/user/modifyBindPhoneWithAuth",objAut,function(d){
+        //         if(d.result) {
+        //             _this.props.changeNextThree()
+        //         }else {
+        //             message.error(GetErrorMsg(d));
+        //             if(d.error.code==5006){
+        //                 _this.props.codeExpires()
+        //             }
+        //         } 
+        //     });
+        // }
     }
     render(){
         const { getFieldDecorator } = this.props.form

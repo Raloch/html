@@ -58,9 +58,6 @@ class MessageCenter extends Component {
         }); 
     }
     passEmailAut=(x,y,z)=>{
-        console.log("xxxxxxxxxxxxxxxxx",x)
-        console.log("yyyyyyyyyyyyyyyyy",y)
-        console.log("zzzzzzzzzzzzzzzzz",z)
         this.setState({
             email: x,
             isAuthentication:y,
@@ -68,7 +65,6 @@ class MessageCenter extends Component {
         }); 
     }
     googleCodeValue = (e)=>{
-        console.log('pppppppppppppppppppppppp',e)
         this.setState({
             googleEmailCode: e.inputEmailCode,
             phoneCode: e.phoneCode
@@ -93,7 +89,6 @@ class MessageCenter extends Component {
         });
     }
     
-    // **************
     getContMain = (event) => {
         console.log('event&&&&&&&',event)
         if(event && typeof event == "string")  {
@@ -109,8 +104,6 @@ class MessageCenter extends Component {
         // this.forceUpdate();
     }
     getPage = (key) => {
-        console.log('**********************')
-        console.log(key);
         switch(key) {
             case 'messageCenter':
                 LoadableComponent = Loadable({
@@ -186,16 +179,16 @@ class MessageCenter extends Component {
                                 <Menu.Item className ="select-hover" key ="setAccount">
                                     <span className ="nav-text">账号设置</span>
                                 </Menu.Item>
-                                <Menu.Item key="messageCenter">
+                                <Menu.Item className ="select-hover" key="messageCenter">
                                     <span className ="nav-text">消息中心</span>
                                 </Menu.Item>
-                                <Menu.Item key ="aktionen">
+                                {/* <Menu.Item key ="aktionen">
                                     <span className ="nav-text">注册奖励</span>
                                 </Menu.Item>
                                 <Menu.Item key ="recomAward">
                                     <span className ="nav-text">推荐奖励</span>
-                                </Menu.Item>
-                                <Menu.Item key="secretKey">
+                                </Menu.Item> */}
+                                <Menu.Item className ="select-hover" key="secretKey">
                                     <span className ="nav-text">API密钥</span>
                                 </Menu.Item>
                             </Menu>
