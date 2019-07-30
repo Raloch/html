@@ -1,9 +1,6 @@
 // 币币交易
 import { observable, action, computed, reaction } from 'mobx'
 import { BeforeSendGet, BeforeSendPost } from '../../../components/Ajax'
-import { message } from 'antd'
-import { dataBTC } from '../../Trade/components/coinsList'
-import { dataBTC as homedataBTC } from '../../Home/components/marketList'
 import home from './home'
 import kline from './kline'
 
@@ -84,33 +81,63 @@ class Trade {
     if (home.urlpath === '/trade' && data.method === 'state.update') {
       let params = data.params[0]
       // 循环获取的数据更新本地数据
-      dataBTC.forEach((val, i) => {
-        let keyArr = Object.keys(params)
-        let name = val.exchangePairs + 'BTC'
-        if (keyArr.includes(name)) {
-          let obj = params[name]
-          val.newPrice = obj.last
-        }
-      })
+      // dataBTC.forEach((val, i) => {
+      //   let keyArr = Object.keys(params)
+      //   let name = val.exchangePairs + 'BTC'
+      //   if (keyArr.includes(name)) {
+      //     let obj = params[name]
+      //     val.newPrice = obj.last
+      //   }
+      // })
+      if (home.marketList.length > 0) {
+        let marketList = JSON.parse(home.marketList)
+        marketList.forEach((item, i) => {
+          this.market[`market${i}`].forEach(val => {
+            let keyArr = Object.keys(params)
+            let name = val.exchangePairs + `${ marketList[this.market.activeKey].Money }`
+            if (keyArr.includes(name)) {
+              let obj = params[name]
+              val.newPrice = obj.last
+            }
+          })
+        })
+      }
       this.market.isUpdate = !this.market.isUpdate
-      this.market.BTCLoading = false
+      this.market.marketLoading = false
     }
     // 主页 -- market
     if (home.urlpath === '/home' && data.method === 'state.update') {
       let params = data.params[0]
-      homedataBTC.forEach((val, i) => {
-        let keyArr = Object.keys(params)
-        let name = val.exchangePairs.replace('/', '')
-        if (keyArr.includes(name)) {
-          let obj = params[name]
-          val.newPrice = obj.last
-          val.highestPrice = obj.high
-          val.minimumPrice = obj.low
-          val.dailyVolume = obj.volume
-          val.dailyTurnover = obj.deal + ' BTC'
-        }
-      })
-      home.BTCLoading = false
+      // homedataBTC.forEach((val, i) => {
+      //   let keyArr = Object.keys(params)
+      //   let name = val.exchangePairs.replace('/', '')
+      //   if (keyArr.includes(name)) {
+      //     let obj = params[name]
+      //     val.newPrice = obj.last
+      //     val.highestPrice = obj.high
+      //     val.minimumPrice = obj.low
+      //     val.dailyVolume = obj.volume
+      //     val.dailyTurnover = obj.deal + ' BTC'
+      //   }
+      // })
+      if (home.marketList.length > 0) {
+        let marketList = JSON.parse(home.marketList)
+        marketList.forEach((item, i) => {
+          home[`market${i}`].forEach(val => {
+            let keyArr = Object.keys(params)
+            let name = val.exchangePairs.replace('/', '')
+            if (keyArr.includes(name)) {
+              let obj = params[name]
+              val.newPrice = obj.last
+              val.highestPrice = obj.high
+              val.minimumPrice = obj.low
+              val.dailyVolume = obj.volume
+              val.dailyTurnover = obj.deal + ' BTC'
+            }
+          })
+        })
+      }
+      home.marketLoading = false
       home.isUpdate = !home.isUpdate
     }
     // 最近成交
@@ -348,7 +375,22 @@ class Trade {
 
   /* --- 交易市场 start --- */
   @observable market = {
-    BTCLoading: true,
+    marketLoading: true,
+    activeKey: '0',
+    market0: [],
+    marketCache0: [],
+    market1: [],
+    marketCache1: [],
+    market2: [],
+    marketCache2: [],
+    market3: [],
+    marketCache3: [],
+    market4: [],
+    marketCache4: [],
+    market5: [],
+    marketCache5: [],
+    market6: [],
+    marketCache6: [],
     isUpdate: true
   }
   /* --- 交易市场 end --- */

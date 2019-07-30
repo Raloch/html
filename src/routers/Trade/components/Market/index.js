@@ -1,161 +1,71 @@
 import React, { Component } from 'react'
 import { Checkbox, Tabs, Table, Input, Icon } from 'antd'
-import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT } from '../coinsList'
 import './index.less'
+import star1 from '../../images/star1.png'
+import star2 from '../../images/star2.png'
 import { inject, observer } from 'mobx-react'
 
 const { TabPane } = Tabs
 
-@inject('trade')
+@inject('trade', 'home')
 @observer
 class Market extends Component {
   constructor(props) {
     super(props)
     this.state = {
       searchText: '',
-      activeKey: '1',
-      dataUSDT: dataUSDT,
-      dataBTC: dataBTC,
-      dataETH: dataETH,
-      dataBCT: dataBCT,
-      selfCheckValue: false,
-      activeKeyBefore: '1'
+      selfCheckValue: false
+    }
+  }
+  componentDidMount() {
+    const home = this.props.home
+    if (home.marketList.length === 0) {
+      home.getMarketList()
     }
   }
   // 币种改变 -- 根据自选框有无选中展示数据
   activeKeyChange = key => {
-    this.setState({
-      activeKey: key
-    })
+    const home = this.props.home
+    const trade = this.props.trade
+    let marketList = JSON.parse(home.marketList)
+    let market = trade.market
+    this.props.trade.market.activeKey = key
     if (this.state.searchText) {
       this.setState({
         searchText: ''
       })
-      switch(this.state.activeKeyBefore) {
-        case '1':
-          // 定时器延迟更新数据避免用户看到页面闪烁
-          setTimeout(() => {
-            this.setState({
-              dataBTC
-            })
-          }, 500)
-          break
-        case '2':
-          setTimeout(() => {
-            this.setState({
-              dataUSDT
-            })
-          }, 500)
-          break
-        case '3':
-          setTimeout(() => {
-            this.setState({
-              dataETH
-            })
-          }, 500)
-          break
-        case '4':
-          setTimeout(() => {
-            this.setState({
-              dataBCT
-            })
-          }, 500)
-          break
-      }
+      marketList.forEach((val, i) => {
+        market[`market${i}`] = market[`marketCache${i}`]
+      })
     }
-    this.setState({
-      activeKeyBefore: key
-    })
     if (this.state.selfCheckValue) {
       this.displayBySelfCheckAndKey(key)
-    } else {
-      this.setState({
-        dataUSDT: dataUSDT,
-        dataBTC: dataBTC,
-        dataETH: dataETH,
-        dataBCT: dataBCT
-      })
     }
   }
   // 根据activeKey及自选按钮选中状态来设置展示的数据
   displayBySelfCheckAndKey = key => {
-    switch(key) {
-      case '1':
-        let BTCCollected = dataBTC.filter(val => {
-          return val.isCollected
-        })
-        this.setState({
-          dataBTC: BTCCollected
-        })
-        break
-      case '2':
-        let USDTCollected = dataUSDT.filter(val => {
-          return val.isCollected
-        })
-        this.setState({
-          dataUSDT: USDTCollected
-        })
-        break
-      case '3':
-        let ETHCollected = dataETH.filter(val => {
-          return val.isCollected
-        })
-        this.setState({
-          dataETH: ETHCollected
-        })
-        break
-      case '4':
-        let BCTCollected = dataBCT.filter(val => {
-          return val.isCollected
-        })
-        this.setState({
-          dataBCT: BCTCollected
-        })
-        break
-    }
+    const trade = this.props.trade
+    const market = trade.market
+    let data = market[`marketCache${key}`].filter(val => {
+      return val.isCollected
+    })
+    market[`market${key}`] = data
   }
   // 搜索币种
   search = () => {
+    const trade = this.props.trade
+    let market = trade.market
     this.setState({
       selfCheckValue: false
     })
-    let arr, name, loadName
-    switch(this.state.activeKey) {
-      case '1':
-        arr = dataBTC
-        name = 'dataBTC'
-        loadName = 'BTCLoading'
-        break
-      case '2':
-        arr = dataUSDT
-        name = 'dataUSDT',
-        loadName = 'USDTLoading'
-        break
-      case '3':
-        arr = dataETH
-        name = 'dataETH'
-        loadName = 'ETHLoading'
-        break
-      case '4':
-        arr = dataBTC
-        name = 'dataBCT'
-        loadName = 'BCTLoading'
-        break
-    }
     if (this.state.searchText !== '') {
       // 过滤不匹配的元素
-      let data = arr.filter(val => {
+      let data = market[`marketCache${ market.activeKey }`].filter(val => {
         return val.exchangePairs.toLowerCase().includes(this.state.searchText.toLowerCase())
       })
-      this.setState({
-        [name]: data
-        // [loadName]: false
-      })
+      market[`market${ market.activeKey }`] = data
     } else {
-      this.setState({
-        [name]: arr
-        // [loadName]: false
-      })
+      market[`market${ market.activeKey }`] = market[`marketCache${ market.activeKey }`]
     }  
   }
   handleChange = (e) => {
@@ -174,20 +84,7 @@ class Market extends Component {
           record.isCollected = !record.isCollected
         } else {
           trade.currencyTrading.coinsType = record.exchangePairs
-          switch(this.state.activeKey) {
-            case '1':
-              trade.currencyTrading.coinsTypeTitle = 'BTC'
-              break
-            case '2':
-              trade.currencyTrading.coinsTypeTitle = 'USDT'
-              break
-            case '3':
-              trade.currencyTrading.coinsTypeTitle = 'ETH'
-              break
-            case '4':
-              trade.currencyTrading.coinsTypeTitle = 'BCT'
-              break
-          }
+          trade.currencyTrading.coinsTypeTitle = JSON.parse(this.props.home.marketList)[trade.market.activeKey].Money
           trade.newDeal.newDealLoading = true
           trade.sendReq(5, 'deals.subscribe', [trade.currentCoinsType])
         }
@@ -201,27 +98,60 @@ class Market extends Component {
       searchText: '',
       selfCheckValue: checked
     })
-    const { activeKey } = this.state
     if (checked) {
-      this.displayBySelfCheckAndKey(activeKey)
+      this.displayBySelfCheckAndKey(this.props.trade.market.activeKey)
     } else {
-      this.setState({
-        dataUSDT: dataUSDT,
-        dataBTC: dataBTC,
-        dataETH: dataETH,
-        dataBCT: dataBCT
+      JSON.parse(this.props.home.marketList).forEach((val, i) => {
+        this.props.trade.market[`market${i}`] = this.props.trade.market[`marketCache${i}`]
       })
     }
   }
   render() {
     const trade = this.props.trade
+    const home = this.props.home
+    let marketList = home.marketList.length > 0 ? JSON.parse(home.marketList) : []
     // isUpdate为mobx中用来强制更新该页面
     let isUpdate = trade.market.isUpdate
     const loadingStyle = {
-      spinning: trade.market.BTCLoading,
+      spinning: trade.market.marketLoading,
       tip: 'Loading...',
       indicator: <Icon type="loading" spin />
     }
+    const columns = [
+      {
+        title: '币种',
+        dataIndex: 'exchangePairs',
+        render: (text, record) => {
+          return (
+            <span><img className="collectStar" style={{ width: 12, cursor: 'pointer', marginRight: 5, marginBottom: 3 }} src={ record.isCollected ? star2 : star1 } alt="" />{ text }</span>
+          )
+        },
+        align: 'center',
+        sorter: (a, b) => {
+          return b.exchangePairs.charCodeAt(0) - a.exchangePairs.charCodeAt(0)
+        },
+        width: '34%'
+      },
+      {
+        title: '最新价',
+        dataIndex: 'newPrice',
+        align: 'center',
+        sorter: (a, b) => {
+          return parseFloat(a.newPrice) - parseFloat(b.newPrice)
+        },
+        width: '40%'
+      },
+      {
+        title: '涨跌',
+        dataIndex: 'highsAndLows',
+        align: 'center',
+        sorter: (a, b) => {
+          return parseFloat(a.highsAndLows) - parseFloat(b.highsAndLows)
+        },
+        render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>,
+        width: '36%'
+      }
+    ]
     return (
       <div className="exchange-market">
         <header>
@@ -236,20 +166,16 @@ class Market extends Component {
           />
         </header>
         <main>
-          <Tabs defaultActiveKey={ this.state.activeKey } onChange={ this.activeKeyChange } tabBarExtraContent={ <Checkbox checked={ this.state.selfCheckValue } onChange={ this.selfCheckedData } className="self-check">自选</Checkbox> }>
-            <TabPane tab="BTC" key="1">
-              <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } loading={ loadingStyle } />
-            </TabPane>
-            <TabPane tab="USDT" key="2">
-              <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } />
-            </TabPane>
-            <TabPane tab="ETH" key="3">
-              <Table columns={ columnsETH } dataSource={ this.state.dataETH } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } />
-            </TabPane>
-            <TabPane tab="BCT" key="4">
-              <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } />
-            </TabPane>
-          </Tabs>
+          { marketList.length > 0 ?
+            <Tabs defaultActiveKey="0" onChange={ this.activeKeyChange } tabBarExtraContent={ <Checkbox checked={ this.state.selfCheckValue } onChange={ this.selfCheckedData } className="self-check">自选</Checkbox> }>
+              { marketList.map((val, i) => (
+                <TabPane tab={ `${ val.Money }` } key={i}>
+                  <Table columns={ columns } dataSource={ trade.market[`market${i}`] } scroll={{ y: 545 }} pagination={ false } onRow={ this.rowClick } loading={ loadingStyle } />
+                </TabPane>
+              )) }
+            </Tabs>
+            : ''
+          }
         </main>
       </div>
     )

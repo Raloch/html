@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { Input, Icon, Tabs, Table, message } from 'antd'
-import { columnsUSDT, dataUSDT, columnsBTC, dataBTC, columnsETH, dataETH, columnsBCT, dataBCT, columnsCollect } from '../marketList'
+import { Input, Icon, Tabs, Table } from 'antd'
 import './index.less'
 import { BeforeSendGet } from '../../../../components/Ajax'
 import { inject, observer } from 'mobx-react'
@@ -10,7 +9,6 @@ import star2 from '../../images/star2.png'
 import { withRouter } from 'react-router-dom'
 
 const { TabPane } = Tabs
-let collectData = []
 
 @withRouter
 @inject('home', 'trade')
@@ -19,27 +17,38 @@ class ExchangeMarket extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      searchText: '',
-      activeKey: '1',
-      dataBTC: dataBTC,
-      dataUSDT: dataUSDT,
-      dataETH: dataETH,
-      dataBCT: dataBCT,
-      collectData: collectData,
-      collectDataCache: [],
-      activeKeyBefore: '1'
+      searchText: ''
     }
   }
   componentDidMount() {
     const trade = this.props.trade
     const home = this.props.home
     home.urlpath = '/home'
-    BeforeSendGet('/api/v1/visitor/market/list', {}, function(res) {
-      if (res.code === 0) {
-        home.marketList = JSON.stringify(res.result)
-        console.log(res.result)
-      }
-    })
+    // BeforeSendGet('/api/v1/visitor/market/list', {}, function(res) {
+    //   if (res.code === 0) {
+    //     home.marketList = JSON.stringify(res.result)
+    //     let len = res.result.length
+    //     res.result.forEach((val, i) => {
+    //       home[`market${i + 1}`] = val.Stock.map((item, index) => (
+    //         {
+    //           key: `${ index }`,
+    //           isCollected: false,
+    //           exchangePairs: `${ item }/${ val.Money }`,
+    //           newPrice: '--',
+    //           highsAndLows: '--',
+    //           highestPrice: '--',
+    //           minimumPrice: '--',
+    //           dailyVolume: '--',
+    //           dailyTurnover: '--'
+    //         }
+    //       ))
+    //       home[`marketCache${i}`] = home[`market${i}`].slice(0)
+    //     })
+    //   }
+    // })
+    if (home.marketList.length === 0) {
+      home.getMarketList()
+    }
     if (trade.ws === null || trade.ws.readyState === 0) {
       trade.tradeWsInit()
     } else {
@@ -50,7 +59,7 @@ class ExchangeMarket extends Component {
     const trade = this.props.trade
     const home = this.props.home
     home.urlpath = ''
-    home.BTCLoading = true
+    home.marketLoading = true
     // 当websocket没有成功开启或者扔处于connecting状态，就跳转到其他页面，会提示send报错
     if (trade.ws !== null && trade.ws.readyState !== 0) {
       trade.sendReq(2, 'state.unsubscribe', [])
@@ -58,99 +67,56 @@ class ExchangeMarket extends Component {
   }
   // 标题栏切换回调
   coinsTypeChange = (key) => {
-    this.setState({
-      activeKey: key
-    }, () => {
-      if (this.state.searchText) {
-        this.setState({
-          searchText: ''
-        })
-        switch(this.state.activeKeyBefore) {
-          case '1':
-            this.setState({
-              dataBTC
-            })
-            break
-          case '2':
-            this.setState({
-              dataUSDT
-            })
-            break
-          case '3':
-            this.setState({
-              dataETH
-            })
-            break
-          case '4':
-            this.setState({
-              dataBCT
-            })
-            break
-        }
-      }
+    let home = this.props.home
+    let marketList = JSON.parse(home.marketList)
+    home.activeKey = key
+    if (this.state.searchText) {
       this.setState({
-        activeKeyBefore: key
+        searchText: ''
       })
-      if (this.state.activeKey === '5') {
-        let BTCCollect = dataBTC.filter(val => {
-          return val.isCollected
-        })
-        let USDTCollect = dataUSDT.filter(val => {
-          return val.isCollected
-        })
-        let ETHCollect = dataETH.filter(val => {
-          return val.isCollected
-        })
-        let BCTCollect = dataBCT.filter(val => {
-          return val.isCollected
-        })
-        let data = [...BTCCollect, ...USDTCollect, ...ETHCollect, ...BCTCollect]
-        collectData = data
-        this.setState({
-          collectData
-        })
-      }
-    })
-    
+      marketList.forEach((val, i) => {
+        home[`market${i}`] = home[`marketCache${i}`]
+      })
+    }
+    if (+home.activeKey === marketList.length) {
+      let collect = marketList.map(() => {
+        return {
+          market: []
+        }
+      })
+      marketList.forEach((val, i) => {
+        collect[i].market = home[`market${i}`].filter(val => val.isCollected)
+      })
+      let data = []
+      marketList.forEach((val, i) => {
+        data.push(...collect[i].market)
+      })
+      home.collectData = data
+      home.collectDataCache = data
+    }
   }
   // 搜索币种
   search = () => {
     const home = this.props.home
-    let arr, name
-    switch(this.state.activeKey) {
-      case '1':
-        arr = dataBTC
-        name = 'dataBTC'
-        home.BTCLoading = true
-        break
-      case '2':
-        arr = dataUSDT
-        name = 'dataUSDT'
-        break
-      case '3':
-        arr = dataETH
-        name = 'dataETH'
-        break
-      case '4':
-        arr = dataBCT
-        name = 'dataBCT'
-        break
-      case '5':
-        arr = collectData
-        name = 'collectData'
-    }
     if (this.state.searchText !== '') {
       // 过滤不匹配的元素
-      let data = arr.filter(val => {
-        return val.exchangePairs.toLowerCase().includes(this.state.searchText.toLowerCase())
-      })
-      this.setState({
-        [name]: data
-      })
+      if (JSON.parse(home.marketList).length === +home.activeKey) {
+        let data = home.collectDataCache.filter(val => {
+          return val.exchangePairs.toLowerCase().includes(this.state.searchText.toLowerCase())
+        })
+        home.collectData = data
+      } else {
+        let data = home[`marketCache${ home.activeKey }`].filter(val => {
+          return val.exchangePairs.toLowerCase().includes(this.state.searchText.toLowerCase())
+        })
+        home[`market${ home.activeKey }`] = data
+      }
     } else {
-      this.setState({
-        [name]: arr
-      })
+      if (JSON.parse(home.marketList).length === +home.activeKey) {
+        home.collectData = home.collectDataCache
+      } else {
+        home[`market${ home.activeKey }`] = home[`marketCache${ home.activeKey }`]
+      }
     }  
   }
   handleChange = (e) => {
@@ -180,11 +146,12 @@ class ExchangeMarket extends Component {
     }
   }
   render() {
+    console.log('刷新')
     const home = this.props.home
     let marketList = home.marketList.length > 0 ? JSON.parse(home.marketList) : []
     let isUpdate = home.isUpdate
     const loadingStyle = {
-      spinning: home.BTCLoading,
+      spinning: home.marketLoading,
       tip: 'Loading...',
       indicator: <Icon type="loading" spin />
     }
@@ -263,25 +230,11 @@ class ExchangeMarket extends Component {
           onChange={ this.handleChange }
         />
         { marketList.length > 0 ?
-          <Tabs defaultActiveKey="1" onChange={ this.coinsTypeChange }>
+          <Tabs defaultActiveKey="0" onChange={ this.coinsTypeChange }>
             { marketList.map((val, i) => (
               <TabPane tab={ `${ val.Money }市场` } key={i}>
                 <Table columns={ columns }
-                  dataSource={ 
-                    val.Stock.map((item, index) => (
-                      {
-                        key: `${ index }`,
-                        isCollected: false,
-                        exchangePairs: `${ item }/${ val.Money }`,
-                        newPrice: '--',
-                        highsAndLows: '--',
-                        highestPrice: '--',
-                        minimumPrice: '--',
-                        dailyVolume: '--',
-                        dailyTurnover: '--'
-                      }
-                    ))
-                  }
+                  dataSource={ home[`market${i}`] }
                   pagination={ false }
                   loading={ loadingStyle }
                   onRow={ this.rowClick }
@@ -293,8 +246,8 @@ class ExchangeMarket extends Component {
                 />
               </TabPane>
             )) }
-            <TabPane tab={ <span><img style={{ marginBottom: 5, marginRight: 5 }} src={ star2 } />自选市场</span> } key="9999">
-              <Table columns={ columnsCollect } dataSource={ this.state.collectData } pagination={ false } onRow={ this.rowClick } locale={{
+            <TabPane tab={ <span><img style={{ marginBottom: 5, marginRight: 5 }} src={ star2 } />自选市场</span> } key={ `${ marketList.length }` }>
+              <Table columns={ columns } dataSource={ home.collectData } pagination={ false } onRow={ this.rowClick } locale={{
                 emptyText: (
                   <Empty height="120" text="暂无收藏" />
                 )

@@ -20,8 +20,6 @@ class NewDeal extends Component {
           <p>最近成交</p>
         </header>
         <main>
-          {/* 使用Table，数据更新时滚动条会向下滑动一行的距离 -- 暂时无法解决，用ul>li来写 */}
-          {/* <Table loading={ this.props.trade.newDeal.newDealLoading } columns={ exchangeColumns } dataSource={ this.props.trade.newDeal.newDealData.slice(0, 38) } pagination={ false } /> */}
           <div className="title">
             <p>时间</p>
             <p>价格 ({ this.props.trade.currencyTrading.coinsTypeTitle })</p>
@@ -42,7 +40,6 @@ class NewDeal extends Component {
               <Spin spinning={ true } tip="Loading..." indicator={ <Icon type="loading" spin /> } style={{ height: '350px' }} />
             </div>
           ) }
-            
         </main>
       </div>
     )
