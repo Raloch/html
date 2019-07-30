@@ -8,6 +8,7 @@ class Home {
   @observable BCTLoading = false
   @observable collectLoading = false
   @observable isUpdate = true // 传递该变量强制更新home-market页面
+  @observable marketList = []
 }
 
 const home = new Home()

@@ -11,7 +11,8 @@ export const columnsUSDT = [
         <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
       )
     },
-    align: 'center'
+    align: 'right',
+    width: '5%'
   },
   {
     title: '交易对',
@@ -140,7 +141,12 @@ export const columnsBTC = [
     title: '交易对',
     dataIndex: 'exchangePairs',
     align: 'center',
-    width: '11%'
+    width: '11%',
+    render: text => {
+      return (
+        <td className="exchangePairs" style={{ display: 'block', width: '100%', textAlign: 'center', cursor: 'pointer' }}>{ text }</td>
+      )
+    }
   },
   {
     title: '最新价',
@@ -789,39 +795,48 @@ export const columnsETH = [
       return (
         <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
       )
-    }
+    },
+    align: 'right',
+    width: '5%'
   },
   {
     title: '交易对',
-    dataIndex: 'exchangePairs'
+    dataIndex: 'exchangePairs',
+    align: 'center'
   },
   {
     title: '最新价',
-    dataIndex: 'newPrice'
+    dataIndex: 'newPrice',
+    align: 'center'
   },
   {
     title: '日涨跌',
     dataIndex: 'highsAndLows',
-    render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>
+    render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>,
+    align: 'center'
   },
   {
     title: '最高价',
-    dataIndex: 'highestPrice'
+    dataIndex: 'highestPrice',
+    align: 'center'
   },
   {
     title: '最低价',
-    dataIndex: 'minimumPrice'
+    dataIndex: 'minimumPrice',
+    align: 'center'
   },
   {
     title: '日成交量',
-    dataIndex: 'dailyVolume'
+    dataIndex: 'dailyVolume',
+    align: 'center'
   },
   {
     title: '日成交额',
     dataIndex: 'dailyTurnover',
     sorter: (a, b) => {
       return parseFloat(a.dailyTurnover) - parseFloat(b.dailyTurnover)
-    }
+    },
+    align: 'center'
   }
 ]
 
@@ -891,39 +906,48 @@ export const columnsBCT = [
       return (
         <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
       )
-    }
+    },
+    align: 'right',
+    width: '5%'
   },
   {
     title: '交易对',
-    dataIndex: 'exchangePairs'
+    dataIndex: 'exchangePairs',
+    align: 'center'
   },
   {
     title: '最新价',
-    dataIndex: 'newPrice'
+    dataIndex: 'newPrice',
+    align: 'center'
   },
   {
     title: '日涨跌',
     dataIndex: 'highsAndLows',
-    render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>
+    render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>,
+    align: 'center'
   },
   {
     title: '最高价',
-    dataIndex: 'highestPrice'
+    dataIndex: 'highestPrice',
+    align: 'center'
   },
   {
     title: '最低价',
-    dataIndex: 'minimumPrice'
+    dataIndex: 'minimumPrice',
+    align: 'center'
   },
   {
     title: '日成交量',
-    dataIndex: 'dailyVolume'
+    dataIndex: 'dailyVolume',
+    align: 'center'
   },
   {
     title: '日成交额',
     dataIndex: 'dailyTurnover',
     sorter: (a, b) => {
       return parseFloat(a.dailyTurnover) - parseFloat(b.dailyTurnover)
-    }
+    },
+    align: 'center'
   }
 ]
 
@@ -993,36 +1017,45 @@ export const columnsCollect = [
       return (
         <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
       )
-    }
+    },
+    align: 'right',
+    width: '5%'
   },
   {
     title: '交易对',
-    dataIndex: 'exchangePairs'
+    dataIndex: 'exchangePairs',
+    align: 'center'
   },
   {
     title: '最新价',
-    dataIndex: 'newPrice'
+    dataIndex: 'newPrice',
+    align: 'center'
   },
   {
     title: '日涨跌',
     dataIndex: 'highsAndLows',
+    align: 'center',
     render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>
   },
   {
     title: '最高价',
-    dataIndex: 'highestPrice'
+    dataIndex: 'highestPrice',
+    align: 'center'
   },
   {
     title: '最低价',
-    dataIndex: 'minimumPrice'
+    dataIndex: 'minimumPrice',
+    align: 'center'
   },
   {
     title: '日成交量',
-    dataIndex: 'dailyVolume'
+    dataIndex: 'dailyVolume',
+    align: 'center'
   },
   {
     title: '日成交额',
     dataIndex: 'dailyTurnover',
+    align: 'center',
     sorter: (a, b) => {
       return parseFloat(a.dailyTurnover) - parseFloat(b.dailyTurnover)
     }

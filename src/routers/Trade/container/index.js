@@ -29,7 +29,8 @@ class Trade extends Component {
     const trade = this.props.trade
     const home = this.props.home
     home.urlpath = '/trade'
-    if (trade.ws === null) {
+    trade.market.BTCLoading = true
+    if (trade.ws === null || trade.ws.readyState === 0) {
       trade.tradeWsInit('/trade')
     } else {
       trade.sendReq(2, 'state.subscribe', [])
@@ -42,9 +43,12 @@ class Trade extends Component {
     const home = this.props.home
     home.urlpath = ''
     trade.market.BTCLoading = true
-    trade.sendReq(2, 'state.unsubscribe', [])
-    trade.sendReq(2, 'depth.unsubscribe', [])
-    trade.sendReq(5, 'deals.unsubscribe', [])
+    // 当websocket没有成功开启，就跳转到其他页面，会提示send报错
+    if (trade.ws !== null && trade.ws.readyState !== 0) {
+      trade.sendReq(2, 'state.unsubscribe', [])
+      trade.sendReq(2, 'depth.unsubscribe', [])
+      trade.sendReq(5, 'deals.unsubscribe', [])
+    }
   }
   render() {
     return (

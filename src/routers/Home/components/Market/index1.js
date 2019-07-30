@@ -5,7 +5,6 @@ import './index.less'
 import { BeforeSendGet } from '../../../../components/Ajax'
 import { inject, observer } from 'mobx-react'
 import Empty from '../../../../components/Empty'
-import star1 from '../../images/star1.png'
 import star2 from '../../images/star2.png'
 import { withRouter } from 'react-router-dom'
 
@@ -36,8 +35,7 @@ class ExchangeMarket extends Component {
     home.urlpath = '/home'
     BeforeSendGet('/api/v1/visitor/market/list', {}, function(res) {
       if (res.code === 0) {
-        home.marketList = JSON.stringify(res.result)
-        console.log(res.result)
+        console.log(res)
       }
     })
     if (trade.ws === null || trade.ws.readyState === 0) {
@@ -181,77 +179,12 @@ class ExchangeMarket extends Component {
   }
   render() {
     const home = this.props.home
-    let marketList = home.marketList.length > 0 ? JSON.parse(home.marketList) : []
     let isUpdate = home.isUpdate
     const loadingStyle = {
       spinning: home.BTCLoading,
       tip: 'Loading...',
       indicator: <Icon type="loading" spin />
     }
-    let columns = [
-      {
-        title: '',
-        dataIndex: 'isCollected',
-        render: text => {
-          return (
-            <img className="collectStar" style={{ cursor: 'pointer' }} src={ text ? star2 : star1 } alt="" />
-          )
-        },
-        align: 'right',
-        width: '5%'
-      },
-      {
-        title: '交易对',
-        dataIndex: 'exchangePairs',
-        align: 'center',
-        width: '11%',
-        render: text => {
-          return (
-            <td className="exchangePairs" style={{ display: 'block', width: '100%', textAlign: 'center', cursor: 'pointer' }}>{ text }</td>
-          )
-        }
-      },
-      {
-        title: '最新价',
-        dataIndex: 'newPrice',
-        align: 'center',
-        width: '11%'
-      },
-      {
-        title: '日涨跌',
-        dataIndex: 'highsAndLows',
-        render: text => <td style={{ display: 'block', width: '100%', textAlign: 'center', color: `${ text[0] === '-' ? '#e95454' : '#29bc89' }` }}>{ text }</td>,
-        align: 'center',
-        width: '11%'
-      },
-      {
-        title: '最高价',
-        dataIndex: 'highestPrice',
-        align: 'center',
-        width: '11%'
-      },
-      {
-        title: '最低价',
-        dataIndex: 'minimumPrice',
-        align: 'center',
-        width: '11%'
-      },
-      {
-        title: '日成交量',
-        dataIndex: 'dailyVolume',
-        align: 'center',
-        width: '20%'
-      },
-      {
-        title: '日成交额',
-        dataIndex: 'dailyTurnover',
-        sorter: (a, b) => {
-          return parseFloat(a.dailyTurnover) - parseFloat(b.dailyTurnover)
-        },
-        align: 'center',
-        width: '20%'
-      }
-    ]
     return (
       <div className="exchange_market">
         <Input
@@ -262,47 +195,43 @@ class ExchangeMarket extends Component {
           // onPressEnter={ this.search }
           onChange={ this.handleChange }
         />
-        { marketList.length > 0 ?
-          <Tabs defaultActiveKey="1" onChange={ this.coinsTypeChange }>
-            { marketList.map((val, i) => (
-              <TabPane tab={ `${ val.Money }市场` } key={i}>
-                <Table columns={ columns }
-                  dataSource={ 
-                    val.Stock.map((item, index) => (
-                      {
-                        key: `${ index }`,
-                        isCollected: false,
-                        exchangePairs: `${ item }/${ val.Money }`,
-                        newPrice: '--',
-                        highsAndLows: '--',
-                        highestPrice: '--',
-                        minimumPrice: '--',
-                        dailyVolume: '--',
-                        dailyTurnover: '--'
-                      }
-                    ))
-                  }
-                  pagination={ false }
-                  loading={ loadingStyle }
-                  onRow={ this.rowClick }
-                  locale={{
-                    emptyText: (
-                      <Empty height="120" text="无匹配数据" />
-                    )
-                  }}
-                />
-              </TabPane>
-            )) }
-            <TabPane tab={ <span><img style={{ marginBottom: 5, marginRight: 5 }} src={ star2 } />自选市场</span> } key="9999">
-              <Table columns={ columnsCollect } dataSource={ this.state.collectData } pagination={ false } onRow={ this.rowClick } locale={{
-                emptyText: (
-                  <Empty height="120" text="暂无收藏" />
-                )
-              }} />
-            </TabPane>
-          </Tabs>
-          : ''
-        }
+        <Tabs defaultActiveKey="1" onChange={ this.coinsTypeChange }>
+          <TabPane tab="BTC市场" key="1">
+            <Table columns={ columnsBTC } dataSource={ this.state.dataBTC } pagination={ false } loading={ loadingStyle } onRow={ this.rowClick } locale={{
+              emptyText: (
+                <Empty height="120" text="无匹配数据" />
+              )
+            }} />
+          </TabPane>
+          <TabPane tab="USDT市场" key="2">
+            <Table columns={ columnsUSDT } dataSource={ this.state.dataUSDT } pagination={ false } onRow={ this.rowClick } locale={{
+              emptyText: (
+                <Empty height="120" text="无匹配数据" />
+              )
+            }} />
+          </TabPane>
+          <TabPane tab="ETH市场" key="3">
+            <Table columns={ columnsETH } dataSource={ this.state.dataETH } pagination={ false } onRow={ this.rowClick } locale={{
+              emptyText: (
+                <Empty height="120" text="无匹配数据" />
+              )
+            }} />
+          </TabPane>
+          <TabPane tab="BCT市场" key="4">
+            <Table columns={ columnsBCT } dataSource={ this.state.dataBCT } pagination={ false } onRow={ this.rowClick } locale={{
+              emptyText: (
+                <Empty height="120" text="无匹配数据" />
+              )
+            }} />
+          </TabPane>
+          <TabPane tab={ <span><img style={{ marginBottom: 5, marginRight: 5 }} src={ star2 } />自选市场</span> } key="5">
+            <Table columns={ columnsCollect } dataSource={ this.state.collectData } pagination={ false } onRow={ this.rowClick } locale={{
+              emptyText: (
+                <Empty height="120" text="暂无收藏" />
+              )
+            }} />
+          </TabPane>
+        </Tabs>
       </div>
     )
   }
