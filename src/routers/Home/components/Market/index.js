@@ -24,28 +24,7 @@ class ExchangeMarket extends Component {
     const trade = this.props.trade
     const home = this.props.home
     home.urlpath = '/home'
-    // BeforeSendGet('/api/v1/visitor/market/list', {}, function(res) {
-    //   if (res.code === 0) {
-    //     home.marketList = JSON.stringify(res.result)
-    //     let len = res.result.length
-    //     res.result.forEach((val, i) => {
-    //       home[`market${i + 1}`] = val.Stock.map((item, index) => (
-    //         {
-    //           key: `${ index }`,
-    //           isCollected: false,
-    //           exchangePairs: `${ item }/${ val.Money }`,
-    //           newPrice: '--',
-    //           highsAndLows: '--',
-    //           highestPrice: '--',
-    //           minimumPrice: '--',
-    //           dailyVolume: '--',
-    //           dailyTurnover: '--'
-    //         }
-    //       ))
-    //       home[`marketCache${i}`] = home[`market${i}`].slice(0)
-    //     })
-    //   }
-    // })
+    // 获取交易市场币种列表
     if (home.marketList.length === 0) {
       home.getMarketList()
     }
@@ -146,7 +125,6 @@ class ExchangeMarket extends Component {
     }
   }
   render() {
-    console.log('刷新')
     const home = this.props.home
     let marketList = home.marketList.length > 0 ? JSON.parse(home.marketList) : []
     let isUpdate = home.isUpdate

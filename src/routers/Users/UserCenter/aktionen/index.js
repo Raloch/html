@@ -30,7 +30,7 @@ class Aktionen extends Component {
                 let realname = d.result.isCertification;
                 _this.setState({realname: (realname == "yes")?realname:(realname == "pending")?realname:'no',registerReward: d.result.registerReward});
             }else {
-                message.error(GetErrorMsg(d))
+                message.error(d.message)
             }
         })
     }

@@ -152,23 +152,23 @@ class Login extends Component {
     //         }
     //     })
     // }
-    // componentWillMount() {
-    //     var script = document.createElement('script');
-    //     script.type = 'text/javascript';
-    //     script.src = 'http://pv.sohu.com/cityjson?ie=utf-8'; 
-    //     document.body.appendChild(script)
-    //     setTimeout(() => {
-    //         var obj = window.returnCitySN
-    //         this.setState({
-    //             ip: obj.cip,
-    //             address: obj.cname
-    //         })
-    //     }, 500);
-    //     if (Cookies.get('account')) {
-    //         if (this.props.history.length < 3) this.props.history.push('/home')
-    //         else this.props.history.goBack();
-    //     }
-    // }
+    componentDidMount() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'http://pv.sohu.com/cityjson?ie=utf-8'; 
+        document.body.appendChild(script)
+        setTimeout(() => {
+            var obj = window.returnCitySN
+            this.setState({
+                ip: obj.cip,
+                address: obj.cname
+            })
+        }, 500);
+        // if (Cookies.get('account')) {
+        //     if (this.props.history.length < 3) this.props.history.push('/home')
+        //     else this.props.history.goBack();
+        // }
+    }
     // 获取操作系统名称
     getOperationSys = () => {
         var OS = '';
@@ -336,6 +336,7 @@ class Login extends Component {
                                 })
                             } else {
                                 // message.error(GetErrorMsg(d))
+                                message.error(d.message)
                             }
                         })
                     } else {

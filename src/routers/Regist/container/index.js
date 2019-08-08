@@ -69,7 +69,7 @@ class Regist extends Component {
                         _this.props.history.push('/login');
                     } else {
                         // message.error(GetErrorMsg(d))
-                        message.error(d.result.message)
+                        message.error(d.message)
                     }
                 });
             }

@@ -3,10 +3,11 @@ import { Provider, inject, observer } from 'mobx-react'
 import { Router,Route, withRouter ,Link} from 'react-router-dom'
 import { message, Layout, Breadcrumb, Tabs, Form, Select } from 'antd'
 import store from '../store'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { Cgicallget, CgicallPost, GetErrorMsg, BeforeSendPost, BeforeSendGet} from '@/components/Ajax'
 import WalletMenu from '../menu'
 import { RechargeTable, InstationMention, GeneralMention} from './components'
 import { AppAdrss, AppFrd} from './addModal'
+import Cookies from 'js-cookie'
 const { Sider, Content } = Layout;
 const TabPane = Tabs.TabPane;
 
@@ -55,9 +56,9 @@ class Recharge extends Component {
                 }else if(type == 'address'){
                     _this.setState({addAdsHtml:num + '秒后重新获取',codeDisAddAds:true})
                     _this.state.atime = num - 1;
-                }else {
+                }else if(type == 'friend'){
                     _this.setState({addFriHtml:num + '秒后重新获取',codeDisAddFri:true})
-                    _this.state.gtime = num - 1;
+                    _this.state.ftime = num - 1;
                 }
                 _this.countDown(type);
             }else {
@@ -70,21 +71,39 @@ class Recharge extends Component {
                 }else if(type == 'address'){
                     _this.setState({addAdsHtml: msg,codeDisAddAds:false})
                     _this.state.atime = 30;
-                }else {
+                }else if(type == 'friend'){
                     _this.setState({addFriHtml: msg,codeDisAddFri:false})
-                    _this.state.itime = 30;
+                    _this.state.ftime = 30;
                 }
             } 
         },1000)
     }
     getAuthCode = (type,event) => {
+        //2019-7-12 zsl  修改手机验证码api
+        // type === 'address'?'addre-phone':type === 'general'? 'with-phone':'conn-phone',
+        let phoneType
+        switch(type){
+            case 'address':
+                phoneType = 'addre-phone'
+                break;
+            case 'friend':
+                phoneType = 'conn-phone'
+                break;
+            case 'general':
+                phoneType = 'with-phone'
+                break;
+            case 'phone':
+                phoneType = 'cont-phone'
+                break;
+
+        }
         var obj = {
-            type: 'withdrawbyphone',
-            account: this.state.getUserInfo.phone,
-            receiver : 'phone'
+            type: phoneType,
+            email: Cookies.get("account"),
+            // receiver : 'phone'
         }
         var _this = this;
-        CgicallPost("/apiv1/visitor/getValidateCode",obj,function(d){
+        BeforeSendPost("/api/v1/user/withdraw/phone-code",obj,function(d){
             if(d.result) {
                 message.success('验证码已发送，请注意查收');
                 _this.countDown(type);
@@ -152,37 +171,39 @@ class Recharge extends Component {
     }
     getRate = () => {
         let _this = this;
-        Cgicallget('/apiv1/user/wallet/currency/mywallet', '',function(d){
-            if(d.result) {
-                let arr = [];
-                let arrRate = [];
-                let market_value = d.result.market_value;
-                // for(var key in d.result.market_value) {
-                //     arr.push({key:key,data: market_value[key]})
-                // }
-                // for(var key in d.result.rate) {
-                //     arrRate.push({key:key,data: d.result.rate[key]});
-                // }
-                _this.setChildG.getRate(d.result.balance);
-                _this.setChildI.getRate(d.result.balance);
-            }else {
-                message.error(GetErrorMsg(d))
-                // _this.setState({currency: currency})
-            }
+        BeforeSendGet('/api/v1/user/asset/list', '', function(d) {
+            let data = [];
+            if(d.code === 0){
+                for(let i in d.result) {
+                    if(i !== 'COCO'){
+                        let obj = {};
+                        obj.asset = i;
+                        obj.available = d.result[i].available;
+                        obj.freeze = d.result[i].freeze;
+                        obj.amount = Number(d.result[i].available) + Number(d.result[i].freeze);
+                        obj.legal_value = d.result[i].MarketValue
+                        data.push(obj)
+                    }
+                }
+            }   
+            _this.setChildG.getRate(data);
+            _this.setChildI.getRate(data);
         })
+    }
+    componentWillMount() {
+        const searchParams = new URLSearchParams(this.props.location.search)
+        const amount = searchParams.get('code')
+        if(!amount) this.props.history.push('/wallet/asset');
+        this.setState({amount: amount});
     }
     componentDidMount() {
         this.getCertification();
-        const searchParams = new URLSearchParams(this.props.location.search)
-        const amount = searchParams.get('code')
-        // if(!amount) this.props.history.push('/wallet/asset');
-        this.setState({amount: amount});
+        
     }
     goWithDrawaled = (num) => {
         this.props.history.push('/wallet/withDrawaled' + '?code=' + encodeURIComponent(this.state.amount) + '&num=' + encodeURIComponent(num));
     }
     gVisible = () => {
-        console.log("-----------------------")
         this.setState({gVisible: true})
     }
     gCancel = () => {
@@ -261,7 +282,7 @@ class Recharge extends Component {
                                                         visible={this.iVisible} 
                                                         amount={amount} 
                                                         setChild={this.setChildI} 
-                                                        getAuthCode={this.getAuthCode}
+                                                        getAuthCode={ this.getAuthCode}
                                                         codeDisType={codeDisInsta}
                                                         getUserInfo={getUserInfo}
                                                         goWithDrawaled={this.goWithDrawaled}

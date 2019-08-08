@@ -46,7 +46,7 @@ class RecRecord extends Component {
         // message.loading('正在刷写数据...', 30)
 
         let token = Cookies.get("token")
-            var url = "http://192.168.100.204:8000/api/v1/user/export/deposit/"+ asset
+            var url = "http://172.38.8.89:8000/api/v1/user/export/deposit/"+ asset
             var xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
             xhr.responseType = "blob";
@@ -154,11 +154,10 @@ class RecRecordTable extends Component {
     state = {
         loading: false,
         data: [],
-        page: 1,
+        page: '0,10',
         limit: 10,
         count: 0,
         asset: "",
-        offset:"0,10",
     }
     handleChange = (val) => {
     }
@@ -174,7 +173,7 @@ class RecRecordTable extends Component {
             business:"deposit",
             starttime:"0",
             endtime:"0",
-            offset:this.state.offset,
+            offset:page,
         }
         // Cgicallget('/api/v1/user/wallet/history/deposit', obj ,function(d){
         //     if(d.result) {
@@ -185,9 +184,10 @@ class RecRecordTable extends Component {
         // })
         BeforeSendGet('/api/v1/user/balance/history', obj, function(d){
             if(d.result) {
-                _this.setState({data: d.result.records,page: d.result.offset,count: d.result.limit});
+                console.log(Math.ceil((d.result.count)/10))
+                _this.setState({data: d.result.records,page:d.result.count,count: d.result.limit});
             }else {
-                message.error(GetErrorMsg(d))
+                message.error(d.message)
             }
         })
     }
@@ -196,7 +196,14 @@ class RecRecordTable extends Component {
         this.getTableData(1,data);
     }
     pageTurn = (current) => {
-        this.getTableData(current,this.state.asset);
+        let all = this.state.page
+        let limit = this.state.count
+        let limit1 = "" //最后一页的剩余数量
+        if(Math.ceil(all/limit) === current){
+            limit1 = all % limit
+        }
+        let d =`${(current-1)*10}, ${(limit1 || "10")}`
+        this.getTableData(d,this.state.asset);
     }
     componentDidMount() {
         // 基于准备好的dom，初始化table实例
@@ -261,8 +268,8 @@ class RecRecordTable extends Component {
                     columns={columns} 
                     dataSource={this.state.data} 
                     pagination = {{
-                        total: this.state.count,
-                        current: this.state.page,
+                        total: this.state.page,
+                        // current: this.state.page,
                         defaultCurrent: 1,
                         pageSize: this.state.limit,
                         onChange:(current, pageSize) => {

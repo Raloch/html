@@ -48,10 +48,10 @@ class WalletAsset extends Component {
             pieData.push({value: balance[k].legal_value.CNY,name: balance[k].asset});
             labelName.push({name: balance[k].asset})
         }
-        if(!pieData.length){
-            pieData = [{value:0,name:'BTC'}];
-            labelName = ['BTC'];
-        } 
+        // if(!pieData.length){
+        //     pieData = [{value:0,name:'BTC'}];
+        //     labelName = ['BTC'];
+        // } 
         var myChart = echarts.init(document.getElementById('assetTtm_pie'));
         // 绘制图表
         myChart.setOption({
@@ -131,6 +131,7 @@ class WalletAsset extends Component {
         let dataRate = this.state.rate;//rateVal
         let num = 0;
         let numRate = 1;
+        console.log(data,dataRate)
         for(var k in data) {
             if(data[k].key == val) {
                 num = data[k].data;
@@ -138,7 +139,7 @@ class WalletAsset extends Component {
         }
         for(var k in dataRate) {
             if(dataRate[k].key == val) {
-                numRate = dataRate[k].data.CNY;
+                numRate = dataRate[k].data;
             }
         }
         this.setState({currency: val,assetVal: num,rateVal: numRate});
@@ -157,12 +158,37 @@ class WalletAsset extends Component {
         //             arrRate.push({key:key,data: d.result.rate[key]});
         //         }
         //         _this.setState({balance: d.result.balance,legal_value: d.result.legal_value,allData: d.result.market_value,market_value: arr,assetVal:arr[0].data,rate: arrRate,rateVal:arrRate[0].data.CNY});
-                _this.buildPie();
+                // _this.buildPie();
         //         _this.childTable.getRate(d.result.balance);
         //     }else {
         //         message.error(GetErrorMsg(d))
         //     }
         // })
+        BeforeSendGet('/api/v1/user/valuation/assets','',function(d){
+            console.log(d)
+            if(d.code === 0) {
+                let arr = [];
+                let arrRate = [];
+                let market_value = d.result.money;
+                for(var key in market_value) {
+                    arr.push({key:key,data: market_value[key]})
+                }
+                for(var key in d.result.rate) {
+                    arrRate.push({key:key,data: d.result.rate[key]});
+                }
+                _this.setState({legal_value: d.result.money,allData: d.result.market_value,market_value: arr,assetVal:arr[0].data,rate: arrRate,
+                    // rateVal:arrRate[0].data.CNY
+                    rateVal:arrRate[0].data
+                });
+                _this.buildPie();
+                // _this.childTable.getRate(d.result.balance);
+                console.log(arr)
+                console.log(arrRate)
+            }else {
+                message.error('数据初始化失败')
+            }
+        })
+
     }
     componentDidMount() {
         // 基于准备好的dom，初始化echarts实例
@@ -187,7 +213,7 @@ class WalletAsset extends Component {
                                                 <span className='currency_left'>{legal_value.CNY || 0}CNY</span>
                                                 ≈
                                                 <span className='currency_right'>
-                                                    {assetVal}
+                                                    {assetVal} 
                                                 </span>
                                                 <Dropdown 
                                                     overlay={
@@ -274,24 +300,38 @@ class StruTable extends Component {
         BeforeSendGet('/api/v1/user/asset/list', '', function(d) {
             let data = [];
             if(d.code === 0){
-                let balance = d.result.balance
+                let data1 = d.result
                 let k = 0
-                d.result.asset.map(i => {
-                    k ++
-                        let obj = {};
-                        let name = i.name
-                        obj.key = k
-                        obj.asset = name;
-                        obj.available = balance[name].available;
-                        obj.freeze = balance[name].freeze;
-                        obj.amount = Number(balance[name].available) + Number(balance[name].freeze);
-                        //写死的假数据 市值
-                        obj.legal_value = {
-                            'CNY':0.00000000
-                        }
-                        data.push(obj)
+                // d.result.map(i => {
+                    // console.log(i)/
+                    // let name = i.name
+                    // obj.key = k
+                    // obj.asset = name;
+                    // obj.available = balance[name].available;
+                    // obj.freeze = balance[name].freeze;
+                    // obj.amount = Number(balance[name].available) + Number(balance[name].freeze);
+                    // //写死的假数据 市值
+                    // obj.legal_value = {
+                    //     'CNY':0.00000000
+                    // }
+                    // data.push(obj)
 
-                })
+                // })
+
+                for(let i in d.result) {
+                    if(i !== 'COCO'){
+                        k ++
+                        let obj = {};
+                        obj.key = k
+                        obj.asset = i;
+                        obj.available = d.result[i].available;
+                        obj.freeze = d.result[i].freeze;
+                        obj.amount = Number(d.result[i].available) + Number(d.result[i].freeze);
+                        obj.legal_value = d.result[i].MarketValue
+                        data.push(obj)
+                    }
+                }
+                // console.log(data)
                 _this.setState({
                     data:data,
                     balance:data
@@ -322,8 +362,6 @@ class StruTable extends Component {
     onsearch = (val) => {
         let arr = [];
         let balance = this.state.balance;
-        console.log(val)
-        console.log(balance)
         if(val) {
             for(var k in balance) {
                 if(val && balance[k].asset.indexOf(val.toUpperCase()) >=0 ) {
@@ -334,6 +372,7 @@ class StruTable extends Component {
             arr = balance;
         }  
         this.setState({data: arr});
+        ;
     }
     getRate = (balance) => {
         // this.setState({data: balance,balance: balance});
@@ -370,7 +409,7 @@ class StruTable extends Component {
           },{
             title: '市值',
             dataIndex: 'legal_value',
-            render: text => text.CNY
+            // render: text => text.CNY
           },{
             title: '操作',
             key: 'action',

@@ -102,7 +102,7 @@ class BoundPhoOne extends Component {
             email: _this.props.email,
             code: inputEmailCode,
         }
-        BeforeSendPost("/api/v1/user/email_code_check", obj, function (d) {
+        BeforeSendPost("/api/v1/user/email_check", obj, function (d) {
             if (d.code == 0) {
                 _this.props.passValueTwo({ inputEmailCode, googleCode })
             } else {

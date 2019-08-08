@@ -25,7 +25,7 @@ class Recharge extends Component {
     state = {
         loading: false,
         realname: 'no',
-        qrcode: '',
+        qrcode: '暂无地址',
         currency: 'BTC'
     }
     getCertification = () => {
@@ -35,20 +35,30 @@ class Recharge extends Component {
         // if(!currency) this.props.history.push('/wallet/asset');
         BeforeSendGet('/api/v1/user/address/' + currency, '',function(d){
             if(d.code === 0){
-                console.log(d)
                 if(d.result) {
-                    _this.setState({qrcode: d.result.Address,currency: currency})
+                    if(d.result.Address){
+                        _this.setState({qrcode: d.result.Address})
+                    }else {
+                        _this.setState({qrcode: d.result})
+                    }
                     // let realname = d.result.isCertification;
                     // _this.setState({realname: (realname == "yes")?realname:(realname == "pending")?realname:'no'});
                 }else {
                     message.error(GetErrorMsg(d))
-                    _this.setState({currency: currency})
+                    // _this.setState({currency: currency})
                 }
             }
         })
     }
     copylink = () => {
         message.success("邀请链接复制成功！")
+    }
+    componentWillMount() {
+        const searchParams = new URLSearchParams(this.props.location.search)
+        const currency = searchParams.get('code')
+        this.setState({
+            currency: currency
+        })
     }
     componentDidMount() {
         this.getCertification();
@@ -152,17 +162,29 @@ class RechargeTable extends Component {
         asset: ''
     }
     handleChange = (val) => {
-        console.log(val);
+        // console.log(val);
     }
     getTableData = (page,asset) => {
+        console.log(this.props)
+
         let _this = this;
+        // let obj = {
+        //     page: page,
+        //     limit: this.state.limit,
+        //     asset: asset || ''
+        // }
         let obj = {
-            page: page,
-            limit: this.state.limit,
-            asset: asset || ''
+            // page: page,
+            // limit: this.state.limit,
+            asset: _this.props.currency,
+            business:"deposit",
+            starttime:"0",
+            endtime:"0",
+            offset:"0,10",
         }
-        Cgicallget('/apiv1/user/wallet/history/deposit', obj ,function(d){
+        BeforeSendGet('/api/v1/user/balance/history', obj ,function(d){
             if(d.result) {
+                
                 _this.setState({data: d.result.records,page: d.result.page,count: d.result.count});
             }else {
                 message.error(GetErrorMsg(d))
@@ -170,6 +192,7 @@ class RechargeTable extends Component {
         })
     }
     componentDidMount() {
+        
         // 基于准备好的dom，初始化table实例
         this.getTableData(this.state.page);
     }
@@ -219,10 +242,10 @@ class RechargeTable extends Component {
             width: 180,
             render: function(text,record) {
                 return(
-                    <Tooltip placement="top" title={text.tx_id} overlayClassName='word-spill-tip'>
+                    <Tooltip placement="top" title={text.id} overlayClassName='word-spill-tip'>
                         {(text.type == 'outer')?
-                            <a className='word-spill' href="javascript:;">{text.tx_id}</a>:
-                            <span className='word-spill'>{text.tx_id}</span>
+                            <a className='word-spill' href="javascript:;">{text.id}</a>:
+                            <span className='word-spill'>{text.id}</span>
                         }
                     </Tooltip>
                 )

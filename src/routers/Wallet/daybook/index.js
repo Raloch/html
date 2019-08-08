@@ -91,6 +91,7 @@ class WithDrawal extends Component {
         // })
     }
     onsearch = () => {
+        // console.log(this.refs.setChild)
         this.childTable.onsearch();
     }
     setChild = (childTable) => {
@@ -126,7 +127,7 @@ class WithDrawal extends Component {
         //     }
         // })
         let token = Cookies.get("token")
-        var url = "http://192.168.100.204:8000/api/v1/user/export/"+business+"/all"
+        var url = "http://172.38.8.89:8000/api/v1/user/export/"+business+"/all"
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = "blob";
@@ -259,13 +260,12 @@ class RecRecordTable extends Component {
     state = {
         loading: false,
         data: [],
-        page: 1,
+        page: "1,10",
         limit: 10,
         total: 0,
         business: '',
         start_time: 0,
         end_time: 0,
-        offset:"0,10"
     }
     handleChange = (val) => {
     }
@@ -281,7 +281,7 @@ class RecRecordTable extends Component {
             asset: "",
             starttime:start_time,
             endtime:end_time,
-            offset:this.state.offset,
+            offset:page,
 
         }
         // Cgicallget('/api/v1/user/balance/history', obj ,function(d){
@@ -298,7 +298,8 @@ class RecRecordTable extends Component {
                     j++
                     i.id = j
                 }   
-                _this.setState({data: d.result.records,page: d.result.offset,count: d.result.limit});
+                // _this.setState({data: d.result.records,page: d.result.offset,count: d.result.count});
+                _this.setState({data: d.result.records,page: d.result.limit, count: d.result.count});
             }else {
                 message.error(GetErrorMsg(d))
             }
@@ -308,10 +309,17 @@ class RecRecordTable extends Component {
         this.state.business = this.props.operate || '';
         this.state.start_time = this.props.startT || 0;
         this.state.end_time = this.props.endT || 0;
-        this.getTableData(1,this.props.operate,this.props.startT,this.props.endT);
+        this.getTableData("1,10",this.props.operate,this.props.startT,this.props.endT);
     }
     pageTurn = (current) => {
-        this.getTableData(current,this.state.business,this.state.start_time,this.state.end_time);
+        let all = this.state.count
+        let limit = this.state.page
+        let limit1 = "" //最后一页的剩余数量
+        if(Math.ceil(all/limit) === current){
+            limit1 = all % limit
+        }
+        let d =`${(current-1)*10}, ${(limit1 || "10")}`
+        this.getTableData(d,this.state.business,this.state.start_time,this.state.end_time);
     }
     operateType = (type) => {
         // let data = this.props.objData;
@@ -368,7 +376,7 @@ class RecRecordTable extends Component {
                     pagination = {{
                         // disabled: true,
                         total: this.state.count,
-                        current: this.state.page,
+                        // current: this.state.page,
                         defaultCurrent: 1,
                         pageSize: this.state.limit,
                         onChange:(current, pageSize) => {

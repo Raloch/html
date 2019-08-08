@@ -30,6 +30,27 @@ class Home {
   @observable marketLoading = []
 
   @action getMarketList = () => {
+    // BeforeSendGet('/api/v1/visitor/market/list', {}, function(res) {
+    //   if (res.code === 0) {
+    //     home.marketList = JSON.stringify(res.result)
+    //     res.result.forEach((val, i) => {
+    //       home[`market${i + 1}`] = val.Stock.map((item, index) => (
+    //         {
+    //           key: `${ index }`,
+    //           isCollected: false,
+    //           exchangePairs: `${ item }/${ val.Money }`,
+    //           newPrice: '--',
+    //           highsAndLows: '--',
+    //           highestPrice: '--',
+    //           minimumPrice: '--',
+    //           dailyVolume: '--',
+    //           dailyTurnover: '--'
+    //         }
+    //       ))
+    //       home[`marketCache${i}`] = home[`market${i}`].slice(0)
+    //     })
+    //   }
+    // })
     let result = [
       {
         Money: 'USDT',

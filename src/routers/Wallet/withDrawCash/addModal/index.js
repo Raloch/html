@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
 import { Input, Button, message, Form, Modal } from 'antd'
 import $ from 'jquery'
-import { Cgicallget, CgicallPost, GetErrorMsg} from '@/components/Ajax'
+import { Cgicallget, CgicallPost, GetErrorMsg, BeforeSendPost, BeforeSendGet} from '@/components/Ajax'
+import Cookies from 'js-cookie'
 const FormItem = Form.Item;
 class AppendAddress extends Component {
     state = {
@@ -41,32 +42,31 @@ class AppendAddress extends Component {
     handleSubmit  = (e) => {
         e.preventDefault()
         let { form } = this.props;
-        const {codeType} = this.state;
+        // const {codeType} = this.state;
         let arr = ['newAddress','remark','PhoneCode'];
-        if(codeType == 'google') arr = ['newAddress','remark','googleCode'];
+        // if(codeType == 'google') arr = ['newAddress','remark','googleCode'];
         form.validateFields(arr,{},(err, values) => {
             if (!err) {
                 let { newAddress, remark, PhoneCode, googleCode } = values
                 var obj = {
-                    person: newAddress,
-                    person_type: 'common',
-                    action: 'add',
-                    remark: remark,
-                    validate_type: codeType,
-                    validate_code: (codeType == 'google')?googleCode:PhoneCode,
+                    email: Cookies.get("account"),
+                    addr: newAddress,
+                    remarks: remark,
+                    code: PhoneCode,
+                    asset: this.props.amount,
                 }
                 var _this = this;
                 this.setState({ LoginLoading: true });
                 setTimeout(function(){
                     _this.setState({ LoginLoading: false });
                 },3000)
-                CgicallPost("/apiv1/user/wallet/withdraw/setperson/"+ this.props.amount ,obj,function(d){
+                BeforeSendPost("/api/v1/user/add/withdraw/addr",obj,function(d){
                     if(d.result) {
                         message.success('提币地址添加成功');
                         _this.props.getMsg();
                         _this.props.cancel();
                     }else {
-                        message.error(GetErrorMsg(d))
+                        message.error(d.message)
                     }
                 });
             }
@@ -98,7 +98,7 @@ class AppendAddress extends Component {
                                 validateFirst:true,
                                 rules: [
                                     {required: true, message: '请输入新增地址!'}, 
-                                    {type: 'email', message: '地址非法!'},
+                                    // {type: 'email', message: '地址非法!'},
                                 ],
                             })(
                                 <Input className="code_input" autocomplete="off" placeholder="请输入新增地址" />
@@ -114,7 +114,8 @@ class AppendAddress extends Component {
                                 <Input className="code_input" autocomplete="off" placeholder="请输入备注" />
                             )}
                         </FormItem>
-                        <FormItem label="验证码" colon={false}  className='plate-code-switch' style={{display: (codeType == 'google')?'none':'block'}}>
+                        <FormItem label="验证码" colon={false}  className='plate-code-switch' >
+                        {/* <FormItem label="验证码" colon={false}  className='plate-code-switch' style={{display: (codeType == 'google')?'none':'block'}}> */}
                             <div>
                                 <div>
                                     {getFieldDecorator('PhoneCode', {
@@ -137,7 +138,7 @@ class AppendAddress extends Component {
                                 <div className='plate-msg-text-right' style={{display: onlyOneType?'none':'block'}}>使用<a href='javascript:;' onClick={this.googleShow}>Google验证码</a></div>
                             </div>
                         </FormItem>
-                        <FormItem label="验证码" colon={false}  className='plate-code-switch' style={{display: (codeType == 'google')?'block':'none'}}>
+                        {/* <FormItem label="验证码" colon={false}  className='plate-code-switch' style={{display: (codeType == 'google')?'block':'none'}}>
                             <div>
                                 <div>
                                     {getFieldDecorator('googleCode', {
@@ -153,7 +154,7 @@ class AppendAddress extends Component {
                                 </div>
                                 <div className='plate-msg-text-right' style={{display: onlyOneType?'none':'block'}}>使用<a href='javascript:;' onClick={this.phoneShow}>手机验证码</a></div>
                             </div>
-                        </FormItem>
+                        </FormItem> */}
                         <FormItem className='ellipse-btn plate-form-btn'>
                             <Button type="primary" htmlType="submit" className="l_button" loading={this.props.LoginLoading}>
                                 确定
@@ -221,26 +222,26 @@ class AppendFriend extends Component {
             if (!err) {
                 let { newLinkman, remark, PhoneCode, googleCode } = values
                 var obj = {
-                    person: newLinkman,
-                    person_type: 'inner',
-                    action: 'add',
-                    remark: remark,
-                    validate_type: codeType,
-                    validate_code: (codeType == 'google')?googleCode:PhoneCode,
+                    username:Cookies.get("account"),
+                    email: newLinkman,
+                    remarks: remark,
+                    // validate_type: codeType,
+                    // code: (codeType == 'google')?googleCode:PhoneCode,
+                    code: PhoneCode,
                 }
                 var _this = this;
                 this.setState({ LoginLoading: true });
                 setTimeout(function(){
                     _this.setState({ LoginLoading: false });
                 },3000)
-                CgicallPost("/apiv1/user/wallet/withdraw/setperson/"+ this.props.amount ,obj,function(d){
+                BeforeSendPost("/api/v1/user/add/contacts" ,obj,function(d){
                     if(d.result) {
                         message.success('联系人添加成功');
                         _this.props.getMsg();
                         _this.props.cancel();
                         // _this.props.goWithDrawaled();
                     }else {
-                        message.error(GetErrorMsg(d))
+                        message.error(d.message)
                     }
                 });
             }

@@ -5,7 +5,7 @@ import{ Icon, Table, Tooltip, Input,Button, Layout, message } from 'antd'
 import $ from 'jquery'
 import store from '../store'
 import TableNoData from '../images/table_no_data.png'
-import { Cgicallget, CgicallPost, GetErrorMsg, BeforeSendGet} from '@/components/Ajax'
+import { Cgicallget, CgicallPost, GetErrorMsg, BeforeSendGet, BeforeSendPost} from '@/components/Ajax'
 import WalletMenu from '../menu'
 import ExportJsonExcel from 'js-export-excel';
 import moment from 'moment';
@@ -59,7 +59,7 @@ class Daybook extends Component {
         //     }
         // })
         let token = Cookies.get("token")
-        var url = "http://192.168.100.204:8000/api/v1/user/export/withdraw/"+ asset
+        var url = "http://172.38.8.89:8000/api/v1/user/export/withdraw/"+ asset
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = "blob";
@@ -185,9 +185,9 @@ class DaybookTable extends Component {
             // page: page,
             // limit: this.state.limit,
             asset: asset,
-            business:"withdraw",
-            starttime:"0",
-            endtime:"0",
+            // business:"withdraw",
+            // starttime:"0",
+            // endtime:"0",
             offset:this.state.offset,
         }
         // Cgicallget('/apiv1/user/wallet/history/withdraw', obj ,function(d){
@@ -197,7 +197,7 @@ class DaybookTable extends Component {
         //         message.error(GetErrorMsg(d))
         //     }
         // })
-        BeforeSendGet('/api/v1/user/query/with/draw', obj, function(d){
+        BeforeSendPost('/api/v1/user/query/with/draw', obj, function(d){
             console.log(d.result.Data)
             if(d.result) {
                 _this.setState({data: d.result.Data,page: d.result.offset,count: d.result.limit});
